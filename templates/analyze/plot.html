@@ -1,0 +1,16 @@
+<h1>NBA Plotting Tool</h1>
+{% if svg != None %}
+
+<!-- Show the figure safely -->
+{{ svg|safe }}
+
+<!-- Create the form to update plot -->
+<form>
+  <input type="radio" name="y_axis" value="game_score"> Game Score<br>
+  <input type="radio" name="y_axis" value="points"> Points<br>
+</form>
+
+{% else %}
+    <p>No data available :(</p>
+
+{% endif %}
