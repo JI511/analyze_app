@@ -27,7 +27,7 @@ def plot(request):
 
 
 def get_fig():
-    my_csv = r'C:\Users\User\Desktop\Programs\django_practice\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
+    my_csv = r'C:\Users\User\Desktop\Programs\testproj\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
     # my_csv = r'C:\Users\ingwe\Desktop\Programs\django_practice\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
     df = Api.get_existing_data_frame(my_csv, logger=logging.getLogger(__name__))
 

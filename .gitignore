@@ -8,6 +8,7 @@ __pycache__/
 
 # MY IGNORES
 *idea
+*migrations/
 
 # Distribution / packaging
 .Python
@@ -105,3 +106,4 @@ venv.bak/
 .mypy_cache/
 
 *.png
+*.pyc
