@@ -9,6 +9,7 @@ __pycache__/
 # MY IGNORES
 *idea
 *migrations/
+*NBA_BEAUTIFUL_DATA/
 
 # Distribution / packaging
 .Python
