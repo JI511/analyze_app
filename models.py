@@ -1,3 +1,25 @@
 from django.db import models
 
-# Create your models here.
+
+class ScatterKeysXAxis(models.Model):
+    name = models.CharField(max_length=35, primary_key=True)
+
+    # Metadata
+    class Meta:
+        ordering = ['-name']
+
+    def __str__(self):
+        """String for representing the MyModelName object (in Admin site etc.)."""
+        return self.name
+
+
+class ScatterKeysYAxis(models.Model):
+    name = models.CharField(max_length=35, primary_key=True)
+
+    # Metadata
+    class Meta:
+        ordering = ['-name']
+
+    def __str__(self):
+        """String for representing the MyModelName object (in Admin site etc.)."""
+        return self.name
