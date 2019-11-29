@@ -10,6 +10,7 @@ import io
 from .NBA_Beautiful_Data.analytics import analytics_API as Api
 import pandas as pd
 import logging
+from .models import ScatterKeysYAxis, ScatterKeysXAxis
 
 # Create your views here.
 
@@ -21,7 +22,11 @@ def index(request):
 
 def plot(request):
     # setPlt()  # create the plot
-    svg_dict = {'svg': get_fig()}  # set the plot data
+    svg_dict = {
+        'svg': get_fig(),
+        'y_keys': ScatterKeysYAxis.objects.all(),
+        'x_keys': ScatterKeysXAxis.objects.all(),
+    }  # set the plot data
     plt.cla()  # clean up plt so it can be re-used
     return render(request, 'analyze/plot.html', svg_dict)
 

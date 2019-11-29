@@ -1,14 +1,21 @@
 <h1>NBA Plotting Tool</h1>
 {% if svg != None %}
 
+<h2>X Axis Keys</h2>
+<select>
+{% for name in x_keys %}
+    <option value="{{ name }}">{{ name }}</option>
+{% endfor %}
+</select>
+<h2>Y Axis Keys</h2>
+<select>
+{% for name in y_keys %}
+    <option value="{{ name }}">{{ name }}</option>
+{% endfor %}
+</select><br><br>
+
 <!-- Show the figure safely -->
 {{ svg|safe }}
-
-<!-- Create the form to update plot -->
-<form>
-  <input type="radio" name="y_axis" value="game_score"> Game Score<br>
-  <input type="radio" name="y_axis" value="points"> Points<br>
-</form>
 
 {% else %}
     <p>No data available :(</p>
