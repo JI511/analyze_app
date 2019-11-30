@@ -1,29 +1,5 @@
-<style>
-.content {
-    text-align: center;
-    margin: auto;
-}
-.selectors {
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-    display: inline-block;
-    padding: 15px;
-}
-.updater {
-    background-color: #4CAF50; /* Green */
-    border: none;
-    border-radius: 4px;
-    color: white;
-    padding: 10px 3px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    width: 100px;
-    cursor: pointer;
-}
-</style>
-
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'analyze/style.css' %}">
 <body>
 <h1 class="content">NBA Plotting Tool</h1><br><br>
 {% if svg != None %}

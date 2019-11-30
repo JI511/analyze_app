@@ -19,7 +19,7 @@ def plot(request):
     if request.method == "POST":
         # try to get the new x_key, default otherwise
         x_key = request.POST.get('x_key_name', 'minutes_played')
-        y_key = request.POST.get('y_key_name', 'points')
+        y_key = request.POST.get('y_key_name', 'game_score')
     svg_dict = {
         'svg': get_fig(x_key=x_key, y_key=y_key),
         'selected_x_key': x_key,
