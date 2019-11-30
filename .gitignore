@@ -10,7 +10,6 @@ __pycache__/
 *idea
 *migrations/
 *NBA_BEAUTIFUL_DATA/
-*extra/
 
 # Distribution / packaging
 .Python
@@ -107,5 +106,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-*.png
 *.pyc
