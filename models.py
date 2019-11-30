@@ -6,7 +6,7 @@ class ScatterKeysXAxis(models.Model):
 
     # Metadata
     class Meta:
-        ordering = ['-name']
+        ordering = ['name']
 
     def __str__(self):
         """String for representing the MyModelName object (in Admin site etc.)."""
@@ -18,7 +18,7 @@ class ScatterKeysYAxis(models.Model):
 
     # Metadata
     class Meta:
-        ordering = ['-name']
+        ordering = ['name']
 
     def __str__(self):
         """String for representing the MyModelName object (in Admin site etc.)."""

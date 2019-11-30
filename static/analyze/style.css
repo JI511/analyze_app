@@ -6,7 +6,6 @@
     display: flex;
     justify-content: center;
     margin: auto;
-    padding: 12px;
 }
 .updater {
     background-color: #4CAF50; /* Green */
@@ -21,7 +20,7 @@
     cursor: pointer;
 }
 .selector {
-    padding: 20px;
+    padding: 15px;
     border: 1px solid black;
     height: 100px;
 }

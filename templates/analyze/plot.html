@@ -1,70 +1,79 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'analyze/style.css' %}">
-<body>
-<h1 class="content">NBA Plotting Tool</h1><br><br>
-{% if svg != None %}
 
-<h2 class="content">Graph Selectors</h2>
-<form action="{% url 'analyze:plot' %}" method="post">
-{% csrf_token %}
-<div class="selector_content">
-    <!-- Selector X AXIS -->
-    <div class="selector">
-        <h3>X Axis</h3>
-        <select name="x_key_name">
-            {% for name in x_keys %}
-                {% if name.name == selected_x_key %}
+<body>
+    <h1 class="content">NBA Plotting Tool</h1><br>
+    {% if svg != None %}
+
+    <h2 class="content">Graph Selectors and Filters</h2>
+    <form action="{% url 'analyze:plot' %}" method="post">
+    {% csrf_token %}
+    <div class="selector_content">
+        <!-- Selector X AXIS -->
+        <div class="selector">
+            <h3>X Axis</h3>
+            <select name="x_key_name">
+                {% for name in x_keys %}
+                    {% if name.name == selected_x_key %}
+                        <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
+                    {% else %}
+                        <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <!-- Selector Y AXIS -->
+        <div class="selector">
+            <h3>Y Axis</h3>
+            <select name="y_key_name">
+            {% for name in y_keys %}
+                {% if name.name == selected_y_key %}
                     <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
                 {% else %}
                     <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
                 {% endif %}
             {% endfor %}
-        </select>
-    </div>
-    <!-- Selector Y AXIS -->
-    <div class="selector">
-        <h3>Y Axis</h3>
-        <select name="y_key_name">
-        {% for name in y_keys %}
-            {% if name.name == selected_y_key %}
-                <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
+            </select>
+        </div>
+        <!-- PLAYER NAME Filter -->
+        <div class="selector">
+            <h3>Player Name Filter</h3>
+            <input type="text" name="player_name">
+        </div>
+        <!-- TEAM NAME Filter -->
+        <div class="selector">
+            <h3>Team Name Filter</h3>
+            <input type="text" name="team_name">
+        </div>
+        <!-- GRID Enable/Disable -->
+        <div class="selector">
+            <h3>Graph Grid</h3>
+            {% if grid_enabled %}
+                <input type="radio" name="grid_enable" value="True" checked>
+                <label> Enable</label><br>
+                <input type="radio" name="grid_enable" value="False">
+                <label> Disable</label>
             {% else %}
-                <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
+                <input type="radio" name="grid_enable" value="True">
+                <label> Enable</label><br>
+                <input type="radio" name="grid_enable" value="False" checked>
+                <label> Disable</label>
             {% endif %}
-        {% endfor %}
-        </select>
+        </div>
     </div>
-    <!-- GRID Enable/Disable -->
-    <div class="selector">
-        <h3>Graph Grid</h3>
-        {% if grid_enabled %}
-            <input type="radio" name="grid_enable" value="True" checked>
-            <label> Enable</label><br>
-            <input type="radio" name="grid_enable" value="False">
-            <label> Disable</label>
-        {% else %}
-            <input type="radio" name="grid_enable" value="True">
-            <label> Enable</label><br>
-            <input type="radio" name="grid_enable" value="False" checked>
-            <label> Disable</label>
-        {% endif %}
+    <br>
+    <div class="content">
+        <input type="submit" value="Update" class="updater">
     </div>
-</div>
-<br>
-<div class="content">
-    <input type="submit" value="Update" class="updater">
-</div>
-</form>
+    </form>
 
-<br><br>
+    <!-- Show the figure safely -->
+    <div class="content">
+    {{ svg|safe }}
+    </div>
 
-<!-- Show the figure safely -->
-<div class="content">
-{{ svg|safe }}
-</div>
+    {% else %}
+        <p>No data available :(</p>
 
-{% else %}
-    <p>No data available :(</p>
-
-{% endif %}
+    {% endif %}
 </body>
