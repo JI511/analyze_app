@@ -16,14 +16,18 @@ def index(request):
 def plot(request):
     x_key = 'minutes_played'
     y_key = 'points'
+    grid = 'True'
     if request.method == "POST":
         # try to get the new x_key, default otherwise
         x_key = request.POST.get('x_key_name', 'minutes_played')
         y_key = request.POST.get('y_key_name', 'game_score')
+        grid = request.POST.get('grid_enable', 'True')
+    grid = (grid == 'True')
     svg_dict = {
-        'svg': get_fig(x_key=x_key, y_key=y_key),
+        'svg': get_fig(x_key=x_key, y_key=y_key, grid=grid),
         'selected_x_key': x_key,
         'selected_y_key': y_key,
+        'grid_enabled': grid,
         'y_keys': ScatterKeysYAxis.objects.all(),
         'x_keys': ScatterKeysXAxis.objects.all(),
     }  # set the plot data
@@ -31,11 +35,15 @@ def plot(request):
     return render(request, 'analyze/plot.html', svg_dict)
 
 
-def get_fig(x_key, y_key):
+def get_fig(x_key, y_key, grid):
     my_csv = r'C:\Users\User\Desktop\Programs\testproj\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
     df = Api.get_existing_data_frame(my_csv, logger=logging.getLogger(__name__))
 
-    Api.create_scatter_plot_with_trend_line(x_key=x_key, y_key=y_key, df=df, outliers=5)
+    Api.create_scatter_plot_with_trend_line(x_key=x_key,
+                                            y_key=y_key,
+                                            df=df,
+                                            grid=grid,
+                                            outliers=5)
 
     fig_file = io.StringIO()
     plt.savefig(fig_file, format='svg', bbox_inches='tight')

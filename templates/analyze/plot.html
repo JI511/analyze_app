@@ -37,10 +37,17 @@
     <!-- GRID Enable/Disable -->
     <div class="selector">
         <h3>Graph Grid</h3>
-        <input type="radio" name="grid_enable" value="True">
-        <label> Enable</label><br>
-        <input type="radio" name="grid_enable" value="False">
-        <label> Disable</label>
+        {% if grid_enabled %}
+            <input type="radio" name="grid_enable" value="True" checked>
+            <label> Enable</label><br>
+            <input type="radio" name="grid_enable" value="False">
+            <label> Disable</label>
+        {% else %}
+            <input type="radio" name="grid_enable" value="True">
+            <label> Enable</label><br>
+            <input type="radio" name="grid_enable" value="False" checked>
+            <label> Disable</label>
+        {% endif %}
     </div>
 </div>
 <br>
