@@ -1,14 +1,7 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
-from django.template import loader
-from django.urls import reverse
-from django.views import generic
-import random
-import numpy as np
+from django.shortcuts import render
 from matplotlib import pyplot as plt
 import io
 from .NBA_Beautiful_Data.analytics import analytics_API as Api
-import pandas as pd
 import logging
 from .models import ScatterKeysYAxis, ScatterKeysXAxis
 
@@ -42,9 +35,6 @@ def get_fig(x_key, y_key):
     my_csv = r'C:\Users\User\Desktop\Programs\testproj\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
     df = Api.get_existing_data_frame(my_csv, logger=logging.getLogger(__name__))
 
-    # x_key = 'minutes_played'
-    print('XKEY:', x_key)
-    print('YKEY:', y_key)
     Api.create_scatter_plot_with_trend_line(x_key=x_key, y_key=y_key, df=df, outliers=5)
 
     fig_file = io.StringIO()

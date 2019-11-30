@@ -1,38 +1,77 @@
-<h1>NBA Plotting Tool</h1>
+<style>
+.content {
+    text-align: center;
+    margin: auto;
+}
+.selectors {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    display: inline-block;
+    padding: 15px;
+}
+.updater {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    border-radius: 4px;
+    color: white;
+    padding: 10px 3px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    width: 100px;
+    cursor: pointer;
+}
+</style>
+
+<body>
+<h1 class="content">NBA Plotting Tool</h1><br><br>
 {% if svg != None %}
 
-<h2>Graph Axis Selectors</h2>
+<h2 class="content">Graph Selectors</h2>
 <form action="{% url 'analyze:plot' %}" method="post">
 {% csrf_token %}
-<h3>X Axis</h3>
-<select name="x_key_name">
-{% for name in x_keys %}
-    {% if name.name == selected_x_key %}
-        <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
-    {% else %}
-        <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
-    {% endif %}
-{% endfor %}
-</select>
-<h3>Y Axis</h3>
-<select name="y_key_name">
-{% for name in y_keys %}
-    {% if name.name == selected_y_key %}
-        <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
-    {% else %}
-        <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
-    {% endif %}
-{% endfor %}
-</select><br><br>
-<input type="submit" value="Update">
+<div class="content">
+    <div class="selectors">
+        <h3>X Axis</h3>
+        <select name="x_key_name">
+            {% for name in x_keys %}
+                {% if name.name == selected_x_key %}
+                    <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
+                {% else %}
+                    <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <div class="selectors">
+        <h3>Y Axis</h3>
+        <select name="y_key_name">
+        {% for name in y_keys %}
+            {% if name.name == selected_y_key %}
+                <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
+            {% else %}
+                <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
+            {% endif %}
+        {% endfor %}
+        </select>
+    </div>
+</div>
+<br>
+<div class="content">
+    <input type="submit" value="Update" class="updater">
+</div>
 </form>
 
 <br><br>
 
 <!-- Show the figure safely -->
+<div class="content">
 {{ svg|safe }}
+</div>
 
 {% else %}
     <p>No data available :(</p>
 
 {% endif %}
+</body>
