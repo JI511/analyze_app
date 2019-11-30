@@ -1,10 +1,10 @@
 <h1>NBA Plotting Tool</h1>
 {% if svg != None %}
 
-<h2>X Axis Keys</h2>
-{{ selected_x_key }}
+<h2>Graph Axis Selectors</h2>
 <form action="{% url 'analyze:plot' %}" method="post">
 {% csrf_token %}
+<h3>X Axis</h3>
 <select name="x_key_name">
 {% for name in x_keys %}
     {% if name.name == selected_x_key %}
@@ -14,15 +14,20 @@
     {% endif %}
 {% endfor %}
 </select>
+<h3>Y Axis</h3>
+<select name="y_key_name">
+{% for name in y_keys %}
+    {% if name.name == selected_y_key %}
+        <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
+    {% else %}
+        <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
+    {% endif %}
+{% endfor %}
+</select><br><br>
 <input type="submit" value="Update">
 </form>
 
-<h2>Y Axis Keys</h2>
-<select>
-{% for name in y_keys %}
-    <option value="{{ name }}">{{ name }}</option>
-{% endfor %}
-</select><br><br>
+<br><br>
 
 <!-- Show the figure safely -->
 {{ svg|safe }}
