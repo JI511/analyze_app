@@ -21,9 +21,13 @@ def index(request):
 
 
 def plot(request):
-    # setPlt()  # create the plot
+    x_key = 'minutes_played'
+    if request.method == "POST":
+        # try to get the new x_key, default otherwise
+        x_key = request.POST.get('x_key_name', 'minutes_played')
     svg_dict = {
-        'svg': get_fig(),
+        'svg': get_fig(x_key=x_key),
+        'selected_x_key': x_key,
         'y_keys': ScatterKeysYAxis.objects.all(),
         'x_keys': ScatterKeysXAxis.objects.all(),
     }  # set the plot data
@@ -31,12 +35,12 @@ def plot(request):
     return render(request, 'analyze/plot.html', svg_dict)
 
 
-def get_fig():
+def get_fig(x_key):
     my_csv = r'C:\Users\User\Desktop\Programs\testproj\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
-    # my_csv = r'C:\Users\ingwe\Desktop\Programs\django_practice\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
     df = Api.get_existing_data_frame(my_csv, logger=logging.getLogger(__name__))
 
-    x_key = 'minutes_played'
+    # x_key = 'minutes_played'
+    print('XKEY:', x_key)
     y_key = 'game_score'
     Api.create_scatter_plot_with_trend_line(x_key=x_key, y_key=y_key, df=df, outliers=5)
 
