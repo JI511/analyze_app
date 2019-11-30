@@ -2,12 +2,11 @@
     text-align: center;
     margin: auto;
 }
-.selectors {
-    text-align: center;
+.selector_content {
+    display: flex;
     justify-content: center;
-    align-items: center;
-    display: inline-block;
-    padding: 15px;
+    margin: auto;
+    padding: 12px;
 }
 .updater {
     background-color: #4CAF50; /* Green */
@@ -20,4 +19,9 @@
     font-size: 16px;
     width: 100px;
     cursor: pointer;
+}
+.selector {
+    padding: 20px;
+    border: 1px solid black;
+    height: 100px;
 }

@@ -7,8 +7,9 @@
 <h2 class="content">Graph Selectors</h2>
 <form action="{% url 'analyze:plot' %}" method="post">
 {% csrf_token %}
-<div class="content">
-    <div class="selectors">
+<div class="selector_content">
+    <!-- Selector X AXIS -->
+    <div class="selector">
         <h3>X Axis</h3>
         <select name="x_key_name">
             {% for name in x_keys %}
@@ -20,7 +21,8 @@
             {% endfor %}
         </select>
     </div>
-    <div class="selectors">
+    <!-- Selector Y AXIS -->
+    <div class="selector">
         <h3>Y Axis</h3>
         <select name="y_key_name">
         {% for name in y_keys %}
@@ -31,6 +33,14 @@
             {% endif %}
         {% endfor %}
         </select>
+    </div>
+    <!-- GRID Enable/Disable -->
+    <div class="selector">
+        <h3>Graph Grid</h3>
+        <input type="radio" name="grid_enable" value="True">
+        <label> Enable</label><br>
+        <input type="radio" name="grid_enable" value="False">
+        <label> Disable</label>
     </div>
 </div>
 <br>
