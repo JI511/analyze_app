@@ -25,7 +25,7 @@ class ScatterKeysYAxis(models.Model):
         return self.name
 
 
-class BasketballTeamNames(models.Model):
+class BasketballTeamName(models.Model):
     name = models.CharField(max_length=50, primary_key=True)
 
     # Metadata

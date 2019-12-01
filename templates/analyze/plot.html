@@ -30,13 +30,13 @@
         <div class="selector">
             <h3>Y Axis</h3>
             <select name="y_key_name">
-            {% for name in y_keys %}
-                {% if name.name == selected_y_key %}
-                    <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
-                {% else %}
-                    <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
-                {% endif %}
-            {% endfor %}
+                {% for name in y_keys %}
+                    {% if name.name == selected_y_key %}
+                        <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
+                    {% else %}
+                        <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
+                    {% endif %}
+                {% endfor %}
             </select>
         </div>
         <!-- PLAYER NAME Filter -->
@@ -47,7 +47,16 @@
         <!-- TEAM NAME Filter -->
         <div class="selector">
             <h3>Team Name Filter</h3>
-            <input type="text" name="team_name">
+            <select id="team_name" name="team_name">
+                <option selected>Select a Team</option>
+                {% for name in team_names %}
+                    {% if name.name == selected_team_name %}
+                        <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
+                    {% else %}
+                        <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
         </div>
         <!-- GRID Enable/Disable -->
         <div class="selector">

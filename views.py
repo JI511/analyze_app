@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 import io
 from .NBA_Beautiful_Data.analytics import analytics_API as Api
 import logging
-from .models import ScatterKeysYAxis, ScatterKeysXAxis
+from .models import ScatterKeysYAxis, ScatterKeysXAxis, BasketballTeamName
 
 # Create your views here.
 
@@ -15,21 +15,25 @@ def index(request):
 
 def plot(request):
     x_key = 'minutes_played'
-    y_key = 'points'
+    y_key = 'game_score'
+    team_name = 'Select a Team'
     grid = 'True'
     if request.method == "POST":
         # try to get the new x_key, default otherwise
         x_key = request.POST.get('x_key_name', 'minutes_played')
         y_key = request.POST.get('y_key_name', 'game_score')
         grid = request.POST.get('grid_enable', 'True')
+        team_name = request.POST.get('team_name', 'Select a Team')
     grid = (grid == 'True')
     svg_dict = {
         'svg': get_fig(x_key=x_key, y_key=y_key, grid=grid),
         'selected_x_key': x_key,
         'selected_y_key': y_key,
+        'selected_team_name': team_name,
         'grid_enabled': grid,
         'y_keys': ScatterKeysYAxis.objects.all(),
         'x_keys': ScatterKeysXAxis.objects.all(),
+        'team_names': BasketballTeamName.objects.all(),
     }  # set the plot data
     plt.cla()  # clean up plt so it can be re-used
     return render(request, 'analyze/plot.html', svg_dict)
