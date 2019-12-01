@@ -6,4 +6,4 @@ The repository for my data set generator can be found here: https://github.com/J
  also handles the plotting functionality so this repository only calls the API.
 
 Current look as of 11/29/2019:
-![current](https://github.com/JI511/analyze_app/blob/master/extra/11_29_snip_2.PNG)
+![current](https://github.com/JI511/analyze_app/blob/master/extra/11_30_snip.PNG)
