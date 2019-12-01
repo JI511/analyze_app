@@ -1,13 +1,15 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'analyze/style.css' %}">
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
 
-<body>
+<div class="all_content">
     <div class="content">
-        <img src="{% static 'analyze/images/hdheader.png'%}">
+        <img src="{% static 'analyze/images/header.png'%}">
     </div>
     {% if svg != None %}
-
-    <h2 class="content">Graph Selectors and Filters</h2>
+    <div class="content">
+        <label class="text_selector_filter">Graph Selectors and Filters</label>
+    </div>
     <form action="{% url 'analyze:plot' %}" method="post">
     {% csrf_token %}
     <div class="selector_content">
@@ -78,4 +80,4 @@
         <p>No data available :(</p>
 
     {% endif %}
-</body>
+</div>
