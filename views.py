@@ -25,8 +25,9 @@ def plot(request):
         grid = request.POST.get('grid_enable', 'True')
         team_name = request.POST.get('team_name', 'Select a Team')
     grid = (grid == 'True')
+    teams = [team_name] if team_name != 'Select a Team' else None
     svg_dict = {
-        'svg': get_fig(x_key=x_key, y_key=y_key, grid=grid),
+        'svg': get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams),
         'selected_x_key': x_key,
         'selected_y_key': y_key,
         'selected_team_name': team_name,
@@ -39,7 +40,7 @@ def plot(request):
     return render(request, 'analyze/plot.html', svg_dict)
 
 
-def get_fig(x_key, y_key, grid):
+def get_fig(x_key, y_key, grid, teams):
     my_csv = r'C:\Users\User\Desktop\Programs\testproj\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
     df = Api.get_existing_data_frame(my_csv, logger=logging.getLogger(__name__))
 
@@ -47,7 +48,8 @@ def get_fig(x_key, y_key, grid):
                                             y_key=y_key,
                                             df=df,
                                             grid=grid,
-                                            outliers=5)
+                                            outliers=5,
+                                            teams=teams)
 
     fig_file = io.StringIO()
     plt.savefig(fig_file, format='svg', bbox_inches='tight')
