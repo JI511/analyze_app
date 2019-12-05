@@ -14,6 +14,13 @@ def index(request):
 
 
 def plot(request):
+    """
+    The plotting view for the NBA data set.
+
+    :param request: HTML request object
+    :return: The html page
+    """
+    # defaults
     x_key = 'minutes_played'
     y_key = 'game_score'
     team_name = 'Select a Team'
@@ -28,6 +35,8 @@ def plot(request):
         team_name = request.POST.get('team_name', 'Select a Team')
         min_seconds = request.POST.get('min_seconds', 0)
         max_seconds = request.POST.get('max_seconds', 100 * 60)
+
+    # set the boolean value based on string value
     grid = (grid == 'True')
     teams = [team_name] if team_name != 'Select a Team' else None
 
@@ -66,13 +75,13 @@ def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
     """
     Gets the svg code for the desired plot.
 
-    :param x_key:
-    :param y_key:
-    :param grid:
-    :param teams:
-    :param min_seconds:
-    :param max_seconds:
-    :return:
+    :param str x_key: Key for the x axis
+    :param str y_key: Key for the y axis
+    :param bool grid: Determines if the plot should contain a grid
+    :param list teams: Teams to filter on
+    :param int min_seconds: Minimum seconds played to filter on
+    :param int max_seconds: Maximum seconds played to filter on
+    :return: svg figure code
     """
     my_csv = r'C:\Users\User\Desktop\Programs\testproj\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
     df = Api.get_existing_data_frame(my_csv, logger=logging.getLogger(__name__))
