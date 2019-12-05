@@ -31,6 +31,7 @@ def plot(request):
     grid = (grid == 'True')
     teams = [team_name] if team_name != 'Select a Team' else None
 
+    # check each separately so the other will persist if one is not a valid int
     try:
         min_seconds = int(min_seconds)
     except ValueError:
@@ -40,6 +41,7 @@ def plot(request):
     except ValueError:
         max_seconds = 100 * 60
 
+    # dict that is passed to the html template file
     svg_dict = {
         'svg': get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams, min_seconds=min_seconds,
                        max_seconds=max_seconds),
@@ -53,11 +55,25 @@ def plot(request):
         'x_keys': ScatterKeysXAxis.objects.all(),
         'team_names': BasketballTeamName.objects.all(),
     }  # set the plot data
-    plt.cla()  # clean up plt so it can be re-used
+
+    # clean up plt so it can be re-used
+    plt.cla()
+
     return render(request, 'analyze/plot.html', svg_dict)
 
 
 def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
+    """
+    Gets the svg code for the desired plot.
+
+    :param x_key:
+    :param y_key:
+    :param grid:
+    :param teams:
+    :param min_seconds:
+    :param max_seconds:
+    :return:
+    """
     my_csv = r'C:\Users\User\Desktop\Programs\testproj\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
     df = Api.get_existing_data_frame(my_csv, logger=logging.getLogger(__name__))
     Api.create_scatter_plot_with_trend_line(x_key=x_key,
@@ -71,6 +87,8 @@ def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
 
     fig_file = io.StringIO()
     plt.savefig(fig_file, format='svg', bbox_inches='tight')
+
+    # grab the svg data to embed directly into the html file
     fig_data_svg = '<svg' + fig_file.getvalue().split('<svg')[1]
     fig_file.close()
     return fig_data_svg
