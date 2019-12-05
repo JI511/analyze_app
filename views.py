@@ -31,9 +31,18 @@ def plot(request):
     grid = (grid == 'True')
     teams = [team_name] if team_name != 'Select a Team' else None
 
+    try:
+        min_seconds = int(min_seconds)
+    except ValueError:
+        min_seconds = 0
+    try:
+        max_seconds = int(max_seconds)
+    except ValueError:
+        max_seconds = 100 * 60
+
     svg_dict = {
-        'svg': get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams, min_seconds=int(min_seconds),
-                       max_seconds=int(max_seconds)),
+        'svg': get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams, min_seconds=min_seconds,
+                       max_seconds=max_seconds),
         'selected_x_key': x_key,
         'selected_y_key': y_key,
         'selected_team_name': team_name,
