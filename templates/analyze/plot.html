@@ -7,9 +7,6 @@
         <img src="{% static 'analyze/images/header.png'%}">
     </div>
     {% if svg != None %}
-    <div class="content">
-        <label class="text_selector_filter">Graph Selectors and Filters</label>
-    </div>
     <form action="{% url 'analyze:plot' %}" method="post">
     {% csrf_token %}
     <div class="selector_content">
@@ -41,12 +38,12 @@
         </div>
         <!-- PLAYER NAME Filter -->
         <div class="selector">
-            <h3>Player Name Filter</h3>
+            <h3>Player Name</h3>
             <input type="text" name="player_name">
         </div>
         <!-- TEAM NAME Filter -->
         <div class="selector">
-            <h3>Team Name Filter</h3>
+            <h3>Team Name</h3>
             <select id="team_name" name="team_name">
                 <option selected>Select a Team</option>
                 {% for name in team_names %}
@@ -57,6 +54,21 @@
                     {% endif %}
                 {% endfor %}
             </select>
+        </div>
+        <div class="selector">
+            <h3>Seconds Played</h3>
+            <div style="display: flex;">
+                <div>
+                    <label>Min: </label>
+                    <br>
+                    <label>Max: </label>
+                </div>
+                <div style="padding: 3px;">
+                    <input style="width: 50px;" type="text" name="min_seconds" value="{{ min_seconds }}">
+                    <br>
+                    <input style="width: 50px;" type="text" name="max_seconds" value="{{ max_seconds }}">
+                </div>
+            </div>
         </div>
         <!-- GRID Enable/Disable -->
         <div class="selector">
@@ -84,9 +96,12 @@
     <div class="content">
     {{ svg|safe }}
     </div>
-
+    <div class="content">
+        <label class="text_selector_filter">Data set created from basketball-reference.com</label>
+    </div>
     {% else %}
         <p>No data available :(</p>
 
     {% endif %}
+
 </div>
