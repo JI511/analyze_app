@@ -4,6 +4,8 @@ import io
 from .NBA_Beautiful_Data.analytics import analytics_API as Api
 import logging
 from .models import ScatterKeysYAxis, ScatterKeysXAxis, BasketballTeamName
+import pandas as pd
+import numpy as np
 
 # Create your views here.
 
@@ -49,17 +51,24 @@ def plot(request):
         max_seconds = int(max_seconds)
     except ValueError:
         max_seconds = 100 * 60
+    fig_data, operations_dict, outliers = get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams,
+                                                  min_seconds=min_seconds, max_seconds=max_seconds)
 
+    print([entry[1] for entry in outliers])
     # dict that is passed to the html template file
     svg_dict = {
-        'svg': get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams, min_seconds=min_seconds,
-                       max_seconds=max_seconds),
+        'svg': fig_data,
         'selected_x_key': x_key,
         'selected_y_key': y_key,
         'selected_team_name': team_name,
         'grid_enabled': grid,
         'min_seconds': min_seconds,
         'max_seconds': max_seconds,
+        'op_mean': operations_dict['mean'],
+        'op_median': operations_dict['median'],
+        'op_std_dev': operations_dict['std_dev'],
+        'outlier_values': [entry[0] for entry in outliers],
+        'outlier_names': [entry[1] for entry in outliers],
         'y_keys': ScatterKeysYAxis.objects.all(),
         'x_keys': ScatterKeysXAxis.objects.all(),
         'team_names': BasketballTeamName.objects.all(),
@@ -85,14 +94,16 @@ def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
     """
     my_csv = r'C:\Users\User\Desktop\Programs\testproj\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
     df = Api.get_existing_data_frame(my_csv, logger=logging.getLogger(__name__))
-    Api.create_scatter_plot_with_trend_line(x_key=x_key,
-                                            y_key=y_key,
-                                            df=df,
-                                            grid=grid,
-                                            outliers=5,
-                                            teams=teams,
-                                            min_seconds=min_seconds,
-                                            max_seconds=max_seconds)
+
+    outlier_count = 5
+    _, outlier_df = Api.create_scatter_plot_with_trend_line(x_key=x_key,
+                                                            y_key=y_key,
+                                                            df=df,
+                                                            grid=grid,
+                                                            num_outliers=outlier_count,
+                                                            teams=teams,
+                                                            min_seconds=min_seconds,
+                                                            max_seconds=max_seconds)
 
     fig_file = io.StringIO()
     plt.savefig(fig_file, format='svg', bbox_inches='tight')
@@ -100,4 +111,26 @@ def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
     # grab the svg data to embed directly into the html file
     fig_data_svg = '<svg' + fig_file.getvalue().split('<svg')[1]
     fig_file.close()
-    return fig_data_svg
+
+    operations_dict = {
+        'mean': np.asscalar(np.round(np.mean(df[y_key]), 2)),
+        'median': np.asscalar(np.round(np.median(df[y_key]), 2)),
+        'std_dev': np.asscalar(np.round(np.std(df[y_key]), 2)),
+    }
+
+    outliers = []
+
+    if outlier_df.shape[0] <= outlier_count:
+        outlier_str = outlier_df[[y_key]].sort_values(by=y_key, ascending=False).to_string()
+        outlier_str = ' '.join(outlier_str.split())
+
+        name = ''
+        for o in outlier_str.split()[1:]:
+            try:
+                float(o)
+                outliers.append((float(o), name[:-1]))
+                name = ''
+            except ValueError:
+                name += '%s ' % o
+
+    return fig_data_svg, operations_dict, outliers

@@ -92,9 +92,33 @@
     </div>
     </form>
 
-    <!-- Show the figure safely -->
-    <div class="content">
-    {{ svg|safe }}
+    <div style="display: flex; justify-content: center;">
+        <div class="side_image_box">
+            <div style="text-align: center;">
+                <label>Mean: {{ op_mean }}</label><br>
+                <label>Median: {{ op_median }}</label><br>
+                <label>Std Dev: {{ op_std_dev }}</label><br>
+            </div>
+        </div>
+        <div>
+            <!-- Show the figure safely -->
+            {{ svg|safe }}
+        </div>
+        <div class="side_image_box">
+            <label style="text-decoration: underline;">Outliers</label><br>
+            <div style="display: flex">
+                <div style="flex: 20%;">
+                    {% for value in outlier_values %}
+                        <label>{{ value }}</label>
+                    {% endfor %}
+                </div>
+                <div style="flex: 80%;">
+                    {% for name in outlier_names %}
+                        <label>{{ name }}</label><br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
     <div class="content">
         <label class="text_selector_filter">Data set created from basketball-reference.com</label>
