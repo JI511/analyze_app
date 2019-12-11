@@ -54,7 +54,6 @@ def plot(request):
     fig_data, operations_dict, outliers = get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams,
                                                   min_seconds=min_seconds, max_seconds=max_seconds)
 
-    print([entry[1] for entry in outliers])
     # dict that is passed to the html template file
     svg_dict = {
         'svg': fig_data,
@@ -119,18 +118,17 @@ def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
     }
 
     outliers = []
-
-    if outlier_df.shape[0] <= outlier_count:
-        outlier_str = outlier_df[[y_key]].sort_values(by=y_key, ascending=False).to_string()
-        outlier_str = ' '.join(outlier_str.split())
-
-        name = ''
-        for o in outlier_str.split()[1:]:
-            try:
-                float(o)
-                outliers.append((float(o), name[:-1]))
-                name = ''
-            except ValueError:
-                name += '%s ' % o
+    outlier_str = outlier_df[[y_key]].sort_values(by=y_key, ascending=False).to_string()
+    outlier_str = ' '.join(outlier_str.split())
+    name = ''
+    for o in outlier_str.split()[1:]:
+        if len(outliers) >= 15:
+            break
+        try:
+            float(o)
+            outliers.append((float(o), name[:-1]))
+            name = ''
+        except ValueError:
+            name += '%s ' % o
 
     return fig_data_svg, operations_dict, outliers
