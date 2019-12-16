@@ -73,9 +73,6 @@ def plot(request):
         'team_names': BasketballTeamName.objects.all(),
     }  # set the plot data
 
-    # clean up plt so it can be re-used
-    plt.cla()
-
     return render(request, 'analyze/plot.html', svg_dict)
 
 
@@ -130,5 +127,9 @@ def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
             name = ''
         except ValueError:
             name += '%s ' % o
+    # close any previous plots made before proceeding
+    plt.cla()
+    plt.clf()
+    plt.close('all')
 
     return fig_data_svg, operations_dict, outliers
