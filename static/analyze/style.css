@@ -14,6 +14,7 @@
     border-radius: 6px;
     padding: 30px;
     font-family: "Oswald";
+    background: #ffffff;
 }
 .math_box {
     width: 120px;
@@ -22,6 +23,7 @@
     border-radius: 6px;
     padding: 15px;
     font-family: "Oswald";
+    background: #ffffff;
 }
 .selector {
     padding: 5px;
@@ -38,11 +40,23 @@
     font-style: italic;
 }
 .updater {
-    background-color: #4CAF50; /* Green */
+    background-color: #17408B; /* Dark Cornflower Blue */
     border: none;
     border-radius: 4px;
     color: white;
     padding: 10px 80px;
+    text-align: center;
+    text-decoration: none;
+    font-family: "Oswald";
+    font-size: 20px;
+    cursor: pointer;
+}
+.downloader {
+    background-color: #C9082A; /* Philippine Red */
+    border: none;
+    border-radius: 4px;
+    color: white;
+    padding: 10px 60px;
     text-align: center;
     text-decoration: none;
     font-family: "Oswald";

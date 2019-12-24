@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponse, Http404
 from .NBA_Beautiful_Data.analytics import analytics_API as Api
 import logging
 from .models import ScatterKeysYAxis, ScatterKeysXAxis, BasketballTeamName
@@ -88,11 +89,17 @@ def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
     :param int max_seconds: Maximum seconds played to filter on
     :return: svg figure code
     """
+    save_path = os.path.join(os.getcwd(), 'analyze', 'static', 'analyze', 'images', 'temp_plot')
     my_csv = r'C:\Users\User\Desktop\Programs\testproj\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
     df = Api.get_existing_data_frame(my_csv, logger=logging.getLogger(__name__))
+    temp_csv_path = os.path.join(save_path, 'temp_plot_data.csv')
+    if not os.path.exists(save_path):
+        os.mkdir(save_path)
+        df.to_csv(path_or_buf=temp_csv_path)
+    print('\n\n\n', temp_csv_path)
 
     outlier_count = 5
-    save_path = os.path.join(os.getcwd(), 'analyze', 'static', 'analyze', 'images', 'temp_plot')
+
     if not os.path.exists(save_path):
         os.mkdir(save_path)
     temp_name = 'temp_plot.png'
