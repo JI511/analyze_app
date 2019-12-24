@@ -6,7 +6,7 @@
     <div class="content">
         <img src="{% static 'analyze/images/header.png'%}">
     </div>
-    {% if svg != None %}
+    {% if fig != None %}
     <form action="{% url 'analyze:plot' %}" method="post">
     {% csrf_token %}
     <div class="selector_content">
@@ -102,8 +102,8 @@
         </div>
         <div style="padding: 5px;"></div>
         <div style="border: 4px solid black;">
-            <!-- Show the figure safely -->
-            {{ svg|safe }}
+            <!-- Show the figure -->
+            <img src="{% static 'analyze/images/temp_plot/temp_plot.png'%}">
         </div>
         <div style="padding: 5px;"></div>
         <div class="outlier_box">

@@ -1,13 +1,10 @@
 from django.shortcuts import render
-from matplotlib import pyplot as plt
-import io
 from .NBA_Beautiful_Data.analytics import analytics_API as Api
 import logging
 from .models import ScatterKeysYAxis, ScatterKeysXAxis, BasketballTeamName
-import pandas as pd
 import numpy as np
-
-# Create your views here.
+import shutil
+import os
 
 
 def index(request):
@@ -22,6 +19,10 @@ def plot(request):
     :param request: HTML request object
     :return: The html page
     """
+    save_path = os.path.join(os.getcwd(), 'analyze', 'static', 'analyze', 'images', 'temp_plot')
+    if os.path.exists(save_path):
+        shutil.rmtree(save_path)
+
     # defaults
     x_key = 'minutes_played'
     y_key = 'game_score'
@@ -51,12 +52,11 @@ def plot(request):
         max_seconds = int(max_seconds)
     except ValueError:
         max_seconds = 100 * 60
-    fig_data, operations_dict, outliers = get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams,
+    plot_png, operations_dict, outliers = get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams,
                                                   min_seconds=min_seconds, max_seconds=max_seconds)
-
     # dict that is passed to the html template file
     svg_dict = {
-        'svg': fig_data,
+        'fig': plot_png,
         'selected_x_key': x_key,
         'selected_y_key': y_key,
         'selected_team_name': team_name,
@@ -92,22 +92,19 @@ def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
     df = Api.get_existing_data_frame(my_csv, logger=logging.getLogger(__name__))
 
     outlier_count = 5
+    save_path = os.path.join(os.getcwd(), 'analyze', 'static', 'analyze', 'images', 'temp_plot')
+    if not os.path.exists(save_path):
+        os.mkdir(save_path)
+    temp_name = 'temp_plot.png'
     _, outlier_df = Api.create_scatter_plot_with_trend_line(x_key=x_key,
                                                             y_key=y_key,
                                                             df=df,
+                                                            save_path=os.path.join(save_path, temp_name),
                                                             grid=grid,
                                                             num_outliers=outlier_count,
                                                             teams=teams,
                                                             min_seconds=min_seconds,
                                                             max_seconds=max_seconds)
-
-    fig_file = io.StringIO()
-    plt.savefig(fig_file, format='svg', bbox_inches='tight')
-
-    # grab the svg data to embed directly into the html file
-    fig_data_svg = '<svg' + fig_file.getvalue().split('<svg')[1]
-    fig_file.close()
-
     operations_dict = {
         'mean': np.asscalar(np.round(np.mean(df[y_key]), 2)),
         'median': np.asscalar(np.round(np.median(df[y_key]), 2)),
@@ -127,9 +124,6 @@ def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
             name = ''
         except ValueError:
             name += '%s ' % o
-    # close any previous plots made before proceeding
-    plt.cla()
-    plt.clf()
-    plt.close('all')
 
-    return fig_data_svg, operations_dict, outliers
+    # todo update to properly check if plot is none?
+    return os.path.join('analyze', 'images', 'temp_plot', temp_name), operations_dict, outliers
