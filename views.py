@@ -29,6 +29,7 @@ def plot(request):
     y_key = 'game_score'
     team_name = 'Select a Team'
     grid = 'True'
+    trend = 'True'
     min_seconds = 0
     max_seconds = 100 * 60
     if request.method == "POST":
@@ -36,12 +37,14 @@ def plot(request):
         x_key = request.POST.get('x_key_name', 'minutes_played')
         y_key = request.POST.get('y_key_name', 'game_score')
         grid = request.POST.get('grid_enable', 'True')
+        trend = request.POST.get('trend_enable', 'True')
         team_name = request.POST.get('team_name', 'Select a Team')
         min_seconds = request.POST.get('min_seconds', 0)
         max_seconds = request.POST.get('max_seconds', 100 * 60)
 
     # set the boolean value based on string value
     grid = (grid == 'True')
+    trend = (trend == 'True')
     teams = [team_name] if team_name != 'Select a Team' else None
 
     # check each separately so the other will persist if one is not a valid int
@@ -53,7 +56,7 @@ def plot(request):
         max_seconds = int(max_seconds)
     except ValueError:
         max_seconds = 100 * 60
-    plot_png, operations_dict, outliers = get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams,
+    plot_png, operations_dict, outliers = get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams, trend=trend,
                                                   min_seconds=min_seconds, max_seconds=max_seconds)
     # dict that is passed to the html template file
     svg_dict = {
@@ -62,11 +65,10 @@ def plot(request):
         'selected_y_key': y_key,
         'selected_team_name': team_name,
         'grid_enabled': grid,
+        'trend_enabled': trend,
         'min_seconds': min_seconds,
         'max_seconds': max_seconds,
-        'op_mean': operations_dict['mean'],
-        'op_median': operations_dict['median'],
-        'op_std_dev': operations_dict['std_dev'],
+        'op_dict': operations_dict,
         'outlier_values': [entry[0] for entry in outliers],
         'outlier_names': [entry[1] for entry in outliers],
         'y_keys': ScatterKeysYAxis.objects.all(),
@@ -77,7 +79,7 @@ def plot(request):
     return render(request, 'analyze/plot.html', svg_dict)
 
 
-def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
+def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
     """
     Gets the svg code for the desired plot.
 
@@ -85,6 +87,7 @@ def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
     :param str y_key: Key for the y axis
     :param bool grid: Determines if the plot should contain a grid
     :param list teams: Teams to filter on
+    :param bool trend: Determines if the trend line should be shown
     :param int min_seconds: Minimum seconds played to filter on
     :param int max_seconds: Maximum seconds played to filter on
     :return: svg figure code
@@ -102,21 +105,21 @@ def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
     if not os.path.exists(save_path):
         os.mkdir(save_path)
     temp_name = 'temp_plot.png'
-    _, outlier_df = Api.create_scatter_plot_with_trend_line(x_key=x_key,
-                                                            y_key=y_key,
-                                                            df=df,
-                                                            save_path=os.path.join(save_path, temp_name),
-                                                            grid=grid,
-                                                            num_outliers=outlier_count,
-                                                            teams=teams,
-                                                            min_seconds=min_seconds,
-                                                            max_seconds=max_seconds)
-    operations_dict = {
-        'mean': np.asscalar(np.round(np.mean(df[y_key]), 2)),
-        'median': np.asscalar(np.round(np.median(df[y_key]), 2)),
-        'std_dev': np.asscalar(np.round(np.std(df[y_key]), 2)),
-    }
-
+    plot_path, outlier_df, total_df = Api.create_scatter_plot_with_trend_line(x_key=x_key,
+                                                                              y_key=y_key,
+                                                                              df=df,
+                                                                              save_path=os.path.join(save_path,
+                                                                                                     temp_name),
+                                                                              grid=grid,
+                                                                              trend_line=trend,
+                                                                              num_outliers=outlier_count,
+                                                                              teams=teams,
+                                                                              min_seconds=min_seconds,
+                                                                              max_seconds=max_seconds)
+    operations_dict = total_df.describe().to_dict()
+    operations_dict = operations_dict[y_key]
+    for k, v in operations_dict.items():
+        operations_dict[k] = round(v, 3)
     outliers = []
     outlier_str = outlier_df[[y_key]].sort_values(by=y_key, ascending=False).to_string()
     outlier_str = ' '.join(outlier_str.split())

@@ -85,6 +85,20 @@
                 <label> Disable</label>
             {% endif %}
         </div>
+        <div class="selector">
+            <h3>Trend Line</h3>
+            {% if trend_enabled %}
+                <input type="radio" name="trend_enable" value="True" checked>
+                <label> Enable</label><br>
+                <input type="radio" name="trend_enable" value="False">
+                <label> Disable</label>
+            {% else %}
+                <input type="radio" name="trend_enable" value="True">
+                <label> Enable</label><br>
+                <input type="radio" name="trend_enable" value="False" checked>
+                <label> Disable</label>
+            {% endif %}
+        </div>
     </div>
     <br>
     <div style="text-align: center;">
@@ -94,10 +108,11 @@
 
     <div style="display: flex; justify-content: center;">
         <div class="math_box">
-            <div style="text-align: center;">
-                <label>Mean: {{ op_mean }}</label><br>
-                <label>Median: {{ op_median }}</label><br>
-                <label>Std Dev: {{ op_std_dev }}</label><br>
+            <div style="text-align: left;">
+                {% for key, value in op_dict.items %}
+                    <label style="font-weight: bold;">{{ key }}: </label>
+                    <label>{{ value }}</label><br>
+                {% endfor %}
             </div>
         </div>
         <div style="padding: 5px;"></div>
