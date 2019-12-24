@@ -96,7 +96,6 @@ def get_fig(x_key, y_key, grid, teams, min_seconds, max_seconds):
     if not os.path.exists(save_path):
         os.mkdir(save_path)
         df.to_csv(path_or_buf=temp_csv_path)
-    print('\n\n\n', temp_csv_path)
 
     outlier_count = 5
 
