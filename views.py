@@ -98,12 +98,9 @@ def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
     temp_csv_path = os.path.join(save_path, 'temp_plot_data.csv')
     if not os.path.exists(save_path):
         os.mkdir(save_path)
-        df.to_csv(path_or_buf=temp_csv_path)
 
     outlier_count = 5
 
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
     temp_name = 'temp_plot.png'
     plot_path, outlier_df, total_df = Api.create_scatter_plot_with_trend_line(x_key=x_key,
                                                                               y_key=y_key,
@@ -133,6 +130,8 @@ def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
             name = ''
         except ValueError:
             name += '%s ' % o
+
+    total_df.to_csv(path_or_buf=temp_csv_path)
 
     # todo update to properly check if plot is none?
     return os.path.join('analyze', 'images', 'temp_plot', temp_name), operations_dict, outliers

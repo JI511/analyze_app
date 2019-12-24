@@ -23,6 +23,7 @@
                 {% endfor %}
             </select>
         </div>
+        <div class="selector_divider"></div>
         <!-- Selector Y AXIS -->
         <div class="selector">
             <h3>Y Axis</h3>
@@ -36,11 +37,13 @@
                 {% endfor %}
             </select>
         </div>
+        <div class="selector_divider"></div>
         <!-- PLAYER NAME Filter -->
         <div class="selector">
             <h3>Player Name</h3>
             <input type="text" name="player_name" style="font-family: 'Oswald';" value="Player">
         </div>
+        <div class="selector_divider"></div>
         <!-- TEAM NAME Filter -->
         <div class="selector">
             <h3>Team Name</h3>
@@ -55,6 +58,7 @@
                 {% endfor %}
             </select>
         </div>
+        <div class="selector_divider"></div>
         <div class="selector">
             <h3>Seconds Played</h3>
             <div style="display: flex;">
@@ -70,6 +74,7 @@
                 </div>
             </div>
         </div>
+        <div class="selector_divider"></div>
         <!-- GRID Enable/Disable -->
         <div class="selector">
             <h3>Graph Grid</h3>
@@ -85,6 +90,7 @@
                 <label> Disable</label>
             {% endif %}
         </div>
+        <div class="selector_divider"></div>
         <div class="selector">
             <h3>Trend Line</h3>
             {% if trend_enabled %}

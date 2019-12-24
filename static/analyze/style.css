@@ -31,6 +31,7 @@
 .selector_content {
     display: flex;
     justify-content: center;
+    align-items: center;
     font-family: "Oswald";
 }
 .text_selector_filter {
@@ -62,4 +63,10 @@
     font-family: "Oswald";
     font-size: 20px;
     cursor: pointer;
+}
+.selector_divider {
+    width: 1px;
+    height: 100px;
+    border-left: 2px solid black;
+    border-color: #878787;
 }
