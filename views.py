@@ -6,6 +6,7 @@ from .models import ScatterKeysYAxis, ScatterKeysXAxis, BasketballTeamName
 import numpy as np
 import shutil
 import os
+from collections import OrderedDict
 
 
 def index(request):
@@ -69,8 +70,8 @@ def plot(request):
         'min_seconds': min_seconds,
         'max_seconds': max_seconds,
         'op_dict': operations_dict,
-        'outlier_values': [entry[0] for entry in outliers],
-        'outlier_names': [entry[1] for entry in outliers],
+        'outliers': outliers,
+        'outliers_data': [(1, 2), (3, 4)],  # todo make this real
         'y_keys': ScatterKeysYAxis.objects.all(),
         'x_keys': ScatterKeysXAxis.objects.all(),
         'team_names': BasketballTeamName.objects.all(),
@@ -113,24 +114,26 @@ def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
                                                                               teams=teams,
                                                                               min_seconds=min_seconds,
                                                                               max_seconds=max_seconds)
-    operations_dict = total_df.describe().to_dict()
-    operations_dict = operations_dict[y_key]
-    for k, v in operations_dict.items():
-        operations_dict[k] = round(v, 3)
+    describe_dict = total_df.describe().to_dict()
+    describe_dict = describe_dict[y_key]
+    operations_dict = OrderedDict()
+    operations_dict['(Percentiles)'] = ''
+    for k, v in sorted(describe_dict.items()):
+        operations_dict['%s:' % k] = round(v, 3)
     outliers = []
     outlier_str = outlier_df[[y_key]].sort_values(by=y_key, ascending=False).to_string()
     outlier_str = ' '.join(outlier_str.split())
     name = ''
+    outlier_format_str = '{0: <6}'
     for o in outlier_str.split()[1:]:
         if len(outliers) >= 15:
             break
         try:
             float(o)
-            outliers.append((float(o), name[:-1]))
+            outliers.append((outlier_format_str.format(float(o)), name[:-1]))
             name = ''
         except ValueError:
             name += '%s ' % o
-
     total_df.to_csv(path_or_buf=temp_csv_path)
 
     # todo update to properly check if plot is none?

@@ -8,17 +8,15 @@
     /* border: 1px solid black; */
 }
 .outlier_box {
-    width: 200px;
     height: 300px;
     border: 4px solid black;
     border-radius: 6px;
-    padding: 30px;
+    padding: 15px;
     font-family: "Oswald";
     background: #ffffff;
 }
 .math_box {
-    width: 120px;
-    height: 200px;
+    height: 220px;
     border: 4px solid black;
     border-radius: 6px;
     padding: 15px;
@@ -42,7 +40,7 @@
 }
 .updater {
     background-color: #17408B; /* Dark Cornflower Blue */
-    border: none;
+    border: 1px solid black;
     border-radius: 4px;
     color: white;
     padding: 10px 80px;
@@ -54,7 +52,7 @@
 }
 .downloader {
     background-color: #C9082A; /* Philippine Red */
-    border: none;
+    border: 1px solid black;
     border-radius: 4px;
     color: white;
     padding: 10px 60px;

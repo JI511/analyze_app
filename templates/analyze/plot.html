@@ -116,7 +116,7 @@
         <div class="math_box">
             <div style="text-align: left;">
                 {% for key, value in op_dict.items %}
-                    <label style="font-weight: bold;">{{ key }}: </label>
+                    <label style="font-weight: bold;">{{ key }} </label>
                     <label>{{ value }}</label><br>
                 {% endfor %}
             </div>
@@ -127,20 +127,41 @@
             <img src="{% static 'analyze/images/temp_plot/temp_plot.png'%}">
         </div>
         <div style="padding: 5px;"></div>
-        <div class="outlier_box">
-            <label style="text-decoration: underline; font-size: 24px;">Outliers</label><br>
-            <div style="display: flex;">
-                <div style="flex: 20%;">
-                    {% for value in outlier_values %}
-                        <label>{{ value }}</label><br>
-                    {% endfor %}
-                </div>
-                <div style="flex: 80%;">
-                    {% for name in outlier_names %}
-                        <label>{{ name }}</label><br>
-                    {% endfor %}
-                </div>
+        <div id="outlier_box" class="outlier_box">
+            <div id="outlier_list" style="display: inline">
+                <label style="text-decoration: underline; font-size: 24px;">Outliers</label><br>
+                {% for val, name in outliers %}
+                    <!-- use forloop.counter to pass index, need to create dict that will store values -->
+                    <label onclick="swapOutlierContent({{ forloop.counter }})" style="font-weight: bold; cursor: pointer;">{{ val }} </label>
+                    <label style="font-style: italic;">{{ name }}</label><br>
+                {% endfor %}
             </div>
+            <div id="outlier_data" style="display: none;">
+                <label style="text-decoration: underline; font-size: 24px;">Outlier In-Depth</label><br>
+                {% for val, name in outliers_data %}
+                    <!-- use forloop.counter to pass index, need to create dict that will store values -->
+                    <label onclick="swapOutlierContent({{ forloop.counter }})" style="font-weight: bold; cursor: pointer;">{{ val }} </label>
+                    <label style="font-style: italic;">{{ name }}</label><br>
+                {% endfor %}
+            </div>
+            <script>
+                function swapOutlierContent(outlier_id) {
+                    outlier_list = document.getElementById('outlier_list');
+                    outlier_data = document.getElementById('outlier_data');
+                    if (outlier_list.style.display == 'inline'){
+                        outlier_list.style.display = 'none'
+                    }
+                    else {
+                        outlier_list.style.display = 'inline'
+                    }
+                    if (outlier_data.style.display == 'inline'){
+                        outlier_data.style.display = 'none'
+                    }
+                    else {
+                        outlier_data.style.display = 'inline'
+                    }
+                }
+            </script>
         </div>
     </div>
 
