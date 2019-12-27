@@ -131,35 +131,35 @@
             <div id="outlier_list" style="display: inline">
                 <label style="text-decoration: underline; font-size: 24px;">Outliers</label><br>
                 {% for val, name in outliers %}
-                    <!-- use forloop.counter to pass index, need to create dict that will store values -->
-                    <label onclick="swapOutlierContent({{ forloop.counter }})" style="font-weight: bold; cursor: pointer;">{{ val }} </label>
+                    <label onclick="swapToOutlierContent({{ forloop.counter }})" style="font-weight: bold; cursor: pointer;">{{ val }} </label>
                     <label style="font-style: italic;">{{ name }}</label><br>
                 {% endfor %}
             </div>
-            <div id="outlier_data" style="display: none;">
-                <label style="text-decoration: underline; font-size: 24px;">Outlier In-Depth</label><br>
-                {% for val, name in outliers_data %}
-                    <!-- use forloop.counter to pass index, need to create dict that will store values -->
-                    <label onclick="swapOutlierContent({{ forloop.counter }})" style="font-weight: bold; cursor: pointer;">{{ val }} </label>
-                    <label style="font-style: italic;">{{ name }}</label><br>
-                {% endfor %}
-            </div>
+            {% for outlier in outliers_data %}
+                <div id="outlier_data_{{ forloop.counter }}" style="display: none;">
+                    <label style="text-decoration: underline; font-size: 24px;">Outlier In-Depth</label><br>
+                    {% for key, value in outlier.items %}
+                        <!-- Get the parent counter -->
+                        <label onclick="swapOutlierContent({{ forloop.parentloop.counter }})" style="font-weight: bold; cursor: pointer;">{{ key }}: </label>
+                        <label style="font-style: italic;">{{ value }}</label><br>
+                    {% endfor %}
+                    <input type="button" onclick="swapToOutlierList({{ forloop.counter }})">
+                </div>
+            {% endfor %}
             <script>
-                function swapOutlierContent(outlier_id) {
-                    outlier_list = document.getElementById('outlier_list');
-                    outlier_data = document.getElementById('outlier_data');
-                    if (outlier_list.style.display == 'inline'){
-                        outlier_list.style.display = 'none'
-                    }
-                    else {
-                        outlier_list.style.display = 'inline'
-                    }
-                    if (outlier_data.style.display == 'inline'){
-                        outlier_data.style.display = 'none'
-                    }
-                    else {
-                        outlier_data.style.display = 'inline'
-                    }
+                function swapToOutlierContent(outlier_id) {
+                    outlier_list_div = document.getElementById('outlier_list');
+                    outlier_data_div = document.getElementById('outlier_data_' + outlier_id);
+
+                    outlier_list_div.style.display = 'none';
+                    outlier_data_div.style.display = 'inline';
+                }
+                function swapToOutlierList(outlier_id) {
+                    outlier_list_div = document.getElementById('outlier_list');
+                    outlier_data_div = document.getElementById('outlier_data_' + outlier_id);
+
+                    outlier_list_div.style.display = 'inline';
+                    outlier_data_div.style.display = 'none';
                 }
             </script>
         </div>

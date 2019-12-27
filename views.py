@@ -57,8 +57,9 @@ def plot(request):
         max_seconds = int(max_seconds)
     except ValueError:
         max_seconds = 100 * 60
-    plot_png, operations_dict, outliers = get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams, trend=trend,
-                                                  min_seconds=min_seconds, max_seconds=max_seconds)
+    plot_png, operations_dict, outliers, outliers_data = get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams,
+                                                                 trend=trend,
+                                                                 min_seconds=min_seconds, max_seconds=max_seconds)
     # dict that is passed to the html template file
     svg_dict = {
         'fig': plot_png,
@@ -71,7 +72,7 @@ def plot(request):
         'max_seconds': max_seconds,
         'op_dict': operations_dict,
         'outliers': outliers,
-        'outliers_data': [(1, 2), (3, 4)],  # todo make this real
+        'outliers_data': outliers_data,
         'y_keys': ScatterKeysYAxis.objects.all(),
         'x_keys': ScatterKeysXAxis.objects.all(),
         'team_names': BasketballTeamName.objects.all(),
@@ -120,21 +121,24 @@ def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
     operations_dict['(Percentiles)'] = ''
     for k, v in sorted(describe_dict.items()):
         operations_dict['%s:' % k] = round(v, 3)
-    outliers = []
+    outliers_data = []
+    outliers_list = []
+    for _, row in outlier_df.sort_values(by=y_key, ascending=False).iterrows():
+        outliers_data.append(row.to_dict())
     outlier_str = outlier_df[[y_key]].sort_values(by=y_key, ascending=False).to_string()
     outlier_str = ' '.join(outlier_str.split())
     name = ''
     outlier_format_str = '{0: <6}'
     for o in outlier_str.split()[1:]:
-        if len(outliers) >= 15:
+        if len(outliers_list) >= 15:
             break
         try:
             float(o)
-            outliers.append((outlier_format_str.format(float(o)), name[:-1]))
+            outliers_list.append((outlier_format_str.format(float(o)), name[:-1]))
             name = ''
         except ValueError:
             name += '%s ' % o
     total_df.to_csv(path_or_buf=temp_csv_path)
 
     # todo update to properly check if plot is none?
-    return os.path.join('analyze', 'images', 'temp_plot', temp_name), operations_dict, outliers
+    return os.path.join('analyze', 'images', 'temp_plot', temp_name), operations_dict, outliers_list, outliers_data
