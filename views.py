@@ -124,7 +124,11 @@ def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
     outliers_data = []
     outliers_list = []
     for _, row in outlier_df.sort_values(by=y_key, ascending=False).iterrows():
-        outliers_data.append(row.to_dict())
+        temp_dict = OrderedDict()
+        temp_dict['name'] = row.name
+        for key in sorted(row.to_dict().keys()):
+            temp_dict[key] = row[key]
+        outliers_data.append(temp_dict)
     outlier_str = outlier_df[[y_key]].sort_values(by=y_key, ascending=False).to_string()
     outlier_str = ' '.join(outlier_str.split())
     name = ''

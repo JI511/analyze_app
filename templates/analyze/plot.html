@@ -112,7 +112,7 @@
     </div>
     </form>
 
-    <div style="display: flex; justify-content: center;">
+    <div style="display: flex; justify-content: center; align-items: flex-start;">
         <div class="math_box">
             <div style="text-align: left;">
                 {% for key, value in op_dict.items %}
@@ -131,19 +131,23 @@
             <div id="outlier_list" style="display: inline">
                 <label style="text-decoration: underline; font-size: 24px;">Outliers</label><br>
                 {% for val, name in outliers %}
-                    <label onclick="swapToOutlierContent({{ forloop.counter }})" style="font-weight: bold; cursor: pointer;">{{ val }} </label>
+                    <label onclick="swapToOutlierContent({{ forloop.counter }})"
+                           style="font-weight: bold; cursor: pointer;">{{ val }} </label>
                     <label style="font-style: italic;">{{ name }}</label><br>
                 {% endfor %}
             </div>
             {% for outlier in outliers_data %}
                 <div id="outlier_data_{{ forloop.counter }}" style="display: none;">
-                    <label style="text-decoration: underline; font-size: 24px;">Outlier In-Depth</label><br>
+                    <label style="text-decoration: underline; font-size: 24px;">Outlier In-Depth</label>
+                    <input type="button" onclick="swapToOutlierList({{ forloop.counter }})" value="Return"
+                           class="outlier_data_return_button">
+                    <br>
                     {% for key, value in outlier.items %}
                         <!-- Get the parent counter -->
-                        <label onclick="swapOutlierContent({{ forloop.parentloop.counter }})" style="font-weight: bold; cursor: pointer;">{{ key }}: </label>
+                        <label onclick="swapOutlierContent({{ forloop.parentloop.counter }})"
+                               style="font-weight: bold; cursor: pointer;">{{ key }}: </label>
                         <label style="font-style: italic;">{{ value }}</label><br>
                     {% endfor %}
-                    <input type="button" onclick="swapToOutlierList({{ forloop.counter }})">
                 </div>
             {% endfor %}
             <script>
@@ -170,10 +174,12 @@
 
     {% endif %}
     <div style="padding: 5px; display: flex; text-align: center; justify-content: center;">
-        <a href="{% static 'analyze/images/temp_plot/temp_plot.png'%}" download="{{ selected_x_key }}_vs_{{ selected_y_key }}" style="padding: 5px;">
+        <a href="{% static 'analyze/images/temp_plot/temp_plot.png'%}"
+           download="{{ selected_x_key }}_vs_{{ selected_y_key }}" style="padding: 5px;">
             <input type="submit" value="Download Plot" class="downloader">
         </a>
-        <a href="{% static 'analyze/images/temp_plot/temp_plot_data.csv'%}" download="plot_data.csv" style="padding: 5px;">
+        <a href="{% static 'analyze/images/temp_plot/temp_plot_data.csv'%}"
+           download="plot_data.csv" style="padding: 5px;">
             <input type="submit" value="Download CSV" class="downloader">
         </a>
     </div>
