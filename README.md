@@ -10,4 +10,5 @@ Current look as of 12/29/2019:
 ![current](https://github.com/JI511/analyze_app/blob/master/extra/snips/12_29_snip_2.png)
 
 Outlier In-Depth view:
+
 ![current](https://github.com/JI511/analyze_app/blob/master/extra/snips/12_29_outlier_data_box.png)
