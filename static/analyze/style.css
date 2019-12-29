@@ -45,6 +45,29 @@
     font-size: 12px;
     cursor: pointer;
 }
+.outlier_player_title {
+    font-size: 26px;
+    font-weight: bold;
+}
+.outlier_team {
+    font-size: 16px;
+    font-style: italic;
+}
+.outlier_small {
+    font-size: 10px;
+}
+.outlier_title {
+    text-decoration: underline;
+    font-size: 20px;
+    font-weight: bold;
+}
+.outlier_generic {
+    font-size: 14px;
+}
+.outlier_generic_bold {
+    font-size: 14px;
+    font-weight: bold;
+}
 .selector {
     padding: 5px;
 }

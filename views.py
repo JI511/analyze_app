@@ -61,6 +61,9 @@ def plot(request):
     plot_png, operations_dict, outliers, outliers_data = get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams,
                                                                  trend=trend,
                                                                  min_seconds=min_seconds, max_seconds=max_seconds)
+    outlier_keys = ['game_score', 'minutes_played', 'turnovers',
+                    'ast/to', 'personal_fouls']
+
     # dict that is passed to the html template file
     svg_dict = {
         'fig': plot_png,
@@ -74,6 +77,7 @@ def plot(request):
         'op_dict': operations_dict,
         'outliers': outliers,
         'outliers_data': outliers_data,
+        'outlier_keys': outlier_keys,
         'y_keys': ScatterKeysYAxis.objects.all(),
         'x_keys': ScatterKeysXAxis.objects.all(),
         'team_names': BasketballTeamName.objects.all(),
@@ -153,44 +157,41 @@ def fix_outlier_dict(row_series):
     :return: The more human readable dictionary
     """
     temp_dict = OrderedDict()
+
     temp_dict['name'] = row_series.name
     temp_dict['team'] = row_series['team'].replace('_', ' ').title()
     temp_dict['opponent'] = row_series['opponent'].replace('_', ' ').title()
     date = convert_date(row_series['date'])
     temp_dict['date'] = date.strftime('%B %d, %Y')
-    temp_dict['FG%'] = '%s%% (%s/%s)' % (round((float(row_series['made_field_goals']) /
+    temp_dict['FGp'] = '%s%% (%s/%s)' % (round((float(row_series['made_field_goals']) /
                                                 float(row_series['attempted_field_goals']) * 100), 1),
                                          int(row_series['made_field_goals']),
                                          int(row_series['attempted_field_goals']))
-    temp_dict['3pt FG%'] = '%s%% (%s/%s)' % (round((float(row_series['made_three_point_field_goals']) /
-                                                    float(row_series['attempted_three_point_field_goals']) * 100), 1),
-                                             int(row_series['made_three_point_field_goals']),
-                                             int(row_series['attempted_three_point_field_goals']))
-    temp_dict['FT%'] = '%s%% (%s/%s)' % (round((float(row_series['made_free_throws']) /
+    temp_dict['3ptFGp'] = '%s%% (%s/%s)' % (round((float(row_series['made_three_point_field_goals']) /
+                                                   float(row_series['attempted_three_point_field_goals']) * 100), 1),
+                                            int(row_series['made_three_point_field_goals']),
+                                            int(row_series['attempted_three_point_field_goals']))
+    temp_dict['FTp'] = '%s%% (%s/%s)' % (round((float(row_series['made_free_throws']) /
                                                 float(row_series['attempted_free_throws']) * 100), 1),
                                          int(row_series['made_free_throws']),
                                          int(row_series['attempted_free_throws']))
+
+    temp_dict['turnovers'] = int(row_series['turnovers'])
+    temp_dict['ast/to'] = row_series['assist_turnover_ratio']
+    temp_dict['minutes_played'] = round(float(row_series['points']), 1)
+    temp_dict['personal_fouls'] = int(row_series['personal_fouls'])
+    temp_dict['defensive_rebounds'] = int(row_series['defensive_rebounds'])
+    temp_dict['offensive_rebounds'] = int(row_series['offensive_rebounds'])
+
     temp_dict['points'] = int(row_series['points'])
-    temp_dict['rebounds'] = '%s (%s off, %s def)' % (int(row_series['rebounds']),
-                                                     int(row_series['offensive_rebounds']),
-                                                     int(row_series['defensive_rebounds']))
+    temp_dict['rebounds'] = int(row_series['rebounds'])
     temp_dict['assists'] = int(row_series['assists'])
     temp_dict['steals'] = int(row_series['steals'])
     temp_dict['blocks'] = int(row_series['blocks'])
-    temp_dict['turnovers'] = int(row_series['turnovers'])
-    temp_dict['ast/to'] = row_series['assist_turnover_ratio']
-    temp_dict['true shooting'] = '%s%%' % round(float(row_series['true_shooting']) * 100, 2)
-
-    # keep track of already modified keys
-    pre_appended = ['name', 'team', 'date', 'opponent', 'made_field_goals', 'attempted_field_goals',
-                    'made_three_point_field_goals', 'attempted_three_point_field_goals', 'made_free_throws',
-                    'attempted_free_throws', 'rebounds', 'offensive_rebounds', 'defensive_rebounds', 'points',
-                    'assists', 'steals', 'blocks', 'turnovers', 'assist_turnover_ratio', 'true_shooting']
-    for key in sorted(row_series.to_dict().keys()):
-        if key not in pre_appended:
-            data = row_series[key]
-            key = key.replace('_', ' ')
-            temp_dict[key] = data
+    temp_dict['outcome'] = row_series['outcome']
+    temp_dict['location'] = row_series['location']
+    temp_dict['true_shooting'] = '%s%%' % round(float(row_series['true_shooting']) * 100, 2)
+    temp_dict['game_score'] = round(float(row_series['game_score']), 2)
 
     return temp_dict
 
