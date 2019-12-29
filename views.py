@@ -62,7 +62,7 @@ def plot(request):
                                                                  trend=trend,
                                                                  min_seconds=min_seconds, max_seconds=max_seconds)
     outlier_keys = ['game_score', 'minutes_played', 'turnovers',
-                    'ast/to', 'personal_fouls']
+                    'ast/to', 'personal_fouls', 'defensive_rebounds', 'offensive_rebounds']
 
     # dict that is passed to the html template file
     svg_dict = {
@@ -129,7 +129,7 @@ def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
     outliers_data = []
     outliers_list = []
     for _, row in outlier_df.sort_values(by=y_key, ascending=False).iterrows():
-        outliers_data.append(fix_outlier_dict(row_series=row))
+        outliers_data.append(fix_outlier_dict(row_series=row, df=df))
     outlier_str = outlier_df[[y_key]].sort_values(by=y_key, ascending=False).to_string()
     outlier_str = ' '.join(outlier_str.split())
     name = ''
@@ -149,11 +149,12 @@ def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
     return os.path.join('analyze', 'images', 'temp_plot', temp_name), operations_dict, outliers_list, outliers_data
 
 
-def fix_outlier_dict(row_series):
+def fix_outlier_dict(row_series, df):
     """
     Cleans up key names for handling outlier data.
 
-    :param row_series: The pandas.Series object
+    :param pandas.Series row_series: The row to iterate over
+    :param pandas.DataFrame df: The data set to reference
     :return: The more human readable dictionary
     """
     temp_dict = OrderedDict()
@@ -182,6 +183,7 @@ def fix_outlier_dict(row_series):
     temp_dict['personal_fouls'] = int(row_series['personal_fouls'])
     temp_dict['defensive_rebounds'] = int(row_series['defensive_rebounds'])
     temp_dict['offensive_rebounds'] = int(row_series['offensive_rebounds'])
+    temp_dict['game_score'] = round(float(row_series['game_score']), 2)
 
     temp_dict['points'] = int(row_series['points'])
     temp_dict['rebounds'] = int(row_series['rebounds'])
@@ -191,7 +193,7 @@ def fix_outlier_dict(row_series):
     temp_dict['outcome'] = row_series['outcome']
     temp_dict['location'] = row_series['location']
     temp_dict['true_shooting'] = '%s%%' % round(float(row_series['true_shooting']) * 100, 2)
-    temp_dict['game_score'] = round(float(row_series['game_score']), 2)
+    temp_dict['team_result'] = Api.get_team_result_on_date(team=temp_dict['team'], date=date, df=df)
 
     return temp_dict
 
@@ -204,7 +206,3 @@ def convert_date(date_string):
     :return: datetime.datetime object
     """
     return datetime.datetime.strptime(date_string, '%y_%m_%d')
-
-
-def get_team_result():
-    pass
