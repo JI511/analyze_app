@@ -7,6 +7,7 @@ import numpy as np
 import shutil
 import os
 from collections import OrderedDict
+import datetime
 
 
 def index(request):
@@ -124,11 +125,7 @@ def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
     outliers_data = []
     outliers_list = []
     for _, row in outlier_df.sort_values(by=y_key, ascending=False).iterrows():
-        temp_dict = OrderedDict()
-        temp_dict['name'] = row.name
-        for key in sorted(row.to_dict().keys()):
-            temp_dict[key] = row[key]
-        outliers_data.append(temp_dict)
+        outliers_data.append(fix_outlier_dict(row_series=row))
     outlier_str = outlier_df[[y_key]].sort_values(by=y_key, ascending=False).to_string()
     outlier_str = ' '.join(outlier_str.split())
     name = ''
@@ -146,3 +143,67 @@ def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
 
     # todo update to properly check if plot is none?
     return os.path.join('analyze', 'images', 'temp_plot', temp_name), operations_dict, outliers_list, outliers_data
+
+
+def fix_outlier_dict(row_series):
+    """
+    Cleans up key names for handling outlier data.
+
+    :param row_series: The pandas.Series object
+    :return: The more human readable dictionary
+    """
+    temp_dict = OrderedDict()
+    temp_dict['name'] = row_series.name
+    temp_dict['team'] = row_series['team'].replace('_', ' ').title()
+    temp_dict['opponent'] = row_series['opponent'].replace('_', ' ').title()
+    date = convert_date(row_series['date'])
+    temp_dict['date'] = date.strftime('%B %d, %Y')
+    temp_dict['FG%'] = '%s%% (%s/%s)' % (round((float(row_series['made_field_goals']) /
+                                                float(row_series['attempted_field_goals']) * 100), 1),
+                                         int(row_series['made_field_goals']),
+                                         int(row_series['attempted_field_goals']))
+    temp_dict['3pt FG%'] = '%s%% (%s/%s)' % (round((float(row_series['made_three_point_field_goals']) /
+                                                    float(row_series['attempted_three_point_field_goals']) * 100), 1),
+                                             int(row_series['made_three_point_field_goals']),
+                                             int(row_series['attempted_three_point_field_goals']))
+    temp_dict['FT%'] = '%s%% (%s/%s)' % (round((float(row_series['made_free_throws']) /
+                                                float(row_series['attempted_free_throws']) * 100), 1),
+                                         int(row_series['made_free_throws']),
+                                         int(row_series['attempted_free_throws']))
+    temp_dict['points'] = int(row_series['points'])
+    temp_dict['rebounds'] = '%s (%s off, %s def)' % (int(row_series['rebounds']),
+                                                     int(row_series['offensive_rebounds']),
+                                                     int(row_series['defensive_rebounds']))
+    temp_dict['assists'] = int(row_series['assists'])
+    temp_dict['steals'] = int(row_series['steals'])
+    temp_dict['blocks'] = int(row_series['blocks'])
+    temp_dict['turnovers'] = int(row_series['turnovers'])
+    temp_dict['ast/to'] = row_series['assist_turnover_ratio']
+    temp_dict['true shooting'] = '%s%%' % round(float(row_series['true_shooting']) * 100, 2)
+
+    # keep track of already modified keys
+    pre_appended = ['name', 'team', 'date', 'opponent', 'made_field_goals', 'attempted_field_goals',
+                    'made_three_point_field_goals', 'attempted_three_point_field_goals', 'made_free_throws',
+                    'attempted_free_throws', 'rebounds', 'offensive_rebounds', 'defensive_rebounds', 'points',
+                    'assists', 'steals', 'blocks', 'turnovers', 'assist_turnover_ratio', 'true_shooting']
+    for key in sorted(row_series.to_dict().keys()):
+        if key not in pre_appended:
+            data = row_series[key]
+            key = key.replace('_', ' ')
+            temp_dict[key] = data
+
+    return temp_dict
+
+
+def convert_date(date_string):
+    """
+    Gets a datetime object from a date string.
+
+    :param date_string: The date string
+    :return: datetime.datetime object
+    """
+    return datetime.datetime.strptime(date_string, '%y_%m_%d')
+
+
+def get_team_result():
+    pass

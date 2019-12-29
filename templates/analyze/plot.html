@@ -138,9 +138,10 @@
             </div>
             {% for outlier in outliers_data %}
                 <div id="outlier_data_{{ forloop.counter }}" style="display: none;">
-                    <label style="text-decoration: underline; font-size: 24px;">Outlier In-Depth</label>
-                    <input type="button" onclick="swapToOutlierList({{ forloop.counter }})" value="Return"
+                    <input type="button" onclick="swapToOutlierList({{ forloop.counter }})" value="<--  Return"
                            class="outlier_data_return_button">
+                    <br>
+                    <label style="text-decoration: underline; font-size: 24px;">{{ outlier.name }}</label>
                     <br>
                     {% for key, value in outlier.items %}
                         <!-- Get the parent counter -->
