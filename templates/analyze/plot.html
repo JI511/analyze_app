@@ -124,7 +124,7 @@
         <div style="padding: 5px;"></div>
         <div style="border: 4px solid black;">
             <!-- Show the figure -->
-            <img src="{% static 'analyze/images/temp_plot/temp_plot.png'%}">
+            {{ fig|safe }}
         </div>
         <div style="padding: 5px;"></div>
         <div id="outlier_box" class="outlier_box">
@@ -199,17 +199,16 @@
         <p>No data available :(</p>
 
     {% endif %}
-    <div style="padding: 5px; display: flex; text-align: center; justify-content: center;">
-        <a href="{% static 'analyze/images/temp_plot/temp_plot.png'%}"
-           download="{{ selected_x_key }}_vs_{{ selected_y_key }}" style="padding: 5px;">
-            <input type="submit" value="Download Plot" class="downloader">
-        </a>
-        <a href="{% static 'analyze/images/temp_plot/temp_plot_data.csv'%}"
-           download="plot_data.csv" style="padding: 5px;">
-            <input type="submit" value="Download CSV" class="downloader">
-        </a>
-    </div>
-    {% csrf_token %}
+    <!--<div style="padding: 5px; display: flex; text-align: center; justify-content: center;">-->
+        <!--<a href="{% static 'analyze/images/temp_plot/temp_plot.png'%}"-->
+           <!--download="{{ selected_x_key }}_vs_{{ selected_y_key }}" style="padding: 5px;">-->
+            <!--<input type="submit" value="Download Plot" class="downloader">-->
+        <!--</a>-->
+        <!--<a href="{% static 'analyze/images/temp_plot/temp_plot_data.csv'%}"-->
+           <!--download="plot_data.csv" style="padding: 5px;">-->
+            <!--<input type="submit" value="Download CSV" class="downloader">-->
+        <!--</a>-->
+    <!--</div>-->
     <div class="content">
         <label class="text_selector_filter">Data set created from basketball-reference.com</label>
     </div>

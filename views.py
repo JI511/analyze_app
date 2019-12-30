@@ -22,10 +22,6 @@ def plot(request):
     :param request: HTML request object
     :return: The html page
     """
-    save_path = os.path.join(os.getcwd(), 'analyze', 'static', 'analyze', 'images', 'temp_plot')
-    if os.path.exists(save_path):
-        shutil.rmtree(save_path)
-
     # defaults
     x_key = 'minutes_played'
     y_key = 'game_score'
@@ -58,15 +54,14 @@ def plot(request):
         max_seconds = int(max_seconds)
     except ValueError:
         max_seconds = 100 * 60
-    plot_png, operations_dict, outliers, outliers_data = get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams,
-                                                                 trend=trend,
-                                                                 min_seconds=min_seconds, max_seconds=max_seconds)
+    fig_data, filtered_df = get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams, trend=trend,
+                                    min_seconds=min_seconds, max_seconds=max_seconds)
     outlier_keys = ['game_score', 'minutes_played', 'turnovers',
                     'ast/to', 'personal_fouls', 'defensive_rebounds', 'offensive_rebounds']
 
     # dict that is passed to the html template file
     svg_dict = {
-        'fig': plot_png,
+        'fig': fig_data['svg_data'],
         'selected_x_key': x_key,
         'selected_y_key': y_key,
         'selected_team_name': team_name,
@@ -74,9 +69,9 @@ def plot(request):
         'trend_enabled': trend,
         'min_seconds': min_seconds,
         'max_seconds': max_seconds,
-        'op_dict': operations_dict,
-        'outliers': outliers,
-        'outliers_data': outliers_data,
+        'op_dict': fig_data['operations_dict'],
+        'outliers': fig_data['outliers_list'],
+        'outliers_data': fig_data['outliers_data'],
         'outlier_keys': outlier_keys,
         'y_keys': ScatterKeysYAxis.objects.all(),
         'x_keys': ScatterKeysXAxis.objects.all(),
@@ -99,21 +94,16 @@ def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
     :param int max_seconds: Maximum seconds played to filter on
     :return: svg figure code
     """
-    save_path = os.path.join(os.getcwd(), 'analyze', 'static', 'analyze', 'images', 'temp_plot')
-    my_csv = r'C:\Users\User\Desktop\Programs\testproj\mysite\analyze\NBA_Beautiful_Data\player_box_scores.csv'
-    df = Api.get_existing_data_frame(my_csv, logger=logging.getLogger(__name__))
-    temp_csv_path = os.path.join(save_path, 'temp_plot_data.csv')
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
+    csv_path = os.path.join(os.getcwd(), 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
+    df = Api.get_existing_data_frame(csv_path=csv_path, logger=logging.getLogger(__name__))
 
     outlier_count = 5
-
-    temp_name = 'temp_plot.png'
+    # plot_path will be the svg data as a string
+    # total_df will be the filtered df
     plot_path, outlier_df, total_df = Api.create_scatter_plot_with_trend_line(x_key=x_key,
                                                                               y_key=y_key,
                                                                               df=df,
-                                                                              save_path=os.path.join(save_path,
-                                                                                                     temp_name),
+                                                                              save_path='svg_buffer',
                                                                               grid=grid,
                                                                               trend_line=trend,
                                                                               num_outliers=outlier_count,
@@ -143,10 +133,15 @@ def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
             name = ''
         except ValueError:
             name += '%s ' % o
-    total_df.to_csv(path_or_buf=temp_csv_path)
+    figure_dict = {
+        'svg_data': plot_path,
+        'operations_dict': operations_dict,
+        'outliers_list': outliers_list,
+        'outliers_data': outliers_data,
+    }
 
     # todo update to properly check if plot is none?
-    return os.path.join('analyze', 'images', 'temp_plot', temp_name), operations_dict, outliers_list, outliers_data
+    return figure_dict, total_df
 
 
 def fix_outlier_dict(row_series, df):
@@ -164,16 +159,20 @@ def fix_outlier_dict(row_series, df):
     temp_dict['opponent'] = row_series['opponent'].replace('_', ' ').title()
     date = convert_date(row_series['date'])
     temp_dict['date'] = date.strftime('%B %d, %Y')
-    temp_dict['FGp'] = '%s%% (%s/%s)' % (round((float(row_series['made_field_goals']) /
-                                                float(row_series['attempted_field_goals']) * 100), 1),
+    fgp = float(row_series['made_field_goals']) / float(row_series['attempted_field_goals']) if \
+        float(row_series['attempted_field_goals']) > 0 else 0
+    temp_dict['FGp'] = '%s%% (%s/%s)' % (round((fgp * 100), 1),
                                          int(row_series['made_field_goals']),
                                          int(row_series['attempted_field_goals']))
-    temp_dict['3ptFGp'] = '%s%% (%s/%s)' % (round((float(row_series['made_three_point_field_goals']) /
-                                                   float(row_series['attempted_three_point_field_goals']) * 100), 1),
+    three_pt = float(row_series['made_three_point_field_goals']) / \
+        float(row_series['attempted_three_point_field_goals']) if \
+        float(row_series['attempted_three_point_field_goals']) > 0 else 0
+    temp_dict['3ptFGp'] = '%s%% (%s/%s)' % (round((three_pt * 100), 1),
                                             int(row_series['made_three_point_field_goals']),
                                             int(row_series['attempted_three_point_field_goals']))
-    temp_dict['FTp'] = '%s%% (%s/%s)' % (round((float(row_series['made_free_throws']) /
-                                                float(row_series['attempted_free_throws']) * 100), 1),
+    ftp = float(row_series['made_free_throws']) / float(row_series['attempted_free_throws']) if \
+        float(row_series['attempted_free_throws']) > 0 else 0
+    temp_dict['FTp'] = '%s%% (%s/%s)' % (round((ftp * 100), 1),
                                          int(row_series['made_free_throws']),
                                          int(row_series['attempted_free_throws']))
 

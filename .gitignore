@@ -10,7 +10,6 @@ __pycache__/
 *idea
 *migrations/
 *NBA_BEAUTIFUL_DATA/
-*static/analyze/images/temp_plot
 
 # Distribution / packaging
 .Python
