@@ -16,16 +16,15 @@ def index(request):
     return render(request, 'analyze/index.html', {})
 
 
-def plot(request, fig_dict=None):
+def plot(request):
     """
     The plotting view for the NBA data set.
 
     :param request: HTML request object
-    :param dict fig_dict: Figure data to specify when loading the plot url
     :return: The html page
     """
-    if fig_dict is None and request.method == 'POST':
-        fig_dict = handle_graph_update(request=request)
+
+    fig_dict = handle_graph_update(request=request)
 
     # dict that is passed to the html template file
     svg_dict = {
