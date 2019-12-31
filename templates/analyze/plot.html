@@ -6,7 +6,7 @@
     <div class="content">
         <img src="{% static 'analyze/images/header.png'%}">
     </div>
-    {% if fig != None %}
+    {% if fig_dict.svg_data != None %}
     <form action="{% url 'analyze:plot' %}" method="post">
     {% csrf_token %}
     <div class="selector_content">
@@ -15,7 +15,7 @@
             <h3>X Axis</h3>
             <select name="x_key_name" style="font-family: 'Oswald';">
                 {% for name in x_keys %}
-                    {% if name.name == selected_x_key %}
+                    {% if name.name == fig_dict.selected_x_key %}
                         <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
                     {% else %}
                         <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
@@ -29,7 +29,7 @@
             <h3>Y Axis</h3>
             <select name="y_key_name" style="font-family: 'Oswald';">
                 {% for name in y_keys %}
-                    {% if name.name == selected_y_key %}
+                    {% if name.name == fig_dict.selected_y_key %}
                         <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
                     {% else %}
                         <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
@@ -50,7 +50,7 @@
             <select id="team_name" name="team_name" style="font-family: 'Oswald';">
                 <option selected>Select a Team</option>
                 {% for name in team_names %}
-                    {% if name.name == selected_team_name %}
+                    {% if name.name == fig_dict.selected_team_name %}
                         <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
                     {% else %}
                         <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
@@ -68,9 +68,9 @@
                     <label>Max: </label>
                 </div>
                 <div style="padding: 3px;">
-                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="min_seconds" value="{{ min_seconds }}">
+                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="min_seconds" value="{{ fig_dict.min_seconds }}">
                     <br>
-                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="max_seconds" value="{{ max_seconds }}">
+                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="max_seconds" value="{{ fig_dict.max_seconds }}">
                 </div>
             </div>
         </div>
@@ -78,7 +78,7 @@
         <!-- GRID Enable/Disable -->
         <div class="selector">
             <h3>Graph Grid</h3>
-            {% if grid_enabled %}
+            {% if fig_dict.grid_enable %}
                 <input type="radio" name="grid_enable" value="True" checked>
                 <label> Enable</label><br>
                 <input type="radio" name="grid_enable" value="False">
@@ -93,7 +93,7 @@
         <div class="selector_divider"></div>
         <div class="selector">
             <h3>Trend Line</h3>
-            {% if trend_enabled %}
+            {% if fig_dict.trend_enable %}
                 <input type="radio" name="trend_enable" value="True" checked>
                 <label> Enable</label><br>
                 <input type="radio" name="trend_enable" value="False">
@@ -115,7 +115,7 @@
     <div style="display: flex; justify-content: center; align-items: flex-start;">
         <div class="math_box">
             <div style="text-align: left;">
-                {% for key, value in op_dict.items %}
+                {% for key, value in fig_dict.operations_dict.items %}
                     <label style="font-weight: bold;">{{ key }} </label>
                     <label>{{ value }}</label><br>
                 {% endfor %}
@@ -124,19 +124,19 @@
         <div style="padding: 5px;"></div>
         <div style="border: 4px solid black;">
             <!-- Show the figure -->
-            {{ fig|safe }}
+            {{ fig_dict.svg_data|safe }}
         </div>
         <div style="padding: 5px;"></div>
         <div id="outlier_box" class="outlier_box">
             <div id="outlier_list" style="display: inline">
                 <label style="text-decoration: underline; font-size: 24px;">Outliers</label><br>
-                {% for val, name in outliers %}
+                {% for val, name in fig_dict.outliers_list %}
                     <label onclick="swapToOutlierContent({{ forloop.counter }})"
                            style="font-weight: bold; cursor: pointer;">{{ val }} </label>
                     <label style="font-style: italic;">{{ name }}</label><br>
                 {% endfor %}
             </div>
-            {% for outlier in outliers_data %}
+            {% for outlier in fig_dict.outliers_data %}
                 <div id="outlier_data_{{ forloop.counter }}" style="display: none;">
                     <input type="button" onclick="swapToOutlierList({{ forloop.counter }})" value="<--  Return"
                            class="outlier_data_return_button"><br>
@@ -168,7 +168,7 @@
                         </div>
                     </div>
                     {% for key, value in outlier.items %}
-                        {% if key in outlier_keys %}
+                        {% if key in fig_dict.outlier_keys %}
                             <label class="outlier_generic">{{ value }}
                                 <span class="outlier_small">{{ key }}</span>
                             </label><br>

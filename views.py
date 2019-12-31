@@ -10,75 +10,102 @@ from collections import OrderedDict
 import datetime
 
 
+# VIEWS
 def index(request):
     # can provide optional 3rd arg of dictionary to pass to template
     return render(request, 'analyze/index.html', {})
 
 
-def plot(request):
+def plot(request, fig_dict=None):
     """
     The plotting view for the NBA data set.
 
     :param request: HTML request object
+    :param dict fig_dict: Figure data to specify when loading the plot url
     :return: The html page
     """
-    # defaults
-    x_key = 'minutes_played'
-    y_key = 'game_score'
-    team_name = 'Select a Team'
-    grid = 'True'
-    trend = 'True'
-    min_seconds = 0
-    max_seconds = 100 * 60
-    if request.method == "POST":
-        # try to get the new x_key, default otherwise
-        x_key = request.POST.get('x_key_name', 'minutes_played')
-        y_key = request.POST.get('y_key_name', 'game_score')
-        grid = request.POST.get('grid_enable', 'True')
-        trend = request.POST.get('trend_enable', 'True')
-        team_name = request.POST.get('team_name', 'Select a Team')
-        min_seconds = request.POST.get('min_seconds', 0)
-        max_seconds = request.POST.get('max_seconds', 100 * 60)
-
-    # set the boolean value based on string value
-    grid = (grid == 'True')
-    trend = (trend == 'True')
-    teams = [team_name] if team_name != 'Select a Team' else None
-
-    # check each separately so the other will persist if one is not a valid int
-    try:
-        min_seconds = int(min_seconds)
-    except ValueError:
-        min_seconds = 0
-    try:
-        max_seconds = int(max_seconds)
-    except ValueError:
-        max_seconds = 100 * 60
-    fig_data, filtered_df = get_fig(x_key=x_key, y_key=y_key, grid=grid, teams=teams, trend=trend,
-                                    min_seconds=min_seconds, max_seconds=max_seconds)
-    outlier_keys = ['game_score', 'minutes_played', 'turnovers',
-                    'ast/to', 'personal_fouls', 'defensive_rebounds', 'offensive_rebounds']
+    if fig_dict is None and request.method == 'POST':
+        fig_dict = handle_graph_update(request=request)
 
     # dict that is passed to the html template file
     svg_dict = {
-        'fig': fig_data['svg_data'],
-        'selected_x_key': x_key,
-        'selected_y_key': y_key,
-        'selected_team_name': team_name,
-        'grid_enabled': grid,
-        'trend_enabled': trend,
-        'min_seconds': min_seconds,
-        'max_seconds': max_seconds,
-        'op_dict': fig_data['operations_dict'],
-        'outliers': fig_data['outliers_list'],
-        'outliers_data': fig_data['outliers_data'],
-        'outlier_keys': outlier_keys,
+        'fig_dict': fig_dict,
+        # 'selected_x_key': fig_dict['x_key'],
+        # 'selected_y_key': figy_key,
+        # 'selected_team_name': team_name,
+        # 'grid_enabled': grid,
+        # 'trend_enabled': trend,
+        # 'min_seconds': min_seconds,
+        # 'max_seconds': max_seconds,
+        # 'op_dict': fig_data['operations_dict'],
+        # 'outliers': fig_data['outliers_list'],
+        # 'outliers_data': fig_data['outliers_data'],
+        # 'outlier_keys': outlier_keys,
         'y_keys': ScatterKeysYAxis.objects.all(),
         'x_keys': ScatterKeysXAxis.objects.all(),
         'team_names': BasketballTeamName.objects.all(),
     }  # set the plot data
 
     return render(request, 'analyze/plot.html', svg_dict)
+
+
+# HELPERS
+def handle_graph_update(request):
+    # defaults
+    template_dict = {
+        'selected_x_key': request.POST.get('x_key_name', 'minutes_played'),
+        'selected_y_key': request.POST.get('y_key_name', 'game_score'),
+        'selected_team_name': request.POST.get('team_name', 'Select a Team'),
+        'grid_enable': request.POST.get('grid_enable', 'True'),
+        'trend_enable': request.POST.get('trend_enable', 'True'),
+        'min_seconds': request.POST.get('min_seconds', 0),
+        'max_seconds': request.POST.get('max_seconds', 100 * 60),
+    }
+    # if request.method == "POST":
+    #     # try to get the new x_key, default otherwise
+    #     x_key = request.POST.get('x_key_name', 'minutes_played')
+    #     y_key = request.POST.get('y_key_name', 'game_score')
+    #     grid = request.POST.get('grid_enable', 'True')
+    #     trend = request.POST.get('trend_enable', 'True')
+    #     team_name = request.POST.get('team_name', 'Select a Team')
+    #     min_seconds = request.POST.get('min_seconds', 0)
+    #     max_seconds = request.POST.get('max_seconds', 100 * 60)
+
+    # set the boolean value based on string value
+    template_dict['grid_enable'] = (template_dict['grid_enable'] == 'True')
+    template_dict['trend_enable'] = (template_dict['trend_enable'] == 'True')
+    template_dict['teams'] = [template_dict['selected_team_name']] if template_dict['selected_team_name'] != \
+        'Select a Team' else None
+
+    # check each separately so the other will persist if one is not a valid int
+    try:
+        template_dict['min_seconds'] = int(template_dict['min_seconds'])
+    except ValueError:
+        template_dict['min_seconds'] = 0
+    try:
+        template_dict['max_seconds'] = int(template_dict['max_seconds'])
+    except ValueError:
+        template_dict['max_seconds'] = 100 * 60
+
+    fig_data, filtered_df = get_fig(x_key=template_dict['selected_x_key'],
+                                    y_key=template_dict['selected_y_key'],
+                                    grid=template_dict['grid_enable'],
+                                    teams=template_dict['teams'],
+                                    trend=template_dict['trend_enable'],
+                                    min_seconds=template_dict['min_seconds'],
+                                    max_seconds=template_dict['max_seconds'])
+    template_dict['svg_data'] = fig_data['svg_data']
+    template_dict['operations_dict'] = fig_data['operations_dict']
+    template_dict['outliers_list'] = fig_data['outliers_list']
+    template_dict['outliers_data'] = fig_data['outliers_data']
+    template_dict['outlier_keys'] = ['game_score', 'minutes_played', 'turnovers',
+                                     'ast/to', 'personal_fouls', 'defensive_rebounds', 'offensive_rebounds']
+
+    for key, val in template_dict.items():
+        if key != 'svg_data':
+            print('key', key)
+            print('\tvalue', val)
+    return template_dict
 
 
 def get_fig(x_key, y_key, grid, teams, trend, min_seconds, max_seconds):
