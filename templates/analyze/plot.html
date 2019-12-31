@@ -60,7 +60,7 @@
         </div>
         <div class="selector_divider"></div>
         <div class="selector">
-            <h3>Seconds Played</h3>
+            <h3>Minutes Played</h3>
             <div style="display: flex;">
                 <div>
                     <label>Min: </label>
@@ -199,16 +199,16 @@
         <p>No data available :(</p>
 
     {% endif %}
-    <!--<div style="padding: 5px; display: flex; text-align: center; justify-content: center;">-->
-        <!--<a href="{% static 'analyze/images/temp_plot/temp_plot.png'%}"-->
-           <!--download="{{ selected_x_key }}_vs_{{ selected_y_key }}" style="padding: 5px;">-->
-            <!--<input type="submit" value="Download Plot" class="downloader">-->
-        <!--</a>-->
-        <!--<a href="{% static 'analyze/images/temp_plot/temp_plot_data.csv'%}"-->
+    <div style="padding: 5px; display: flex; text-align: center; justify-content: center;">
+        <a href="{% url 'download_plot_png' %}"
+           style="padding: 5px;">
+            <input type="submit" value="Download Plot" class="downloader">
+        </a>
+        <!--<a href="{% static 'analyze/images/header.png' %}"-->
            <!--download="plot_data.csv" style="padding: 5px;">-->
             <!--<input type="submit" value="Download CSV" class="downloader">-->
         <!--</a>-->
-    <!--</div>-->
+    </div>
     <div class="content">
         <label class="text_selector_filter">Data set created from basketball-reference.com</label>
     </div>

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, FileResponse
 from .NBA_Beautiful_Data.analytics import analytics_API as Api
 import logging
 from .models import ScatterKeysYAxis, ScatterKeysXAxis, BasketballTeamName
@@ -16,16 +16,40 @@ def index(request):
     return render(request, 'analyze/index.html', {})
 
 
-def plot(request, fig_dict=None):
+def download_plot_png(request):
+    try:
+        fig_dict = request.GET['fig_dict']
+    except KeyError:
+        raise Http404  # or another exception...
+    print('\n\n\nVIEW', fig_dict)
+    csv_path = os.path.join(os.getcwd(), 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
+    df = Api.get_existing_data_frame(csv_path=csv_path, logger=logging.getLogger(__name__))
+    outlier_count = 5
+    # plot_path will be the svg data as a string
+    # total_df will be the filtered df
+    plot_path, _, _ = Api.create_scatter_plot_with_trend_line(x_key='minutes_played',
+                                                                              y_key='points',
+                                                                              df=df,
+                                                                              save_path='png_buffer',
+                                                                              grid=True,
+                                                                              trend_line=True,
+                                                                              num_outliers=outlier_count,
+                                                                              teams=None,
+                                                                              min_seconds=0,
+                                                                              max_seconds=35)
+    converted_png = plot_path
+    return FileResponse(converted_png, filename='test.png')
+# todo need to call graph api with png_buffer for save path
+
+
+def plot(request):
     """
     The plotting view for the NBA data set.
 
     :param request: HTML request object
-    :param dict fig_dict: Figure data to specify when loading the plot url
     :return: The html page
     """
-    if fig_dict is None and request.method == 'POST':
-        fig_dict = handle_graph_update(request=request)
+    fig_dict = handle_graph_update(request=request)
 
     # dict that is passed to the html template file
     svg_dict = {
@@ -101,10 +125,6 @@ def handle_graph_update(request):
     template_dict['outlier_keys'] = ['game_score', 'minutes_played', 'turnovers',
                                      'ast/to', 'personal_fouls', 'defensive_rebounds', 'offensive_rebounds']
 
-    for key, val in template_dict.items():
-        if key != 'svg_data':
-            print('key', key)
-            print('\tvalue', val)
     return template_dict
 
 
