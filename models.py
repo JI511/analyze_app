@@ -2,6 +2,7 @@ import logging
 import os
 from django.db import models
 from .NBA_Beautiful_Data.analytics import analytics_API as Api
+from mysite import settings
 
 
 class ScatterXKey(models.Model):
@@ -69,6 +70,7 @@ class Graph(models.Model):
     grid = models.ForeignKey(GridChoice, on_delete=models.PROTECT)
     min_seconds = models.IntegerField(default=0)
     max_seconds = models.IntegerField(default=6000)
+    plot_dir = os.path.dirname(os.path.abspath(__file__))
 
     def __str__(self):
         name = 'DEFAULT'
@@ -77,7 +79,7 @@ class Graph(models.Model):
         return name
 
     def get_svg_text(self):
-        csv_path = os.path.join(os.getcwd(), 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
+        csv_path = os.path.join(settings.BASE_DIR, 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
         df = Api.get_existing_data_frame(csv_path=csv_path, logger=logging.getLogger(__name__))
         outlier_count = 5
         # plot_path will be the svg data as a string
@@ -95,11 +97,11 @@ class Graph(models.Model):
         return plot_path
 
     def create_png_location(self):
-        csv_path = os.path.join(os.getcwd(), 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
+        csv_path = os.path.join(settings.BASE_DIR, 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
         df = Api.get_existing_data_frame(csv_path=csv_path, logger=logging.getLogger(__name__))
 
         outlier_count = 5
-        save_path = os.path.join(os.getcwd(), 'analyze', 'static', 'analyze', 'images', 'plot.png')
+        save_path = os.path.join(self.plot_dir, 'Media', 'Plots', 'plot.png')
         # plot_path will be the svg data as a string
         # total_df will be the filtered df
         plot_path, _, _ = Api.create_scatter_plot_with_trend_line(x_key=self.x_key.__str__(),

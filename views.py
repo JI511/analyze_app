@@ -33,6 +33,14 @@ def plot(request):
     :return: The html page
     """
     print('\nIN PLOT VIEW\n')
+
+    d = os.path.dirname(os.path.abspath(__file__))
+    location = os.path.join(d, 'Media', 'Plots')
+    for f in os.listdir(location):
+        f_path = os.path.join(location, f)
+        if os.path.getmtime(f_path) > 30:
+            os.remove(f_path)
+
     fig_dict = handle_graph_update(request=request)
     graph = Graph.objects.get(pk=0)
 
