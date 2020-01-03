@@ -1,13 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404, FileResponse
 from .NBA_Beautiful_Data.analytics import analytics_API as Api
 import logging
-from .models import ScatterKeysYAxis, ScatterKeysXAxis, BasketballTeamName
+from .models import ScatterYKey, ScatterXKey, BasketballTeamName, TrendLineChoice, GridChoice, Graph
 import numpy as np
 import shutil
 import os
 from collections import OrderedDict
 import datetime
+from sendfile import sendfile
 
 
 # VIEWS
@@ -17,29 +18,11 @@ def index(request):
 
 
 def download_plot_png(request):
-    try:
-        fig_dict = request.GET['fig_dict']
-    except KeyError:
-        raise Http404  # or another exception...
-    print('\n\n\nVIEW', fig_dict)
-    csv_path = os.path.join(os.getcwd(), 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
-    df = Api.get_existing_data_frame(csv_path=csv_path, logger=logging.getLogger(__name__))
-    outlier_count = 5
-    # plot_path will be the svg data as a string
-    # total_df will be the filtered df
-    plot_path, _, _ = Api.create_scatter_plot_with_trend_line(x_key='minutes_played',
-                                                                              y_key='points',
-                                                                              df=df,
-                                                                              save_path='png_buffer',
-                                                                              grid=True,
-                                                                              trend_line=True,
-                                                                              num_outliers=outlier_count,
-                                                                              teams=None,
-                                                                              min_seconds=0,
-                                                                              max_seconds=35)
-    converted_png = plot_path
-    return FileResponse(converted_png, filename='test.png')
-# todo need to call graph api with png_buffer for save path
+    print('\nIN DOWNLOAD VIEW\n')
+    graph = get_object_or_404(Graph, pk=0)
+    path = graph.create_png_location()
+
+    return sendfile(request, path, attachment=True, attachment_filename='view.png')
 
 
 def plot(request):
@@ -49,25 +32,19 @@ def plot(request):
     :param request: HTML request object
     :return: The html page
     """
+    print('\nIN PLOT VIEW\n')
     fig_dict = handle_graph_update(request=request)
+    graph = Graph.objects.get(pk=0)
 
     # dict that is passed to the html template file
     svg_dict = {
         'fig_dict': fig_dict,
-        # 'selected_x_key': fig_dict['x_key'],
-        # 'selected_y_key': figy_key,
-        # 'selected_team_name': team_name,
-        # 'grid_enabled': grid,
-        # 'trend_enabled': trend,
-        # 'min_seconds': min_seconds,
-        # 'max_seconds': max_seconds,
-        # 'op_dict': fig_data['operations_dict'],
-        # 'outliers': fig_data['outliers_list'],
-        # 'outliers_data': fig_data['outliers_data'],
-        # 'outlier_keys': outlier_keys,
-        'y_keys': ScatterKeysYAxis.objects.all(),
-        'x_keys': ScatterKeysXAxis.objects.all(),
-        'team_names': BasketballTeamName.objects.all(),
+        'graph': graph,
+        'y_keys': ScatterYKey.objects.all(),
+        'x_keys': ScatterXKey.objects.all(),
+        'teams': BasketballTeamName.objects.all(),
+        'grid_choices': GridChoice.objects.all(),
+        'trend_choices': TrendLineChoice.objects.all(),
     }  # set the plot data
 
     return render(request, 'analyze/plot.html', svg_dict)

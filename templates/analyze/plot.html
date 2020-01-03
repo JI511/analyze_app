@@ -14,11 +14,11 @@
         <div class="selector">
             <h3>X Axis</h3>
             <select name="x_key_name" style="font-family: 'Oswald';">
-                {% for name in x_keys %}
-                    {% if name.name == fig_dict.selected_x_key %}
-                        <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
+                {% for key_obj in x_keys %}
+                    {% if key_obj.x_key == fig_dict.selected_x_key %}
+                        <option name="{{ key_obj }}" value="{{ key_obj }}" selected>{{ key_obj }}</option>
                     {% else %}
-                        <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
+                        <option name="{{ key_obj }}" value="{{ key_obj }}">{{ key_obj }}</option>
                     {% endif %}
                 {% endfor %}
             </select>
@@ -28,11 +28,11 @@
         <div class="selector">
             <h3>Y Axis</h3>
             <select name="y_key_name" style="font-family: 'Oswald';">
-                {% for name in y_keys %}
-                    {% if name.name == fig_dict.selected_y_key %}
-                        <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
+                {% for key_obj in y_keys %}
+                    {% if key_obj.y_key == fig_dict.selected_y_key %}
+                        <option name="{{ key_obj }}" value="{{ key_obj }}" selected>{{ key_obj }}</option>
                     {% else %}
-                        <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
+                        <option name="{{ key_obj }}" value="{{ key_obj }}">{{ key_obj }}</option>
                     {% endif %}
                 {% endfor %}
             </select>
@@ -49,11 +49,11 @@
             <h3>Team Name</h3>
             <select id="team_name" name="team_name" style="font-family: 'Oswald';">
                 <option selected>Select a Team</option>
-                {% for name in team_names %}
-                    {% if name.name == fig_dict.selected_team_name %}
-                        <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
+                {% for team in teams %}
+                    {% if team.team == fig_dict.selected_team_name %}
+                        <option name="{{ team }}" value="{{ team }}" selected>{{ team }}</option>
                     {% else %}
-                        <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
+                        <option name="{{ team }}" value="{{ team }}">{{ team }}</option>
                     {% endif %}
                 {% endfor %}
             </select>
@@ -78,32 +78,24 @@
         <!-- GRID Enable/Disable -->
         <div class="selector">
             <h3>Graph Grid</h3>
-            {% if fig_dict.grid_enable %}
-                <input type="radio" name="grid_enable" value="True" checked>
-                <label> Enable</label><br>
-                <input type="radio" name="grid_enable" value="False">
-                <label> Disable</label>
-            {% else %}
-                <input type="radio" name="grid_enable" value="True">
-                <label> Enable</label><br>
-                <input type="radio" name="grid_enable" value="False" checked>
-                <label> Disable</label>
-            {% endif %}
+            {% for option in grid_choices %}
+                {% if option.choice == fig_dict.grid_enable %}
+                    <label>{{ option }}<input type="radio" name="grid_enable" value="Enable" checked></label><br>
+                {% else %}
+                    <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}"></label><br>
+                {% endif %}
+            {% endfor %}
         </div>
         <div class="selector_divider"></div>
         <div class="selector">
             <h3>Trend Line</h3>
-            {% if fig_dict.trend_enable %}
-                <input type="radio" name="trend_enable" value="True" checked>
-                <label> Enable</label><br>
-                <input type="radio" name="trend_enable" value="False">
-                <label> Disable</label>
-            {% else %}
-                <input type="radio" name="trend_enable" value="True">
-                <label> Enable</label><br>
-                <input type="radio" name="trend_enable" value="False" checked>
-                <label> Disable</label>
-            {% endif %}
+            {% for option in trend_choices %}
+                {% if option.choice == fig_dict.trend_enable %}
+                    <label>{{ option }}<input type="radio" name="grid_enable" value="Enable" checked></label><br>
+                {% else %}
+                    <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}"></label><br>
+                {% endif %}
+            {% endfor %}
         </div>
     </div>
     <br>
@@ -124,7 +116,7 @@
         <div style="padding: 5px;"></div>
         <div style="border: 4px solid black;">
             <!-- Show the figure -->
-            {{ fig_dict.svg_data|safe }}
+            {{ graph.get_svg_text|safe }}
         </div>
         <div style="padding: 5px;"></div>
         <div id="outlier_box" class="outlier_box">
@@ -200,9 +192,8 @@
 
     {% endif %}
     <div style="padding: 5px; display: flex; text-align: center; justify-content: center;">
-        <a href="{% url 'download_plot_png' %}"
-           style="padding: 5px;">
-            <input type="submit" value="Download Plot" class="downloader">
+        <a href="{% url 'analyze:download_plot_png' %}" style="padding: 5px;">
+            <input type="submit" id="plot_down" value="Download Plot" class="downloader">
         </a>
         <!--<a href="{% static 'analyze/images/header.png' %}"-->
            <!--download="plot_data.csv" style="padding: 5px;">-->
