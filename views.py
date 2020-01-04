@@ -9,6 +9,7 @@ import os
 from collections import OrderedDict
 import datetime
 from sendfile import sendfile
+from .constants import Defaults as Vars
 
 
 # VIEWS
@@ -18,8 +19,8 @@ def index(request):
 
 
 def download_plot_png(request):
-    print('\nIN DOWNLOAD VIEW\n')
-    graph = get_object_or_404(Graph, pk=0)
+    print('\nIN DOWNLOAD VIEW')
+    graph = get_object_or_404(Graph, pk=1)
     path = graph.create_png_location()
 
     return sendfile(request, path, attachment=True, attachment_filename='view.png')
@@ -32,7 +33,7 @@ def plot(request):
     :param request: HTML request object
     :return: The html page
     """
-    print('\nIN PLOT VIEW\n')
+    print('\nIN PLOT VIEW')
 
     d = os.path.dirname(os.path.abspath(__file__))
     location = os.path.join(d, 'Media', 'Plots')
@@ -41,8 +42,34 @@ def plot(request):
         if os.path.getmtime(f_path) > 30:
             os.remove(f_path)
 
+    if request.method == 'POST' and 'form_submit' in request.POST:
+        # create graph object from post request
+        template_dict = {
+            'selected_x_key': request.POST.get('x_key_name', default=Vars.x_key),
+            'selected_y_key': request.POST.get('y_key_name', default=Vars.y_key),
+            'selected_team_name': request.POST.get('team_name', 'Select a Team'),
+            'grid_enable': request.POST.get('grid_enable', 'True'),
+            'trend_enable': request.POST.get('trend_enable', 'True'),
+            'selected_min_seconds': request.POST.get('min_seconds', 0),
+            'selected_max_seconds': request.POST.get('max_seconds', 100 * 60),
+        }
+
+        graph = Graph(x_key=ScatterXKey(x_key='minutes_played'),
+                      y_key=ScatterYKey(y_key='points'),
+                      team=BasketballTeamName(team='Los Angeles Lakers'),
+                      trend_line=TrendLineChoice.objects.get(pk=1),
+                      grid=GridChoice.objects.get(pk=1),
+                      min_seconds=template_dict['selected_min_seconds'],
+                      max_seconds=template_dict['selected_max_seconds'],)
+    else:
+        # create default object
+        graph = Graph(x_key=ScatterXKey(x_key='minutes_played'),
+                      y_key=ScatterYKey(y_key='points'),
+                      team=BasketballTeamName(team='Los Angeles Lakers'),
+                      trend_line=TrendLineChoice.objects.get(pk=1),
+                      grid=GridChoice.objects.get(pk=1))
+
     fig_dict = handle_graph_update(request=request)
-    graph = Graph.objects.get(pk=0)
 
     # dict that is passed to the html template file
     svg_dict = {

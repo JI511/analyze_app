@@ -6,7 +6,7 @@
     <div class="content">
         <img src="{% static 'analyze/images/header.png'%}">
     </div>
-    {% if fig_dict.svg_data != None %}
+    {% if graph.x_key != None %}
     <form action="{% url 'analyze:plot' %}" method="post">
     {% csrf_token %}
     <div class="selector_content">
@@ -15,7 +15,7 @@
             <h3>X Axis</h3>
             <select name="x_key_name" style="font-family: 'Oswald';">
                 {% for key_obj in x_keys %}
-                    {% if key_obj.x_key == fig_dict.selected_x_key %}
+                    {% if key_obj.x_key == graph.x_key.x_key %}
                         <option name="{{ key_obj }}" value="{{ key_obj }}" selected>{{ key_obj }}</option>
                     {% else %}
                         <option name="{{ key_obj }}" value="{{ key_obj }}">{{ key_obj }}</option>
@@ -29,7 +29,7 @@
             <h3>Y Axis</h3>
             <select name="y_key_name" style="font-family: 'Oswald';">
                 {% for key_obj in y_keys %}
-                    {% if key_obj.y_key == fig_dict.selected_y_key %}
+                    {% if key_obj.y_key == graph.y_key.y_key %}
                         <option name="{{ key_obj }}" value="{{ key_obj }}" selected>{{ key_obj }}</option>
                     {% else %}
                         <option name="{{ key_obj }}" value="{{ key_obj }}">{{ key_obj }}</option>
@@ -48,9 +48,8 @@
         <div class="selector">
             <h3>Team Name</h3>
             <select id="team_name" name="team_name" style="font-family: 'Oswald';">
-                <option selected>Select a Team</option>
                 {% for team in teams %}
-                    {% if team.team == fig_dict.selected_team_name %}
+                    {% if team.team == graph.team.team %}
                         <option name="{{ team }}" value="{{ team }}" selected>{{ team }}</option>
                     {% else %}
                         <option name="{{ team }}" value="{{ team }}">{{ team }}</option>
@@ -68,19 +67,19 @@
                     <label>Max: </label>
                 </div>
                 <div style="padding: 3px;">
-                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="min_seconds" value="{{ fig_dict.min_seconds }}">
+                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="min_seconds" value="{{ graph.min_seconds }}">
                     <br>
-                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="max_seconds" value="{{ fig_dict.max_seconds }}">
+                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="max_seconds" value="{{ graph.max_seconds }}">
                 </div>
             </div>
         </div>
         <div class="selector_divider"></div>
         <!-- GRID Enable/Disable -->
         <div class="selector">
-            <h3>Graph Grid</h3>
+            <h3>Grid</h3>
             {% for option in grid_choices %}
-                {% if option.choice == fig_dict.grid_enable %}
-                    <label>{{ option }}<input type="radio" name="grid_enable" value="Enable" checked></label><br>
+                {% if option.choice == graph.grid.choice %}
+                    <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}" checked></label><br>
                 {% else %}
                     <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}"></label><br>
                 {% endif %}
@@ -90,17 +89,17 @@
         <div class="selector">
             <h3>Trend Line</h3>
             {% for option in trend_choices %}
-                {% if option.choice == fig_dict.trend_enable %}
-                    <label>{{ option }}<input type="radio" name="grid_enable" value="Enable" checked></label><br>
+                {% if option.choice == graph.trend_line.choice %}
+                    <label>{{ option }}<input type="radio" name="trend_enable" value="{{ option }}" checked></label><br>
                 {% else %}
-                    <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}"></label><br>
+                    <label>{{ option }}<input type="radio" name="trend_enable" value="{{ option }}"></label><br>
                 {% endif %}
             {% endfor %}
         </div>
     </div>
     <br>
     <div style="text-align: center;">
-        <input type="submit" value="Update" class="updater">
+        <input type="submit" value="Update" name="filter_submit" class="updater">
     </div>
     </form>
 

@@ -6,7 +6,8 @@ from mysite import settings
 
 
 class ScatterXKey(models.Model):
-    x_key = models.CharField(max_length=35, primary_key=True)
+    id = models.AutoField(primary_key=True)
+    x_key = models.CharField(max_length=35)
 
     # Metadata
     class Meta:
@@ -18,7 +19,8 @@ class ScatterXKey(models.Model):
 
 
 class ScatterYKey(models.Model):
-    y_key = models.CharField(max_length=35, primary_key=True)
+    id = models.AutoField(primary_key=True)
+    y_key = models.CharField(max_length=35)
 
     # Metadata
     class Meta:
@@ -29,7 +31,8 @@ class ScatterYKey(models.Model):
 
 
 class BasketballTeamName(models.Model):
-    team = models.CharField(max_length=50, primary_key=True)
+    team_id = models.AutoField(primary_key=True)
+    team = models.CharField(max_length=50)
 
     # Metadata
     class Meta:
@@ -40,7 +43,8 @@ class BasketballTeamName(models.Model):
 
 
 class TrendLineChoice(models.Model):
-    choice = models.CharField(max_length=50, primary_key=True)
+    trend_id = models.AutoField(primary_key=True)
+    choice = models.CharField(max_length=50)
 
     # Metadata
     class Meta:
@@ -51,7 +55,8 @@ class TrendLineChoice(models.Model):
 
 
 class GridChoice(models.Model):
-    choice = models.CharField(max_length=50, primary_key=True)
+    grid_id = models.AutoField(primary_key=True)
+    choice = models.CharField(max_length=50)
 
     # Metadata
     class Meta:
@@ -62,7 +67,8 @@ class GridChoice(models.Model):
 
 
 class Graph(models.Model):
-    id = models.IntegerField(primary_key=True)
+    # SQL fields
+    graph_id = models.AutoField(primary_key=True)
     x_key = models.ForeignKey(ScatterXKey, on_delete=models.PROTECT)
     y_key = models.ForeignKey(ScatterYKey, on_delete=models.PROTECT)
     team = models.ForeignKey(BasketballTeamName, on_delete=models.PROTECT)
@@ -70,48 +76,40 @@ class Graph(models.Model):
     grid = models.ForeignKey(GridChoice, on_delete=models.PROTECT)
     min_seconds = models.IntegerField(default=0)
     max_seconds = models.IntegerField(default=6000)
+    outlier_count = models.IntegerField(default=5)
+
+    # other object vars
     plot_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(settings.BASE_DIR, 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
+    png_save_dir = save_path = os.path.join(plot_dir, 'Media', 'Plots')
 
     def __str__(self):
-        name = 'DEFAULT'
-        if self.id != 0:
-            name = '%s_vs_%s' % (self.x_key, self.y_key)
-        return name
+        return '%s_%s_%s_min_%s_max_%s' % (str(self.x_key), str(self.y_key), self.team, self.min_seconds, self.max_seconds)
 
     def get_svg_text(self):
-        csv_path = os.path.join(settings.BASE_DIR, 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
-        df = Api.get_existing_data_frame(csv_path=csv_path, logger=logging.getLogger(__name__))
-        outlier_count = 5
-        # plot_path will be the svg data as a string
-        # total_df will be the filtered df
-        plot_path, _, _ = Api.create_scatter_plot_with_trend_line(x_key=self.x_key.__str__(),
-                                                                                  y_key=self.y_key.__str__(),
-                                                                                  df=df,
-                                                                                  save_path='svg_buffer',
-                                                                                  grid=(self.grid.__str__() != 'Disable'),
-                                                                                  trend_line=(self.trend_line.__str__() != 'Disable'),
-                                                                                  num_outliers=outlier_count,
-                                                                                  teams=[self.team.__str__()],
-                                                                                  min_seconds=self.min_seconds,
-                                                                                  max_seconds=self.max_seconds)
+        plot_path, _, _ = self.update_graph_and_save(save_path='svg_buffer')
         return plot_path
 
     def create_png_location(self):
-        csv_path = os.path.join(settings.BASE_DIR, 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
-        df = Api.get_existing_data_frame(csv_path=csv_path, logger=logging.getLogger(__name__))
-
-        outlier_count = 5
-        save_path = os.path.join(self.plot_dir, 'Media', 'Plots', 'plot.png')
-        # plot_path will be the svg data as a string
-        # total_df will be the filtered df
-        plot_path, _, _ = Api.create_scatter_plot_with_trend_line(x_key=self.x_key.__str__(),
-                                                                  y_key=self.y_key.__str__(),
-                                                                  df=df,
-                                                                  save_path=save_path,
-                                                                  grid=(self.grid.__str__() != 'Disable'),
-                                                                  trend_line=(self.trend_line.__str__() != 'Disable'),
-                                                                  num_outliers=outlier_count,
-                                                                  teams=[self.team.__str__()],
-                                                                  min_seconds=self.min_seconds,
-                                                                  max_seconds=self.max_seconds)
+        save_path = os.path.join(self.png_save_dir, '%s_vs_%s_min_%s_max_%s' % (str(self.x_key),
+                                                                                str(self.y_key),
+                                                                                self.min_seconds,
+                                                                                self.max_seconds))
+        self.update_graph_and_save(save_path=save_path)
+        # there should probably be a check to make sure the graph update worked but for now just assume it did
         return save_path
+
+    def update_graph_and_save(self, save_path):
+        df = Api.get_existing_data_frame(csv_path=self.csv_path, logger=logging.getLogger(__name__))
+        plot_path, outlier_df, total_df = Api.create_scatter_plot_with_trend_line(x_key=str(self.x_key),
+                                                                                  y_key=str(self.y_key),
+                                                                                  df=df,
+                                                                                  save_path=save_path,
+                                                                                  grid=(str(self.grid) != 'Disable'),
+                                                                                  trend_line=(str(
+                                                                                      self.trend_line) != 'Disable'),
+                                                                                  num_outliers=self.outlier_count,
+                                                                                  teams=[str(self.team)],
+                                                                                  min_seconds=self.min_seconds,
+                                                                                  max_seconds=self.max_seconds)
+        return plot_path, outlier_df, total_df
