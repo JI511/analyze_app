@@ -55,6 +55,7 @@
 }
 .outlier_small {
     font-size: 10px;
+    font-weight: normal;
 }
 .outlier_title {
     text-decoration: underline;
