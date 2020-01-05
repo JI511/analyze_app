@@ -22,7 +22,6 @@ class Graph(models.Model):
     # other object vars
     plot_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(settings.BASE_DIR, 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
-    png_save_dir = save_path = os.path.join(plot_dir, 'Media', 'Plots')
 
     def __str__(self):
         return '%s_%s_%s_min_%s_max_%s' % (str(self.x_key), str(self.y_key), self.team, self.min_seconds,
@@ -32,12 +31,11 @@ class Graph(models.Model):
         plot_path, _, _ = self.__update_graph_and_save(save_path='svg_buffer')
         return plot_path
 
-    def create_png_location(self):
-        save_path = os.path.join(self.png_save_dir, '%s_vs_%s_min_%s_max_%s.png' % (str(self.x_key),
-                                                                                    str(self.y_key),
-                                                                                    self.min_seconds,
-                                                                                    self.max_seconds))
-        print(save_path)
+    def create_png_location(self, save_dir=os.path.join(plot_dir, 'Media', 'Plots')):
+        save_path = os.path.join(save_dir, '%s_vs_%s_min_%s_max_%s.png' % (str(self.x_key),
+                                                                           str(self.y_key),
+                                                                           self.min_seconds,
+                                                                           self.max_seconds))
         self.__update_graph_and_save(save_path=save_path)
         # there should probably be a check to make sure the graph update worked but for now just assume it did
         return save_path
