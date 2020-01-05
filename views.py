@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, Http404, FileResponse
+from django.http import HttpResponse, Http404, FileResponse, HttpResponseRedirect
+from django.urls import reverse
 from .NBA_Beautiful_Data.analytics import analytics_API as Api
 import logging
 from .models import Graph
@@ -35,15 +36,12 @@ def plot(request):
     :return: The html page
     """
     print('\nIN PLOT VIEW')
+    print(request.POST)
 
-    d = os.path.dirname(os.path.abspath(__file__))
-    location = os.path.join(d, 'Media', 'Plots')
-    for f in os.listdir(location):
-        f_path = os.path.join(location, f)
-        if os.path.getmtime(f_path) > 30:
-            os.remove(f_path)
     # todo, need to user post/redirect/get pattern to avoid refresh causing new entry
+    graph = Graph.objects.get(pk=1)
     if request.method == 'POST' and 'filter_submit' in request.POST:
+
         # create graph object from post request
         template_dict = {
             'selected_x_key': request.POST.get('x_key_name', default=Vars.x_key),
@@ -65,21 +63,30 @@ def plot(request):
             template_dict['selected_max_seconds'] = 100 * 60
         grid_pk = 0 if template_dict['grid_enable'] == 'Enable' else 1
         trend_pk = 0 if template_dict['trend_enable'] == 'Enable' else 1
-        graph = Graph(x_key=template_dict['selected_x_key'],
-                      y_key=template_dict['selected_y_key'],
-                      team=template_dict['selected_team_name'],
-                      trend_line=sf.trend_choices[trend_pk],
-                      grid=sf.grid_choices[grid_pk],
-                      min_seconds=template_dict['selected_min_seconds'],
-                      max_seconds=template_dict['selected_max_seconds'],)
-        graph.save()
-    else:
-        # create default object
-        graph = Graph(x_key=Vars.x_key,
-                      y_key=Vars.y_key,
-                      team=Vars.team,
-                      trend_line=Vars.trend,
-                      grid=Vars.grid)
+        req_graph = Graph(x_key=template_dict['selected_x_key'],
+                          y_key=template_dict['selected_y_key'],
+                          team=template_dict['selected_team_name'],
+                          trend_line=sf.trend_choices[trend_pk],
+                          grid=sf.grid_choices[grid_pk],
+                          min_seconds=template_dict['selected_min_seconds'],
+                          max_seconds=template_dict['selected_max_seconds'])
+        prev_id = int(request.POST.get('graph_id'))
+        prev_graph = get_object_or_404(Graph, pk=prev_id)
+        if not compare_graphs(req_graph, prev_graph):
+            # the graphs were different, save the request graph
+            print('the graphs were different, save the request graph')
+            req_graph.save()
+            graph = req_graph
+        else:
+            print('the graphs were not different, not saving')
+            graph = prev_graph
+
+    d = os.path.dirname(os.path.abspath(__file__))
+    location = os.path.join(d, 'Media', 'Plots')
+    for f in os.listdir(location):
+        f_path = os.path.join(location, f)
+        if os.path.getmtime(f_path) > 30:
+            os.remove(f_path)
 
     outlier_dict = graph.get_outlier_dict()
 
@@ -95,3 +102,28 @@ def plot(request):
     }  # set the plot data
 
     return render(request, 'analyze/plot.html', svg_dict)
+
+
+def compare_graphs(a, b):
+    """
+    Compares two graph objects.
+
+    :param Graph a: first graph
+    :param Graph b: second graph
+    :return:
+    """
+    x_key = (a.x_key == b.x_key)
+    # print('%s %s %s' % (x_key, a.x_key, b.x_key))
+    y_key = (a.y_key == b.y_key)
+    # print('%s %s %s' % (y_key, a.y_key, b.y_key))
+    team = (a.team == b.team)
+    # print('%s %s %s' % (team, a.team, b.team))
+    trend = (a.trend_line == b.trend_line)
+    # print('%s %s %s' % (trend, a.trend_line, b.trend_line))
+    grid = (a.grid == b.grid)
+    # print('%s %s %s' % (grid, a.grid, b.grid))
+    max_seconds = (a.max_seconds == b.max_seconds)
+    # print('%s %s %s' % (max_seconds, a.max_seconds, b.max_seconds))
+    min_seconds = (a.min_seconds == b.min_seconds)
+    # print('%s %s %s' % (min_/seconds, a.min_seconds, b.min_seconds))
+    return x_key and y_key and team and trend and grid and max_seconds and min_seconds
