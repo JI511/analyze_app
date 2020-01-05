@@ -40,11 +40,11 @@
             </div>
             <div class="selector_divider"></div>
             <!-- PLAYER NAME Filter -->
-            <div class="selector">
-                <h3>Player Name</h3>
-                <input type="text" name="player_name" style="font-family: 'Oswald';" value="Player">
-            </div>
-            <div class="selector_divider"></div>
+            <!--<div class="selector">-->
+                <!--<h3>Player Name</h3>-->
+                <!--<input type="text" name="player_name" style="font-family: 'Oswald';" value="Player">-->
+            <!--</div>-->
+            <!--<div class="selector_divider"></div>-->
             <!-- TEAM NAME Filter -->
             <div class="selector">
                 <h3>Team Name</h3>
@@ -193,7 +193,7 @@
     {% endif %}
     <div style="padding: 5px; display: flex; text-align: center; justify-content: center;">
         <a href="{% url 'analyze:download_plot_png' %}" style="padding: 5px;">
-            <input type="submit" id="plot_down" value="Download Plot" class="downloader">
+            <input type="submit" id="plot_down" value="Download Plot PNG" class="downloader">
         </a>
         <!--<a href="{% static 'analyze/images/header.png' %}"-->
            <!--download="plot_data.csv" style="padding: 5px;">-->
