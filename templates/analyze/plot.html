@@ -6,116 +6,108 @@
     <div class="content">
         <img src="{% static 'analyze/images/header.png'%}">
     </div>
-    {% if fig_dict.svg_data != None %}
+    {% if graph.x_key != None %}
     <form action="{% url 'analyze:plot' %}" method="post">
     {% csrf_token %}
-    <div class="selector_content">
-        <!-- Selector X AXIS -->
-        <div class="selector">
-            <h3>X Axis</h3>
-            <select name="x_key_name" style="font-family: 'Oswald';">
-                {% for name in x_keys %}
-                    {% if name.name == fig_dict.selected_x_key %}
-                        <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
-                    {% else %}
-                        <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-        </div>
-        <div class="selector_divider"></div>
-        <!-- Selector Y AXIS -->
-        <div class="selector">
-            <h3>Y Axis</h3>
-            <select name="y_key_name" style="font-family: 'Oswald';">
-                {% for name in y_keys %}
-                    {% if name.name == fig_dict.selected_y_key %}
-                        <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
-                    {% else %}
-                        <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-        </div>
-        <div class="selector_divider"></div>
-        <!-- PLAYER NAME Filter -->
-        <div class="selector">
-            <h3>Player Name</h3>
-            <input type="text" name="player_name" style="font-family: 'Oswald';" value="Player">
-        </div>
-        <div class="selector_divider"></div>
-        <!-- TEAM NAME Filter -->
-        <div class="selector">
-            <h3>Team Name</h3>
-            <select id="team_name" name="team_name" style="font-family: 'Oswald';">
-                <option selected>Select a Team</option>
-                {% for name in team_names %}
-                    {% if name.name == fig_dict.selected_team_name %}
-                        <option name="{{ name }}" value="{{ name }}" selected>{{ name }}</option>
-                    {% else %}
-                        <option name="{{ name }}" value="{{ name }}">{{ name }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-        </div>
-        <div class="selector_divider"></div>
-        <div class="selector">
-            <h3>Seconds Played</h3>
-            <div style="display: flex;">
-                <div>
-                    <label>Min: </label>
-                    <br>
-                    <label>Max: </label>
-                </div>
-                <div style="padding: 3px;">
-                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="min_seconds" value="{{ fig_dict.min_seconds }}">
-                    <br>
-                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="max_seconds" value="{{ fig_dict.max_seconds }}">
+        <div class="selector_content">
+            <!-- Selector X AXIS -->
+            <div class="selector">
+                <h3>X Axis</h3>
+                <select name="x_key_name" style="font-family: 'Oswald';">
+                    {% for x_key in x_keys %}
+                        {% if x_key == graph.x_key %}
+                            <option name="{{ x_key }}" value="{{ x_key }}" selected>{{ x_key }}</option>
+                        {% else %}
+                            <option name="{{ x_key }}" value="{{ x_key }}">{{ x_key }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="selector_divider"></div>
+            <!-- Selector Y AXIS -->
+            <div class="selector">
+                <h3>Y Axis</h3>
+                <select name="y_key_name" style="font-family: 'Oswald';">
+                    {% for y_key in y_keys %}
+                        {% if y_key == graph.y_key %}
+                    <!-- todo check if the name on this is needed, dont think it is-->
+                            <option name="{{ y_key }}" value="{{ y_key }}" selected>{{ y_key }}</option>
+                        {% else %}
+                            <option name="{{ y_key }}" value="{{ y_key }}">{{ y_key }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="selector_divider"></div>
+            <!-- PLAYER NAME Filter -->
+            <div class="selector">
+                <h3>Player Name</h3>
+                <input type="text" name="player_name" style="font-family: 'Oswald';" value="Player">
+            </div>
+            <div class="selector_divider"></div>
+            <!-- TEAM NAME Filter -->
+            <div class="selector">
+                <h3>Team Name</h3>
+                <select id="team_name" name="team_name" style="font-family: 'Oswald';">
+                    {% for team in teams %}
+                        {% if team == graph.team %}
+                            <option name="{{ team }}" value="{{ team }}" selected>{{ team }}</option>
+                        {% else %}
+                            <option name="{{ team }}" value="{{ team }}">{{ team }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="selector_divider"></div>
+            <div class="selector">
+                <h3>Minutes Played</h3>
+                <div style="display: flex;">
+                    <div>
+                        <label>Min: </label>
+                        <br>
+                        <label>Max: </label>
+                    </div>
+                    <div style="padding: 3px;">
+                        <input style="width: 50px; font-family: 'Oswald';" type="text" name="min_seconds" value="{{ graph.min_seconds }}">
+                        <br>
+                        <input style="width: 50px; font-family: 'Oswald';" type="text" name="max_seconds" value="{{ graph.max_seconds }}">
+                    </div>
                 </div>
             </div>
+            <div class="selector_divider"></div>
+            <!-- GRID Enable/Disable -->
+            <div class="selector">
+                <h3>Grid</h3>
+                {% for option in grid_choices %}
+                    {% if option == graph.grid %}
+                        <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}" checked></label><br>
+                    {% else %}
+                        <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}"></label><br>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="selector_divider"></div>
+            <div class="selector">
+                <h3>Trend Line</h3>
+                {% for option in trend_choices %}
+                    {% if option == graph.trend_line %}
+                        <label>{{ option }}<input type="radio" name="trend_enable" value="{{ option }}" checked></label><br>
+                    {% else %}
+                        <label>{{ option }}<input type="radio" name="trend_enable" value="{{ option }}"></label><br>
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
-        <div class="selector_divider"></div>
-        <!-- GRID Enable/Disable -->
-        <div class="selector">
-            <h3>Graph Grid</h3>
-            {% if fig_dict.grid_enable %}
-                <input type="radio" name="grid_enable" value="True" checked>
-                <label> Enable</label><br>
-                <input type="radio" name="grid_enable" value="False">
-                <label> Disable</label>
-            {% else %}
-                <input type="radio" name="grid_enable" value="True">
-                <label> Enable</label><br>
-                <input type="radio" name="grid_enable" value="False" checked>
-                <label> Disable</label>
-            {% endif %}
+        <br>
+        <div style="text-align: center;">
+            <input type="submit" value="Update" name="filter_submit" class="updater">
         </div>
-        <div class="selector_divider"></div>
-        <div class="selector">
-            <h3>Trend Line</h3>
-            {% if fig_dict.trend_enable %}
-                <input type="radio" name="trend_enable" value="True" checked>
-                <label> Enable</label><br>
-                <input type="radio" name="trend_enable" value="False">
-                <label> Disable</label>
-            {% else %}
-                <input type="radio" name="trend_enable" value="True">
-                <label> Enable</label><br>
-                <input type="radio" name="trend_enable" value="False" checked>
-                <label> Disable</label>
-            {% endif %}
-        </div>
-    </div>
-    <br>
-    <div style="text-align: center;">
-        <input type="submit" value="Update" class="updater">
-    </div>
     </form>
 
     <div style="display: flex; justify-content: center; align-items: flex-start;">
         <div class="math_box">
             <div style="text-align: left;">
-                {% for key, value in fig_dict.operations_dict.items %}
+                {% for key, value in outlier_dict.operations_dict.items %}
                     <label style="font-weight: bold;">{{ key }} </label>
                     <label>{{ value }}</label><br>
                 {% endfor %}
@@ -124,19 +116,19 @@
         <div style="padding: 5px;"></div>
         <div style="border: 4px solid black;">
             <!-- Show the figure -->
-            {{ fig_dict.svg_data|safe }}
+            {{ graph.get_svg_text|safe }}
         </div>
         <div style="padding: 5px;"></div>
         <div id="outlier_box" class="outlier_box">
             <div id="outlier_list" style="display: inline">
                 <label style="text-decoration: underline; font-size: 24px;">Outliers</label><br>
-                {% for val, name in fig_dict.outliers_list %}
+                {% for val, name in outlier_dict.outliers_list %}
                     <label onclick="swapToOutlierContent({{ forloop.counter }})"
                            style="font-weight: bold; cursor: pointer;">{{ val }} </label>
                     <label style="font-style: italic;">{{ name }}</label><br>
                 {% endfor %}
             </div>
-            {% for outlier in fig_dict.outliers_data %}
+            {% for outlier in outlier_dict.outliers_data %}
                 <div id="outlier_data_{{ forloop.counter }}" style="display: none;">
                     <input type="button" onclick="swapToOutlierList({{ forloop.counter }})" value="<--  Return"
                            class="outlier_data_return_button"><br>
@@ -147,11 +139,11 @@
                     <label class="outlier_generic">{{ outlier.location }} vs {{ outlier.opponent }}</label><br>
                     <label class="outlier_generic">{{ outlier.outcome }}, {{ outlier.team_result }}</label><br>
                     <label class="outlier_title">Stats</label><br>
-                    <label class="outlier_generic">{{ outlier.points }}<span class="outlier_small">pts</span></label>
-                    <label class="outlier_generic">{{ outlier.rebounds }}<span class="outlier_small">reb</span></label>
-                    <label class="outlier_generic">{{ outlier.assists }}<span class="outlier_small">ast</span></label>
-                    <label class="outlier_generic">{{ outlier.blocks }}<span class="outlier_small">blk</span></label>
-                    <label class="outlier_generic">{{ outlier.steals }}<span class="outlier_small">stl</span></label><br>
+                    <label class="outlier_generic_bold">{{ outlier.points }}<span class="outlier_small">pts</span></label>
+                    <label class="outlier_generic_bold">{{ outlier.rebounds }}<span class="outlier_small">reb</span></label>
+                    <label class="outlier_generic_bold">{{ outlier.assists }}<span class="outlier_small">ast</span></label>
+                    <label class="outlier_generic_bold">{{ outlier.blocks }}<span class="outlier_small">blk</span></label>
+                    <label class="outlier_generic_bold">{{ outlier.steals }}<span class="outlier_small">stl</span></label><br>
                     <!--Percentages-->
                     <div style="display: flex;">
                         <div>
@@ -168,7 +160,7 @@
                         </div>
                     </div>
                     {% for key, value in outlier.items %}
-                        {% if key in fig_dict.outlier_keys %}
+                        {% if key in outlier_dict.outlier_keys %}
                             <label class="outlier_generic">{{ value }}
                                 <span class="outlier_small">{{ key }}</span>
                             </label><br>
@@ -199,16 +191,15 @@
         <p>No data available :(</p>
 
     {% endif %}
-    <!--<div style="padding: 5px; display: flex; text-align: center; justify-content: center;">-->
-        <!--<a href="{% static 'analyze/images/temp_plot/temp_plot.png'%}"-->
-           <!--download="{{ selected_x_key }}_vs_{{ selected_y_key }}" style="padding: 5px;">-->
-            <!--<input type="submit" value="Download Plot" class="downloader">-->
-        <!--</a>-->
-        <!--<a href="{% static 'analyze/images/temp_plot/temp_plot_data.csv'%}"-->
+    <div style="padding: 5px; display: flex; text-align: center; justify-content: center;">
+        <a href="{% url 'analyze:download_plot_png' %}" style="padding: 5px;">
+            <input type="submit" id="plot_down" value="Download Plot" class="downloader">
+        </a>
+        <!--<a href="{% static 'analyze/images/header.png' %}"-->
            <!--download="plot_data.csv" style="padding: 5px;">-->
             <!--<input type="submit" value="Download CSV" class="downloader">-->
         <!--</a>-->
-    <!--</div>-->
+    </div>
     <div class="content">
         <label class="text_selector_filter">Data set created from basketball-reference.com</label>
     </div>
