@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404, FileResponse, HttpResponseRedirect
 from django.urls import reverse
-from .NBA_Beautiful_Data.analytics import analytics_API as Api
+from .NBA_Beautiful_Data.src import analytics_API as Api
 import logging
 from .models import Graph
 import numpy as np

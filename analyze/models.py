@@ -3,7 +3,7 @@ import os
 import datetime
 from collections import OrderedDict
 from django.db import models
-from .NBA_Beautiful_Data.analytics import analytics_API as Api
+from .NBA_Beautiful_Data.src import analytics_API as Api
 from mysite import settings
 
 
