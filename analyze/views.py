@@ -82,6 +82,9 @@ def plot(request):
             graph = prev_graph
 
     d = os.path.dirname(os.path.abspath(__file__))
+    if not os.path.exists(os.path.join(d, 'Media')):
+        os.mkdir(os.path.join(d, 'Media'))
+        os.mkdir(os.path.join(d, 'Media', 'Plots'))
     location = os.path.join(d, 'Media', 'Plots')
     for f in os.listdir(location):
         f_path = os.path.join(location, f)
