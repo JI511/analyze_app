@@ -28,7 +28,7 @@ def download_plot_png(request):
     return sendfile(request, path, attachment=True, attachment_filename='view.png')
 
 
-def plot(request):
+def plot(request, graph_id):
     """
     The plotting view for the NBA data set.
 
@@ -39,7 +39,7 @@ def plot(request):
     print(request.POST)
 
     # todo, need to user post/redirect/get pattern to avoid refresh causing new entry
-    graph = Graph.objects.get(pk=1)
+    graph = Graph.objects.get(pk=graph_id)
     if request.method == 'POST' and 'filter_submit' in request.POST:
 
         # create graph object from post request

@@ -7,7 +7,7 @@
         <img src="{% static 'analyze/images/header.png'%}">
     </div>
     {% if graph.x_key != None %}
-    <form action="{% url 'analyze:plot' %}" method="post">
+    <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
     {% csrf_token %}
         <div class="selector_content">
             <!-- Selector X AXIS -->
