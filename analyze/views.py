@@ -41,10 +41,14 @@ def plot(request, graph_id):
     :return: The html page
     """
     print('\nIN PLOT VIEW')
-    print(request.POST)
+    print('Post: ' % request.POST)
 
     # todo, need to user post/redirect/get pattern to avoid refresh causing new entry
-    graph = Graph.objects.get(pk=graph_id)
+    try:
+        graph = Graph.objects.get(pk=graph_id)
+    except Graph.DoesNotExist:
+        return redirect('analyze:plot', graph_id='1')
+
     if request.method == 'POST' and 'filter_submit' in request.POST:
 
         # create graph object from post request
