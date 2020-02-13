@@ -43,13 +43,12 @@ def plot(request, graph_id):
     print('\nIN PLOT VIEW')
     print('Post: ' % request.POST)
 
-    # todo, need to user post/redirect/get pattern to avoid refresh causing new entry
     try:
         graph = Graph.objects.get(pk=graph_id)
     except Graph.DoesNotExist:
         return redirect('analyze:plot', graph_id='1')
 
-    if request.method == 'POST' and 'filter_submit' in request.POST:
+    if request.method == 'POST':
 
         # create graph object from post request
         template_dict = {
@@ -72,23 +71,17 @@ def plot(request, graph_id):
             template_dict['selected_max_seconds'] = 100 * 60
         grid_pk = 0 if template_dict['grid_enable'] == 'Enable' else 1
         trend_pk = 0 if template_dict['trend_enable'] == 'Enable' else 1
-        req_graph = Graph(x_key=template_dict['selected_x_key'],
-                          y_key=template_dict['selected_y_key'],
-                          team=template_dict['selected_team_name'],
-                          trend_line=sf.trend_choices[trend_pk],
-                          grid=sf.grid_choices[grid_pk],
-                          min_seconds=template_dict['selected_min_seconds'],
-                          max_seconds=template_dict['selected_max_seconds'])
-        prev_id = int(request.POST.get('graph_id'))
-        prev_graph = get_object_or_404(Graph, pk=prev_id)
-        if not compare_graphs(req_graph, prev_graph):
-            # the graphs were different, save the request graph
-            print('the graphs were different, save the request graph')
-            req_graph.save()
-            graph = req_graph
-        else:
-            print('the graphs were not different, not saving')
-            graph = prev_graph
+        graph = Graph(x_key=template_dict['selected_x_key'],
+                      y_key=template_dict['selected_y_key'],
+                      team=template_dict['selected_team_name'],
+                      trend_line=sf.trend_choices[trend_pk],
+                      grid=sf.grid_choices[grid_pk],
+                      min_seconds=template_dict['selected_min_seconds'],
+                      max_seconds=template_dict['selected_max_seconds'])
+
+        graph.save()
+
+        return HttpResponseRedirect(reverse("analyze:plot", args=[graph.graph_id]))
 
     d = os.path.dirname(os.path.abspath(__file__))
     if not os.path.exists(os.path.join(d, 'Media')):
@@ -100,11 +93,9 @@ def plot(request, graph_id):
         if os.path.getmtime(f_path) > 30:
             os.remove(f_path)
 
-    outlier_dict = graph.get_outlier_dict()
-
     # dict that is passed to the html template file
     svg_dict = {
-        'outlier_dict': outlier_dict,
+        'outlier_dict': graph.get_outlier_dict(),
         'graph': graph,
         'y_keys': sf.y_keys,
         'x_keys': sf.x_keys,

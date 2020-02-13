@@ -26,24 +26,24 @@ class Graph(models.Model):
     plot_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(settings.BASE_DIR, 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
 
-    def save(self, *args, **kwargs):
-        if not self.auto_pseudoid:
-            self.auto_pseudoid = self.generate_random_alphanumeric(16)
-            # using your function as above or anything else
-        success = False
-        failures = 0
-        while not success:
-            try:
-                super(Graph, self).save(*args, **kwargs)
-            except IntegrityError:
-                failures += 1
-                if failures > 5:  # or some other arbitrary cutoff point at which things are clearly wrong
-                    raise
-                else:
-                    # looks like a collision, try another random value
-                    self.auto_pseudoid = self.generate_random_alphanumeric(16)
-            else:
-                success = True
+    # def save(self, *args, **kwargs):
+    #     if not self.auto_pseudoid:
+    #         self.auto_pseudoid = self.generate_random_alphanumeric(16)
+    #         # using your function as above or anything else
+    #     success = False
+    #     failures = 0
+    #     while not success:
+    #         try:
+    #             super(Graph, self).save(*args, **kwargs)
+    #         except IntegrityError:
+    #             failures += 1
+    #             if failures > 5:  # or some other arbitrary cutoff point at which things are clearly wrong
+    #                 raise
+    #             else:
+    #                 # looks like a collision, try another random value
+    #                 self.auto_pseudoid = self.generate_random_alphanumeric(16)
+    #         else:
+    #             success = True
 
     @staticmethod
     def generate_random_alphanumeric(length):
