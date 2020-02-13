@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, Http404, FileResponse, HttpResponseRedirect
 from django.urls import reverse
 from .NBA_Beautiful_Data.src import analytics_API as Api
@@ -28,11 +28,16 @@ def download_plot_png(request):
     return sendfile(request, path, attachment=True, attachment_filename='view.png')
 
 
+def plot_redirect(request):
+    return redirect('analyze:plot', graph_id='1')
+
+
 def plot(request, graph_id):
     """
     The plotting view for the NBA data set.
 
     :param request: HTML request object
+    :param graph_id:
     :return: The html page
     """
     print('\nIN PLOT VIEW')

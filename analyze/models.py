@@ -1,8 +1,10 @@
 import logging
 import os
 import datetime
+import random
+import string
 from collections import OrderedDict
-from django.db import models
+from django.db import models, IntegrityError
 from .NBA_Beautiful_Data.src import analytics_API as Api
 from mysite import settings
 
@@ -18,10 +20,34 @@ class Graph(models.Model):
     min_seconds = models.IntegerField(default=0)
     max_seconds = models.IntegerField(default=6000)
     outlier_count = models.IntegerField(default=5)
+    # auto_pseudoid = models.CharField(max_length=16, blank=True, editable=False, unique=True, db_index=True)
 
     # other object vars
     plot_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.join(settings.BASE_DIR, 'analyze', 'static', 'analyze', 'data', 'player_box_scores.csv')
+
+    def save(self, *args, **kwargs):
+        if not self.auto_pseudoid:
+            self.auto_pseudoid = self.generate_random_alphanumeric(16)
+            # using your function as above or anything else
+        success = False
+        failures = 0
+        while not success:
+            try:
+                super(Graph, self).save(*args, **kwargs)
+            except IntegrityError:
+                failures += 1
+                if failures > 5:  # or some other arbitrary cutoff point at which things are clearly wrong
+                    raise
+                else:
+                    # looks like a collision, try another random value
+                    self.auto_pseudoid = self.generate_random_alphanumeric(16)
+            else:
+                success = True
+
+    @staticmethod
+    def generate_random_alphanumeric(length):
+        return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
     def __str__(self):
         return '%s_%s_%s_min_%s_max_%s' % (str(self.x_key), str(self.y_key), self.team, self.min_seconds,
