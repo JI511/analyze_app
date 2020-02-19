@@ -22,11 +22,12 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ['SECRET_KEY']
+print(SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.12', 'localhost']
+ALLOWED_HOSTS = ['192.168.0.12', 'localhost', 'johningwersen.pythonanywhere.com']
 
 
 # Application definition
