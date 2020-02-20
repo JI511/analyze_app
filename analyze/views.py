@@ -1,14 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, Http404, FileResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
-from .NBA_Beautiful_Data.src import analytics_API as Api
-import logging
 from .models import Graph
-import numpy as np
-import shutil
 import os
-from collections import OrderedDict
-import datetime
 from sendfile import sendfile
 from .constants import Defaults as Vars
 from .constants import ScatterFilters as sf
