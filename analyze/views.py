@@ -25,7 +25,7 @@ def download_plot_png(request):
     graph = get_object_or_404(Graph, pk=1)
     path = graph.create_png_location()
 
-    return sendfile(request, path, attachment=True, attachment_filename='view.png')
+    return sendfile(request, path, attachment=True, attachment_filename='your_plot.png')
 
 
 def plot_redirect(request):
