@@ -131,6 +131,9 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     grid = kwargs.get('grid', True)
     trend_line = kwargs.get('trend_line', True)
 
+    if num_outliers > 15:
+        num_outliers = 15
+
     # filters
     if teams is not None and isinstance(teams, list):
         df = filter_df_on_team_names(df, teams)

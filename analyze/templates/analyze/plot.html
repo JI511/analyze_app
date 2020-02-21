@@ -97,6 +97,13 @@
                     {% endif %}
                 {% endfor %}
             </div>
+            <div class="selector_divider"></div>
+            <div class="selector">
+                <h3>Outliers</h3>
+                <div style="padding: 3px;">
+                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="outlier_count" value="{{ graph.outlier_count }}">
+                </div>
+            </div>
             <input type="hidden" name="graph_id" value="{{ graph.graph_id }}">
         </div>
         <br>

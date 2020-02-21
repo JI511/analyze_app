@@ -35,7 +35,6 @@ def plot(request, graph_id):
     :return: The html page
     """
     print('\nIN PLOT VIEW')
-    print('Post: ' % request.POST)
 
     try:
         graph = Graph.objects.get(pk=graph_id)
@@ -53,6 +52,7 @@ def plot(request, graph_id):
             'trend_enable': request.POST.get('trend_enable', default=Vars.trend),
             'selected_min_seconds': request.POST.get('min_seconds', default=Vars.min_seconds),
             'selected_max_seconds': request.POST.get('max_seconds', default=Vars.max_seconds),
+            'outlier_count': request.POST.get('outlier_count', default=Vars.outliers),
         }
         # check each separately so the other will persist if one is not a valid int
         try:
@@ -63,6 +63,10 @@ def plot(request, graph_id):
             template_dict['selected_max_seconds'] = int(template_dict['selected_max_seconds'])
         except ValueError:
             template_dict['selected_max_seconds'] = 100 * 60
+        try:
+            template_dict['outlier_count'] = int(template_dict['outlier_count'])
+        except ValueError:
+            template_dict['outlier_count'] = 5
         grid_pk = 0 if template_dict['grid_enable'] == 'Enable' else 1
         trend_pk = 0 if template_dict['trend_enable'] == 'Enable' else 1
         graph = Graph(x_key=template_dict['selected_x_key'],
@@ -71,7 +75,8 @@ def plot(request, graph_id):
                       trend_line=sf.trend_choices[trend_pk],
                       grid=sf.grid_choices[grid_pk],
                       min_seconds=template_dict['selected_min_seconds'],
-                      max_seconds=template_dict['selected_max_seconds'])
+                      max_seconds=template_dict['selected_max_seconds'],
+                      outlier_count=template_dict['outlier_count'])
 
         graph.save()
 
