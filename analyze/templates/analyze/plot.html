@@ -8,6 +8,11 @@
     </div>
     {% if graph.x_key != None %}
     <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
+        <div style="text-align: center;">
+            <input type="submit" value="Game" name="type_submit" class="updater">
+        </div>
+    </form>
+    <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
     {% csrf_token %}
         <div class="selector_content">
             <!-- Selector X AXIS -->
