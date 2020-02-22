@@ -42,43 +42,54 @@ def plot(request, graph_id):
         return redirect('analyze:plot', graph_id='1')
 
     if request.method == 'POST':
+        print(request.POST)
+        if 'type_submit' in request.POST:
+            graph_type = request.POST.get('type_submit')
+            if graph_type == 'Date Played':
+                # set default date graph object
+                graph = Graph.objects.get(pk=2)
+            else:
+                # set default game graph object
+                graph = Graph.objects.get(pk=1)
 
-        # create graph object from post request
-        template_dict = {
-            'selected_x_key': request.POST.get('x_key_name', default=Vars.x_key),
-            'selected_y_key': request.POST.get('y_key_name', default=Vars.y_key),
-            'selected_team_name': request.POST.get('team_name', default=Vars.team),
-            'grid_enable': request.POST.get('grid_enable', default=Vars.grid),
-            'trend_enable': request.POST.get('trend_enable', default=Vars.trend),
-            'selected_min_seconds': request.POST.get('min_seconds', default=Vars.min_seconds),
-            'selected_max_seconds': request.POST.get('max_seconds', default=Vars.max_seconds),
-            'outlier_count': request.POST.get('outlier_count', default=Vars.outliers),
-        }
-        # check each separately so the other will persist if one is not a valid int
-        try:
-            template_dict['selected_min_seconds'] = int(template_dict['selected_min_seconds'])
-        except ValueError:
-            template_dict['selected_min_seconds'] = 0
-        try:
-            template_dict['selected_max_seconds'] = int(template_dict['selected_max_seconds'])
-        except ValueError:
-            template_dict['selected_max_seconds'] = 100 * 60
-        try:
-            template_dict['outlier_count'] = int(template_dict['outlier_count'])
-        except ValueError:
-            template_dict['outlier_count'] = 5
-        grid_pk = 0 if template_dict['grid_enable'] == 'Enable' else 1
-        trend_pk = 0 if template_dict['trend_enable'] == 'Enable' else 1
-        graph = Graph(x_key=template_dict['selected_x_key'],
-                      y_key=template_dict['selected_y_key'],
-                      team=template_dict['selected_team_name'],
-                      trend_line=sf.trend_choices[trend_pk],
-                      grid=sf.grid_choices[grid_pk],
-                      min_seconds=template_dict['selected_min_seconds'],
-                      max_seconds=template_dict['selected_max_seconds'],
-                      outlier_count=template_dict['outlier_count'])
+        elif 'x_key_name' in request.POST:
+            print('inside')
+            # create graph object from post request
+            template_dict = {
+                'selected_x_key': request.POST.get('x_key_name', default=Vars.x_key),
+                'selected_y_key': request.POST.get('y_key_name', default=Vars.y_key),
+                'selected_team_name': request.POST.get('team_name', default=Vars.team),
+                'grid_enable': request.POST.get('grid_enable', default=Vars.grid),
+                'trend_enable': request.POST.get('trend_enable', default=Vars.trend),
+                'selected_min_seconds': request.POST.get('min_seconds', default=Vars.min_seconds),
+                'selected_max_seconds': request.POST.get('max_seconds', default=Vars.max_seconds),
+                'outlier_count': request.POST.get('outlier_count', default=Vars.outliers),
+            }
+            # check each separately so the other will persist if one is not a valid int
+            try:
+                template_dict['selected_min_seconds'] = int(template_dict['selected_min_seconds'])
+            except ValueError:
+                template_dict['selected_min_seconds'] = 0
+            try:
+                template_dict['selected_max_seconds'] = int(template_dict['selected_max_seconds'])
+            except ValueError:
+                template_dict['selected_max_seconds'] = 100 * 60
+            try:
+                template_dict['outlier_count'] = int(template_dict['outlier_count'])
+            except ValueError:
+                template_dict['outlier_count'] = 5
+            grid_pk = 0 if template_dict['grid_enable'] == 'Enable' else 1
+            trend_pk = 0 if template_dict['trend_enable'] == 'Enable' else 1
+            graph = Graph(x_key=template_dict['selected_x_key'],
+                          y_key=template_dict['selected_y_key'],
+                          team=template_dict['selected_team_name'],
+                          trend_line=sf.trend_choices[trend_pk],
+                          grid=sf.grid_choices[grid_pk],
+                          min_seconds=template_dict['selected_min_seconds'],
+                          max_seconds=template_dict['selected_max_seconds'],
+                          outlier_count=template_dict['outlier_count'])
 
-        graph.save()
+            graph.save()
 
         return HttpResponseRedirect(reverse("analyze:plot", args=[graph.graph_id]))
 
