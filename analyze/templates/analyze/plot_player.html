@@ -1,0 +1,20 @@
+{% extends "analyze/plot.html" %}
+{% block graph_filters %}
+    <!-- PLAYER NAME Filter -->
+    <div class="selector">
+        <h3>Player Name</h3>
+        <input type="text" name="selected_team_name" style="font-family: 'Oswald';" value="{{ graph.team }}">
+    </div>
+    <div class="selector_divider"></div>
+    <!-- Mean Line Filter -->
+    <div class="selector">
+        <h3>Mean Line</h3>
+        {% for option in trend_choices %}
+            {% if option == graph.trend_line %}
+                <label>{{ option }}<input type="radio" name="trend_enable" value="{{ option }}" checked></label><br>
+            {% else %}
+                <label>{{ option }}<input type="radio" name="trend_enable" value="{{ option }}"></label><br>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock graph_filters %}

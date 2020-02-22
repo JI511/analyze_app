@@ -12,7 +12,7 @@ class Defaults(object):
 
 
 class ScatterFilters(object):
-    x_keys = sorted(['minutes_played', 'seconds_played'])
+    x_keys = sorted(['minutes_played', 'seconds_played', 'date'])
     y_keys = sorted(['points', 'rebounds', 'assists', 'made_field_goals', 'made_three_point_field_goals',
                      'made_free_throws', 'offensive_rebounds', 'defensive_rebounds', 'attempted_field_goals',
                      'attempted_three_point_field_goals', 'attempted_free_throws', 'steals', 'blocks',

@@ -11,12 +11,12 @@
             {# change color of button based on what is selected (red) and what is not (blue) #}
             <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
             {% csrf_token %}
-                <input type="submit" value="All Games" name="type_submit" class="type_submit_button_blue">
+                <input type="submit" value="Team" name="type_submit" class="type_submit_button_blue">
             </form>
             <div style="width: 8px"></div>
             <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
             {% csrf_token %}
-                <input type="submit" value="Date Played" name="type_submit" class="type_submit_button_red">
+                <input type="submit" value="Player" name="type_submit" class="type_submit_button_red">
             </form>
         </div>
 
@@ -52,24 +52,20 @@
                     </select>
                 </div>
                 <div class="selector_divider"></div>
-                <!-- PLAYER NAME Filter -->
-                <!--<div class="selector">-->
-                    <!--<h3>Player Name</h3>-->
-                    <!--<input type="text" name="player_name" style="font-family: 'Oswald';" value="Player">-->
-                <!--</div>-->
-                <!--<div class="selector_divider"></div>-->
-                <!-- TEAM NAME Filter -->
+                {% block graph_filters %}
+                    <label>This should not happen</label>
+                {% endblock graph_filters %}
+                <div class="selector_divider"></div>
+                <!-- GRID Enable/Disable -->
                 <div class="selector">
-                    <h3>Team Name</h3>
-                    <select id="team_name" name="team_name" style="font-family: 'Oswald';">
-                        {% for team in teams %}
-                            {% if team == graph.team %}
-                                <option name="{{ team }}" value="{{ team }}" selected>{{ team }}</option>
-                            {% else %}
-                                <option name="{{ team }}" value="{{ team }}">{{ team }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
+                    <h3>Grid</h3>
+                    {% for option in grid_choices %}
+                        {% if option == graph.grid %}
+                            <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}" checked></label><br>
+                        {% else %}
+                            <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}"></label><br>
+                        {% endif %}
+                    {% endfor %}
                 </div>
                 <div class="selector_divider"></div>
                 <div class="selector">
@@ -88,36 +84,12 @@
                     </div>
                 </div>
                 <div class="selector_divider"></div>
-                <!-- GRID Enable/Disable -->
-                <div class="selector">
-                    <h3>Grid</h3>
-                    {% for option in grid_choices %}
-                        {% if option == graph.grid %}
-                            <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}" checked></label><br>
-                        {% else %}
-                            <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}"></label><br>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                <div class="selector_divider"></div>
-                <div class="selector">
-                    <h3>Trend Line</h3>
-                    {% for option in trend_choices %}
-                        {% if option == graph.trend_line %}
-                            <label>{{ option }}<input type="radio" name="trend_enable" value="{{ option }}" checked></label><br>
-                        {% else %}
-                            <label>{{ option }}<input type="radio" name="trend_enable" value="{{ option }}"></label><br>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                <div class="selector_divider"></div>
                 <div class="selector">
                     <h3>Outliers</h3>
                     <div style="padding: 3px;">
                         <input style="width: 50px; font-family: 'Oswald';" type="text" name="outlier_count" value="{{ graph.outlier_count }}">
                     </div>
                 </div>
-                <input type="hidden" name="graph_id" value="{{ graph.graph_id }}">
             </div>
             <br>
 
