@@ -1,201 +1,210 @@
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'analyze/style.css' %}">
-<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
+<html lang="en">
+    <head>
+        <title>Plotting</title>
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static 'analyze/style.css' %}">
+        <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
+    </head>
+    <body>
+        <div class="all_content">
+            <div class="content">
+                <img src="{% static 'analyze/images/header.png'%}">
+            </div>
+            {% if graph.x_key != None %}
+                <div class="type_submit">
+                    {# change color of button based on what is selected (red) and what is not (blue) #}
+                    <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
+                    {% csrf_token %}
+                        <input type="submit" value="Team" name="type_submit" class="type_submit_button_blue">
+                    </form>
+                    <div style="width: 8px"></div>
+                    <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
+                    {% csrf_token %}
+                        <input type="submit" value="Player" name="type_submit" class="type_submit_button_red">
+                    </form>
+                </div>
 
-<div class="all_content">
-    <div class="content">
-        <img src="{% static 'analyze/images/header.png'%}">
-    </div>
-    {% if graph.x_key != None %}
-        <div class="type_submit">
-            {# change color of button based on what is selected (red) and what is not (blue) #}
-            <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
-            {% csrf_token %}
-                <input type="submit" value="Team" name="type_submit" class="type_submit_button_blue">
-            </form>
-            <div style="width: 8px"></div>
-            <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
-            {% csrf_token %}
-                <input type="submit" value="Player" name="type_submit" class="type_submit_button_red">
-            </form>
-        </div>
-
-        <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
-        {% csrf_token %}
-            <div class="selector_content">
-                <!-- Selector X AXIS -->
-                <div class="selector">
-                    <h3>X Axis</h3>
-                    <select name="x_key_name" style="font-family: 'Oswald';">
-                        {% for x_key in x_keys %}
-                            {% if x_key == graph.x_key %}
-                                <option name="{{ x_key }}" value="{{ x_key }}" selected>{{ x_key }}</option>
-                            {% else %}
-                                <option name="{{ x_key }}" value="{{ x_key }}">{{ x_key }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="selector_divider"></div>
-                <!-- Selector Y AXIS -->
-                <div class="selector">
-                    <h3>Y Axis</h3>
-                    <select name="y_key_name" style="font-family: 'Oswald';">
-                        {% for y_key in y_keys %}
-                            {% if y_key == graph.y_key %}
-                        <!-- todo check if the name on this is needed, dont think it is-->
-                                <option name="{{ y_key }}" value="{{ y_key }}" selected>{{ y_key }}</option>
-                            {% else %}
-                                <option name="{{ y_key }}" value="{{ y_key }}">{{ y_key }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="selector_divider"></div>
-                {% block graph_filters %}
-                    <label>This should not happen</label>
-                {% endblock graph_filters %}
-                <div class="selector_divider"></div>
-                <!-- GRID Enable/Disable -->
-                <div class="selector">
-                    <h3>Grid</h3>
-                    {% for option in grid_choices %}
-                        {% if option == graph.grid %}
-                            <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}" checked></label><br>
-                        {% else %}
-                            <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}"></label><br>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                <div class="selector_divider"></div>
-                <div class="selector">
-                    <h3>Minutes Played</h3>
-                    <div style="display: flex;">
-                        <div>
-                            <label>Min: </label>
-                            <br>
-                            <label>Max: </label>
+                <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
+                {% csrf_token %}
+                    <div class="selector_content">
+                        <!-- Selector X AXIS -->
+                        <div class="selector">
+                            <h3>X Axis</h3>
+                            <select name="x_key_name" style="font-family: 'Oswald';">
+                                {% for x_key in x_keys %}
+                                    {% if x_key == graph.x_key %}
+                                        <option name="{{ x_key }}" value="{{ x_key }}" selected>{{ x_key }}</option>
+                                    {% else %}
+                                        <option name="{{ x_key }}" value="{{ x_key }}">{{ x_key }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
                         </div>
-                        <div style="padding: 3px;">
-                            <input style="width: 50px; font-family: 'Oswald';" type="text" name="min_seconds" value="{{ graph.min_seconds }}">
-                            <br>
-                            <input style="width: 50px; font-family: 'Oswald';" type="text" name="max_seconds" value="{{ graph.max_seconds }}">
+                        <div class="selector_divider"></div>
+                        <!-- Selector Y AXIS -->
+                        <div class="selector">
+                            <h3>Y Axis</h3>
+                            <select name="y_key_name" style="font-family: 'Oswald';">
+                                {% for y_key in y_keys %}
+                                    {% if y_key == graph.y_key %}
+                                <!-- todo check if the name on this is needed, dont think it is-->
+                                        <option name="{{ y_key }}" value="{{ y_key }}" selected>{{ y_key }}</option>
+                                    {% else %}
+                                        <option name="{{ y_key }}" value="{{ y_key }}">{{ y_key }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
                         </div>
-                    </div>
-                </div>
-                <div class="selector_divider"></div>
-                <div class="selector">
-                    <h3>Outliers</h3>
-                    <div style="padding: 3px;">
-                        <input style="width: 50px; font-family: 'Oswald';" type="text" name="outlier_count" value="{{ graph.outlier_count }}">
-                    </div>
-                </div>
-            </div>
-            <br>
-
-            <div style="text-align: center;">
-                <input type="submit" value="Update" name="filter_submit" class="updater">
-            </div>
-        </form>
-
-        <div style="display: flex; justify-content: center; align-items: flex-start;">
-            <div class="math_box">
-                <div style="text-align: left;">
-                    {% for key, value in outlier_dict.operations_dict.items %}
-                        <label style="font-weight: bold;">{{ key }} </label>
-                        <label>{{ value }}</label><br>
-                    {% endfor %}
-                </div>
-            </div>
-            <div style="padding: 5px;"></div>
-            <div style="border: 4px solid black;">
-                <!-- Show the figure -->
-                {{ graph.get_svg_text|safe }}
-            </div>
-            <div style="padding: 5px;"></div>
-            <div id="outlier_box" class="outlier_box">
-                <div id="outlier_list" style="display: inline">
-                    <label style="text-decoration: underline; font-size: 24px;">Outliers</label><br>
-                    {% for val, name in outlier_dict.outliers_list %}
-                        <label onclick="swapToOutlierContent({{ forloop.counter }})"
-                               style="font-weight: bold; cursor: pointer;">{{ val }} </label>
-                        <label style="font-style: italic;">{{ name }}</label><br>
-                    {% endfor %}
-                </div>
-                {% for outlier in outlier_dict.outliers_data %}
-                    <div id="outlier_data_{{ forloop.counter }}" style="display: none;">
-                        <input type="button" onclick="swapToOutlierList({{ forloop.counter }})" value="<--  Return"
-                               class="outlier_data_return_button"><br>
-
-                        <label class="outlier_player_title">{{ outlier.name }}</label><br>
-                        <label class="outlier_team">{{ outlier.team }}</label><br>
-                        <label class="outlier_title">{{ outlier.date }}</label><br>
-                        <label class="outlier_generic">{{ outlier.location }} vs {{ outlier.opponent }}</label><br>
-                        <label class="outlier_generic">{{ outlier.outcome }}, {{ outlier.team_result }}</label><br>
-                        <label class="outlier_title">Stats</label><br>
-                        <label class="outlier_generic_bold">{{ outlier.points }}<span class="outlier_small">pts</span></label>
-                        <label class="outlier_generic_bold">{{ outlier.rebounds }}<span class="outlier_small">reb</span></label>
-                        <label class="outlier_generic_bold">{{ outlier.assists }}<span class="outlier_small">ast</span></label>
-                        <label class="outlier_generic_bold">{{ outlier.blocks }}<span class="outlier_small">blk</span></label>
-                        <label class="outlier_generic_bold">{{ outlier.steals }}<span class="outlier_small">stl</span></label><br>
-                        <!--Percentages-->
-                        <div style="display: flex;">
-                            <div>
-                                <label class="outlier_generic">FG:</label><br>
-                                <label class="outlier_generic">3pt:</label><br>
-                                <label class="outlier_generic">FT:</label><br>
-                                <label class="outlier_generic">TS:</label><br>
-                            </div>
-                            <div style="padding: 0px 3px;">
-                                <label class="outlier_generic_bold">{{ outlier.FGp }}</label><br>
-                                <label class="outlier_generic_bold">{{ outlier.3ptFGp }}</label><br>
-                                <label class="outlier_generic_bold">{{ outlier.FTp }}</label><br>
-                                <label class="outlier_generic_bold">{{ outlier.true_shooting }}</label><br>
+                        <div class="selector_divider"></div>
+                        {% block graph_filters %}
+                            <label>This should not happen</label>
+                        {% endblock graph_filters %}
+                        <div class="selector_divider"></div>
+                        <!-- GRID Enable/Disable -->
+                        <div class="selector">
+                            <h3>Grid</h3>
+                            {% for option in grid_choices %}
+                                {% if option == graph.grid %}
+                                    <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}" checked></label><br>
+                                {% else %}
+                                    <label>{{ option }}<input type="radio" name="grid_enable" value="{{ option }}"></label><br>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="selector_divider"></div>
+                        <div class="selector">
+                            <h3>Minutes Played</h3>
+                            <div style="display: flex;">
+                                <div>
+                                    <label>Min: </label>
+                                    <br>
+                                    <label>Max: </label>
+                                </div>
+                                <div style="padding: 3px;">
+                                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="min_seconds" value="{{ graph.min_seconds }}">
+                                    <br>
+                                    <input style="width: 50px; font-family: 'Oswald';" type="text" name="max_seconds" value="{{ graph.max_seconds }}">
+                                </div>
                             </div>
                         </div>
-                        {% for key, value in outlier.items %}
-                            {% if key in outlier_dict.outlier_keys %}
-                                <label class="outlier_generic">{{ value }}
-                                    <span class="outlier_small">{{ key }}</span>
-                                </label><br>
-                            {% endif %}
-                        {% endfor %}
+                        <div class="selector_divider"></div>
+                        <div class="selector">
+                            <h3>Outliers</h3>
+                            <div style="padding: 3px;">
+                                <input style="width: 50px; font-family: 'Oswald';" type="text" name="outlier_count" value="{{ graph.outlier_count }}">
+                            </div>
+                        </div>
                     </div>
-                {% endfor %}
-                <script>
-                    function swapToOutlierContent(outlier_id) {
-                        outlier_list_div = document.getElementById('outlier_list');
-                        outlier_data_div = document.getElementById('outlier_data_' + outlier_id);
+                    <br>
 
-                        outlier_list_div.style.display = 'none';
-                        outlier_data_div.style.display = 'inline';
-                    }
-                    function swapToOutlierList(outlier_id) {
-                        outlier_list_div = document.getElementById('outlier_list');
-                        outlier_data_div = document.getElementById('outlier_data_' + outlier_id);
+                    <div style="text-align: center;">
+                        <input type="submit" value="Update" name="filter_submit" class="updater">
+                    </div>
+                </form>
 
-                        outlier_list_div.style.display = 'inline';
-                        outlier_data_div.style.display = 'none';
-                    }
-                </script>
+                <div style="display: flex; justify-content: center; align-items: flex-start;">
+                    <div class="math_box">
+                        <div style="text-align: left;">
+                            {% for key, value in outlier_dict.operations_dict.items %}
+                                <label style="font-weight: bold;">{{ key }} </label>
+                                <label>{{ value }}</label><br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div style="padding: 5px;"></div>
+                    <div style="border: 4px solid black;">
+                        <!-- Show the figure -->
+                        {{ graph.get_svg_text|safe }}
+                    </div>
+                    <div style="padding: 5px;"></div>
+                    <div id="outlier_box" class="outlier_box">
+                        <div id="outlier_list" style="display: inline">
+                            <label style="text-decoration: underline; font-size: 24px;">Outliers</label><br>
+                            {% for val, name in outlier_dict.outliers_list %}
+                                <label onclick="swapToOutlierContent({{ forloop.counter }})"
+                                       style="font-weight: bold; cursor: pointer;">{{ val }} </label>
+                                <label style="font-style: italic;">{{ name }}</label><br>
+                            {% endfor %}
+                        </div>
+                        {% for outlier in outlier_dict.outliers_data %}
+                            <div id="outlier_data_{{ forloop.counter }}" style="display: none;">
+                                <input type="button" onclick="swapToOutlierList({{ forloop.counter }})" value="<--  Return"
+                                       class="outlier_data_return_button"><br>
+
+                                <label class="outlier_player_title">{{ outlier.name }}</label><br>
+                                <label class="outlier_team">{{ outlier.team }}</label><br>
+                                <label class="outlier_title">{{ outlier.date }}</label><br>
+                                <label class="outlier_generic">{{ outlier.location }} vs {{ outlier.opponent }}</label><br>
+                                <label class="outlier_generic">{{ outlier.outcome }}, {{ outlier.team_result }}</label><br>
+                                <label class="outlier_title">Stats</label><br>
+                                <label class="outlier_generic_bold">{{ outlier.points }}<span class="outlier_small">pts</span></label>
+                                <label class="outlier_generic_bold">{{ outlier.rebounds }}<span class="outlier_small">reb</span></label>
+                                <label class="outlier_generic_bold">{{ outlier.assists }}<span class="outlier_small">ast</span></label>
+                                <label class="outlier_generic_bold">{{ outlier.blocks }}<span class="outlier_small">blk</span></label>
+                                <label class="outlier_generic_bold">{{ outlier.steals }}<span class="outlier_small">stl</span></label><br>
+                                <!--Percentages-->
+                                <div style="display: flex;">
+                                    <div>
+                                        <label class="outlier_generic">FG:</label><br>
+                                        <label class="outlier_generic">3pt:</label><br>
+                                        <label class="outlier_generic">FT:</label><br>
+                                        <label class="outlier_generic">TS:</label><br>
+                                    </div>
+                                    <div style="padding: 0px 3px;">
+                                        <label class="outlier_generic_bold">{{ outlier.FGp }}</label><br>
+                                        <label class="outlier_generic_bold">{{ outlier.3ptFGp }}</label><br>
+                                        <label class="outlier_generic_bold">{{ outlier.FTp }}</label><br>
+                                        <label class="outlier_generic_bold">{{ outlier.true_shooting }}</label><br>
+                                    </div>
+                                </div>
+                                {% for key, value in outlier.items %}
+                                    {% if key in outlier_dict.outlier_keys %}
+                                        <label class="outlier_generic">{{ value }}
+                                            <span class="outlier_small">{{ key }}</span>
+                                        </label><br>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <script>
+                            function swapToOutlierContent(outlier_id) {
+                                outlier_list_div = document.getElementById('outlier_list');
+                                outlier_data_div = document.getElementById('outlier_data_' + outlier_id);
+
+                                outlier_list_div.style.display = 'none';
+                                outlier_data_div.style.display = 'inline';
+                            }
+                            function swapToOutlierList(outlier_id) {
+                                outlier_list_div = document.getElementById('outlier_list');
+                                outlier_data_div = document.getElementById('outlier_data_' + outlier_id);
+
+                                outlier_list_div.style.display = 'inline';
+                                outlier_data_div.style.display = 'none';
+                            }
+                        </script>
+                    </div>
+                </div>
+
+            {% else %}
+                <p>No data available :(</p>
+
+            {% endif %}
+            <div style="padding: 5px; display: flex; text-align: center; justify-content: center;">
+                <a href="{% url 'analyze:download_plot_png' %}" style="padding: 5px;">
+                    <input type="submit" id="plot_down" value="Download Plot PNG" class="downloader">
+                </a>
+                <!--<a href="{% static 'analyze/images/header.png' %}"-->
+                   <!--download="plot_data.csv" style="padding: 5px;">-->
+                    <!--<input type="submit" value="Download CSV" class="downloader">-->
+                <!--</a>-->
             </div>
+            <div class="content">
+                <label class="text_selector_filter">Data set created from basketball-reference.com</label>
+            </div>
+
         </div>
+    </body>
+</html>
 
-    {% else %}
-        <p>No data available :(</p>
 
-    {% endif %}
-    <div style="padding: 5px; display: flex; text-align: center; justify-content: center;">
-        <a href="{% url 'analyze:download_plot_png' %}" style="padding: 5px;">
-            <input type="submit" id="plot_down" value="Download Plot PNG" class="downloader">
-        </a>
-        <!--<a href="{% static 'analyze/images/header.png' %}"-->
-           <!--download="plot_data.csv" style="padding: 5px;">-->
-            <!--<input type="submit" value="Download CSV" class="downloader">-->
-        <!--</a>-->
-    </div>
-    <div class="content">
-        <label class="text_selector_filter">Data set created from basketball-reference.com</label>
-    </div>
-
-</div>
