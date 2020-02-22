@@ -45,11 +45,11 @@ def plot(request, graph_id):
         print(request.POST)
         if 'type_submit' in request.POST:
             graph_type = request.POST.get('type_submit')
-            if graph_type == 'Date Played':
-                # set default date graph object
+            if graph_type == 'Player':
+                # set default Player graph object
                 graph = Graph.objects.get(pk=2)
             else:
-                # set default game graph object
+                # set default Game graph object
                 graph = Graph.objects.get(pk=1)
 
         elif 'x_key_name' in request.POST:
@@ -65,6 +65,8 @@ def plot(request, graph_id):
                 'selected_max_seconds': request.POST.get('max_seconds', default=Vars.max_seconds),
                 'outlier_count': request.POST.get('outlier_count', default=Vars.outliers),
             }
+            if template_dict['selected_x_key'] == 'date':
+                template_dict['selected_team_name'] = 'Anthony Davis'
             # check each separately so the other will persist if one is not a valid int
             try:
                 template_dict['selected_min_seconds'] = int(template_dict['selected_min_seconds'])
@@ -114,7 +116,10 @@ def plot(request, graph_id):
         'trend_choices': sf.trend_choices,
     }  # set the plot data
 
-    return render(request, 'analyze/plot.html', svg_dict)
+    if graph.team in Vars.team:
+        return render(request, 'analyze/plot_team.html', svg_dict)
+    else:
+        return render(request, 'analyze/plot_player.html', svg_dict)
 
 
 def compare_graphs(a, b):
