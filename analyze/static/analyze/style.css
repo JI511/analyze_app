@@ -1,11 +1,9 @@
 .all_content {
-    margin: auto;
     background: #d6d6d6;
 }
 .content {
     text-align: center;
-    padding: 5px;
-    /* border: 1px solid black; */
+    /*border: 1px solid black;*/
 }
 .downloader {
     background-color: #C9082A; /* Philippine Red */
@@ -18,6 +16,11 @@
     font-family: "Oswald";
     font-size: 20px;
     cursor: pointer;
+}
+.graph_label {
+    font-family: "Oswald";
+    font-size: 40px;
+    font-weight: bold;
 }
 .math_box {
     border: 4px solid black;
@@ -90,6 +93,37 @@
     font-size: 36px;
     font-style: italic;
 }
+.type_submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.type_submit_button_blue {
+    background-color: #17408B; /* Dark Cornflower Blue */
+    border: 1px solid black;
+    border-radius: 4px;
+    color: white;
+    width: 120px;
+    height: 45px;
+    text-align: center;
+    text-decoration: none;
+    font-family: "Oswald";
+    font-size: 20px;
+    cursor: pointer;
+}
+.type_submit_button_red {
+    background-color: #C9082A; /* Dark Cornflower Blue */
+    border: 1px solid black;
+    border-radius: 4px;
+    color: white;
+    width: 120px;
+    height: 45px;
+    text-align: center;
+    text-decoration: none;
+    font-family: "Oswald";
+    font-size: 20px;
+    cursor: pointer;
+}
 .updater {
     background-color: #17408B; /* Dark Cornflower Blue */
     border: 1px solid black;
@@ -102,3 +136,4 @@
     font-size: 20px;
     cursor: pointer;
 }
+
