@@ -82,17 +82,30 @@ class Graph(models.Model):
 
     def __update_graph_and_save(self, save_path):
         df = Api.get_existing_data_frame(csv_path=self.csv_path, logger=logging.getLogger(__name__))
-        plot_path, outlier_df, total_df = Api.create_scatter_plot_with_trend_line(x_key=str(self.x_key),
-                                                                                  y_key=str(self.y_key),
-                                                                                  df=df,
-                                                                                  save_path=save_path,
-                                                                                  grid=(str(self.grid) != 'Disable'),
-                                                                                  trend_line=(str(
-                                                                                      self.trend_line) != 'Disable'),
-                                                                                  num_outliers=self.outlier_count,
-                                                                                  teams=[str(self.team)],
-                                                                                  min_seconds=self.min_seconds,
-                                                                                  max_seconds=self.max_seconds)
+        if self.x_key == 'date':
+            plot_path, outlier_df, total_df = Api.create_date_plot(y_key=str(self.y_key),
+                                                                   player='Anthony Davis',
+                                                                   df=df,
+                                                                   save_path=save_path,
+                                                                   grid=(str(self.grid) != 'Disable'),
+                                                                   mean_line=(str(
+                                                                       self.trend_line) != 'Disable'),
+                                                                   num_outliers=self.outlier_count,
+                                                                   min_seconds=self.min_seconds,
+                                                                   max_seconds=self.max_seconds
+                                                                   )
+        else:
+            plot_path, outlier_df, total_df = Api.create_scatter_plot_with_trend_line(x_key=str(self.x_key),
+                                                                                      y_key=str(self.y_key),
+                                                                                      df=df,
+                                                                                      save_path=save_path,
+                                                                                      grid=(str(self.grid) != 'Disable'),
+                                                                                      trend_line=(str(
+                                                                                          self.trend_line) != 'Disable'),
+                                                                                      num_outliers=self.outlier_count,
+                                                                                      teams=[str(self.team)],
+                                                                                      min_seconds=self.min_seconds,
+                                                                                      max_seconds=self.max_seconds)
         return plot_path, outlier_df, total_df
 
     def __prepare_outliers(self):
