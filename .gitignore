@@ -9,6 +9,7 @@ __pycache__/
 # MY IGNORES
 *.idea/
 /my_venv
+*migrations/
 
 # Distribution / packaging
 .Python
