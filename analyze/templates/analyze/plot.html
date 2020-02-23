@@ -13,16 +13,22 @@
             </div>
             {% if graph.x_key != None %}
                 <div class="type_submit">
-                    {# change color of button based on what is selected (red) and what is not (blue) #}
-                    <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
-                    {% csrf_token %}
-                        <input type="submit" value="Team" name="type_submit" class="type_submit_button_blue">
-                    </form>
-                    <div style="width: 8px"></div>
-                    <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
-                    {% csrf_token %}
-                        <input type="submit" value="Player" name="type_submit" class="type_submit_button_red">
-                    </form>
+                    {% for option in graph_options %}
+                        {% if option == graph_type %}
+                            {# selected #}
+                            <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
+                            {% csrf_token %}
+                                <input type="submit" value="{{ option }}" name="type_submit" class="type_submit_button_red">
+                            </form>
+                        {% else %}
+                            {# others #}
+                            <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">
+                            {% csrf_token %}
+                                <input type="submit" value="{{ option }}" name="type_submit" class="type_submit_button_blue">
+                            </form>
+                        {% endif %}
+                        <div style="width: 8px"></div>
+                    {% endfor %}
                 </div>
 
                 <form action="{% url 'analyze:plot' graph.graph_id %}" method="post">

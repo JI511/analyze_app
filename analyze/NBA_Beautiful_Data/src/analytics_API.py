@@ -116,12 +116,12 @@ def get_team_result_on_date(team, date, df):
 
 def apply_graph_filters(df, **kwargs):
 
-    search_terms = kwargs.get('teams', None)
+    search_terms = kwargs.get('search_terms', None)
     min_seconds = kwargs.get('min_seconds', 0)
     max_seconds = kwargs.get('max_seconds', 6000)
 
     # filters
-    # todo
+    print(search_terms)
     if search_terms is not None and isinstance(search_terms, list):
         if search_terms[0] in constants.ScatterFilters.teams:
             df = filter_df_on_team_names(df, search_terms)
@@ -165,6 +165,32 @@ def handle_plot_output(save_path):
     return plot_path
 
 
+def get_outlier_threshold(y_key, temp_df, num_outliers):
+    series_size = temp_df[y_key].shape[0]
+    if series_size > num_outliers:
+        thresh = sorted(temp_df[y_key].to_list())[-num_outliers]
+    else:
+        thresh = 0
+    return thresh
+
+
+def get_scatter_outliers(x_key, y_key, df, **kwargs):
+
+    teams = kwargs.get('teams', None)
+    min_seconds = kwargs.get('min_seconds', 0)
+    max_seconds = kwargs.get('max_seconds', 6000)
+    num_outliers = kwargs.get('num_outliers', 5)
+
+    if num_outliers > 15:
+        num_outliers = 15
+
+    df = apply_graph_filters(df=df, teams=teams, min_seconds=min_seconds, max_seconds=max_seconds)
+    thresh = get_outlier_threshold(y_key=y_key, temp_df=df[[x_key, y_key]], num_outliers=num_outliers)
+    outlier_df_full = df[df[y_key] >= thresh]
+
+    return outlier_df_full
+
+
 def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     """
     Creates a scatter plot for two different series of a pandas data frame.
@@ -180,24 +206,23 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
         int min_seconds: The minimum number of seconds played to filter on if needed.
         int max_seconds: The maximum number of seconds played to filter on if needed.
         str save_path: The path to save the png file created.
-        bool show_plot: Indicates if the png should be shown during execution.
         bool trend_line: Indicates if a trend line should be shown.
 
     :return: The save path of the created png, the outlier DataFrame, the filtered DataFrame.
     :rtype: tuple
     """
-    search_terms = kwargs.get('teams', None)
+    teams = kwargs.get('teams', None)
     save_path = kwargs.get('save_path', None)
-    show_plot = kwargs.get('show_plot', False)
     min_seconds = kwargs.get('min_seconds', 0)
     max_seconds = kwargs.get('max_seconds', 6000)
     num_outliers = kwargs.get('num_outliers', 5)
     grid = kwargs.get('grid', True)
     trend_line = kwargs.get('trend_line', True)
-
+    print(df.shape)
+    print(teams)
     # filters
-    df = apply_graph_filters(df=df, teams=search_terms, min_seconds=min_seconds, max_seconds=max_seconds)
-
+    df = apply_graph_filters(df=df, search_terms=teams, min_seconds=min_seconds, max_seconds=max_seconds)
+    print(df.shape)
     temp_df = df[[x_key, y_key]]
     thresh = get_outlier_threshold(y_key=y_key, temp_df=temp_df, num_outliers=num_outliers)
 
@@ -237,32 +262,6 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     return handle_plot_output(save_path=save_path)
 
 
-def get_outlier_threshold(y_key, temp_df, num_outliers):
-    series_size = temp_df[y_key].shape[0]
-    if series_size > num_outliers:
-        thresh = sorted(temp_df[y_key].to_list())[-num_outliers]
-    else:
-        thresh = 0
-    return thresh
-
-
-def get_scatter_outliers(x_key, y_key, df, **kwargs):
-
-    teams = kwargs.get('teams', None)
-    min_seconds = kwargs.get('min_seconds', 0)
-    max_seconds = kwargs.get('max_seconds', 6000)
-    num_outliers = kwargs.get('num_outliers', 5)
-
-    if num_outliers > 15:
-        num_outliers = 15
-
-    df = apply_graph_filters(df=df, teams=teams, min_seconds=min_seconds, max_seconds=max_seconds)
-    thresh = get_outlier_threshold(y_key=y_key, temp_df=df[[x_key, y_key]], num_outliers=num_outliers)
-    outlier_df_full = df[df[y_key] >= thresh]
-
-    return outlier_df_full
-
-
 def create_date_plot(y_key, player, df, **kwargs):
     """
     Creates a plot of player data based on a given key.
@@ -284,7 +283,6 @@ def create_date_plot(y_key, player, df, **kwargs):
     :rtype: tuple
     """
     save_path = kwargs.get('save_path', None)
-    show_plot = kwargs.get('show_plot', False)
     min_seconds = kwargs.get('min_seconds', 0)
     max_seconds = kwargs.get('max_seconds', 6000)
     num_outliers = kwargs.get('num_outliers', 5)  # todo
