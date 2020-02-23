@@ -174,21 +174,22 @@ def get_outlier_threshold(y_key, temp_df, num_outliers):
     return thresh
 
 
-def get_scatter_outliers(x_key, y_key, df, **kwargs):
-
-    teams = kwargs.get('teams', None)
-    min_seconds = kwargs.get('min_seconds', 0)
-    max_seconds = kwargs.get('max_seconds', 6000)
-    num_outliers = kwargs.get('num_outliers', 5)
-
-    if num_outliers > 15:
-        num_outliers = 15
-
-    df = apply_graph_filters(df=df, teams=teams, min_seconds=min_seconds, max_seconds=max_seconds)
-    thresh = get_outlier_threshold(y_key=y_key, temp_df=df[[x_key, y_key]], num_outliers=num_outliers)
-    outlier_df_full = df[df[y_key] >= thresh]
-
-    return outlier_df_full
+# def get_scatter_outliers(x_key, y_key, df, **kwargs):
+#
+#     teams = kwargs.get('teams', None)
+#     min_seconds = kwargs.get('min_seconds', 0)
+#     max_seconds = kwargs.get('max_seconds', 6000)
+#     num_outliers = kwargs.get('num_outliers', 5)
+#
+#     if num_outliers > 15:
+#         num_outliers = 15
+#
+#     # todo search terms
+#     df = apply_graph_filters(df=df, search_terms=teams, min_seconds=min_seconds, max_seconds=max_seconds)
+#     thresh = get_outlier_threshold(y_key=y_key, temp_df=df[[x_key, y_key]], num_outliers=num_outliers)
+#     outlier_df_full = df[df[y_key] >= thresh]
+#
+#     return outlier_df_full
 
 
 def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
