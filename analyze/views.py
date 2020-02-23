@@ -35,13 +35,14 @@ def plot(request, graph_id):
     :return: The html page
     """
     print('\nIN PLOT VIEW')
-    graph_type = 'Team'
+
     if request.method == 'POST':
         print(request.POST)
         # temporary default
-        graph = TeamGraph.objects.get(pk=1)
+        graph = TeamGraph.objects.get(pk=2)
         if 'type_submit' in request.POST:
             graph_type = request.POST.get('type_submit')
+            print("Type switch: %s" % graph_type)
             if graph_type == 'Player':
                 # set default Player graph object
                 graph = PlayerGraph.objects.get(pk=1)
@@ -50,7 +51,7 @@ def plot(request, graph_id):
                 graph = TeamGraph.objects.get(pk=2)
 
         elif 'x_key_name' in request.POST:
-            print('inside')
+            print('New graph requested')
             # create graph object from post request
             template_dict = {
                 'selected_x_key': request.POST.get('x_key_name', default=Vars.x_key),
@@ -91,10 +92,11 @@ def plot(request, graph_id):
                                     max_seconds=template_dict['selected_max_seconds'],
                                     outlier_count=template_dict['outlier_count'])
             else:
-                template_dict['selected_teams'] = request.POST.get('selected_teams'),
+                template_dict['selected_teams'] = request.POST.get('selected_teams')
+                print('td: %s' % template_dict)
                 graph = TeamGraph(x_key=template_dict['selected_x_key'],
                                   y_key=template_dict['selected_y_key'],
-                                  team=template_dict['selected_teams'],
+                                  teams=template_dict['selected_teams'],
                                   trend_line=sf.trend_choices[trend_pk],
                                   grid=sf.grid_choices[grid_pk],
                                   min_seconds=template_dict['selected_min_seconds'],
@@ -103,8 +105,8 @@ def plot(request, graph_id):
             graph.save()
 
         return HttpResponseRedirect(reverse("analyze:plot", args=[graph.graph_id]))
-
     else:
+        graph_type = 'Team'
         try:
             graph = TeamGraph.objects.get(pk=graph_id)
         except TeamGraph.DoesNotExist:
@@ -133,6 +135,8 @@ def plot(request, graph_id):
         'teams': sf.teams,
         'grid_choices': sf.grid_choices,
         'trend_choices': sf.trend_choices,
+        'graph_type': graph_type,
+        'graph_options': ['Player', 'Team']
     }  # set the plot data
 
     if graph_type == 'Player':

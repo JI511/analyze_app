@@ -2,7 +2,7 @@
 {% block graph_filters %}
     <div class="selector">
         <h3>Team Name</h3>
-        <select id="selected_teams" name="selected_teams" style="font-family: 'Oswald';">
+        <select name="selected_teams" style="font-family: 'Oswald';">
             {% for team in teams %}
                 {% if team == graph.teams %}
                     <option name="{{ team }}" value="{{ team }}" selected>{{ team }}</option>

@@ -130,6 +130,7 @@ class Graph(models.Model):
     def create_graph(self, save_path):
         df = Api.get_existing_data_frame(csv_path, logger=logging.getLogger(__name__))
         search_terms = self.get_search_terms()
+        print('Search terms: %s' % search_terms)
         if self.x_key == 'date':
             # noinspection PyTypeChecker
             plot_path = Api.create_date_plot(y_key=str(self.y_key),
@@ -230,8 +231,9 @@ class TeamGraph(Graph):
         return '%s_%s_%s_%s' % (self.graph_id, str(self.x_key), str(self.y_key), self.teams)
 
     def get_search_terms(self):
-        # todo could return list of items rather than proposed comma separated string
-        return self.teams.split(",")
+        print(self.teams)
+        print(type(self.teams))
+        return str(self.teams).split(",")
 
 
 class PlayerGraph(Graph):
@@ -241,4 +243,4 @@ class PlayerGraph(Graph):
         return '%s_%s_%s_%s' % (self.graph_id, str(self.x_key), str(self.y_key), self.players)
 
     def get_search_terms(self):
-        return self.players.split(",")
+        return str(self.players).split(",")
