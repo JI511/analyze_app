@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Graph
+from .models import TeamGraph
 from .constants import Defaults as Vars
 import os
 import tempfile
@@ -8,11 +8,11 @@ import shutil
 
 class GraphModelTests(TestCase):
     def setUp(self):
-        self.test_graph = Graph(x_key=Vars.x_key,
-                                y_key=Vars.y_key,
-                                team=Vars.team,
-                                trend_line=Vars.trend,
-                                grid=Vars.grid)
+        self.test_graph = TeamGraph(x_key=Vars.x_key,
+                                    y_key=Vars.y_key,
+                                    team=Vars.team,
+                                    trend_line=Vars.trend,
+                                    grid=Vars.grid)
         media_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Media')
         os.mkdir(os.path.join(media_dir, 'Temp'))
         self.logs_dir = os.path.join(media_dir, 'Temp')
