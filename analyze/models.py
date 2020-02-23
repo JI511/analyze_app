@@ -166,9 +166,11 @@ class Graph(models.Model):
         """
         df = Api.get_existing_data_frame(csv_path=csv_path, logger=logging.getLogger(__name__))
 
-        outlier_df = df.sort_values(by=[self.y_key], ascending=False)
+        total_df = Api.apply_graph_filters(df=df, search_terms=self.get_search_terms(), min_seconds=self.min_seconds,
+                                           max_seconds=self.max_seconds)
+        outlier_df = total_df.sort_values(by=[self.y_key], ascending=False)
         outlier_df = outlier_df.head(n=self.outlier_count)
-        total_df = Api.apply_graph_filters(df=df)
+
         describe_dict = total_df.describe().to_dict()
         describe_dict = describe_dict[str(self.y_key)]
         operations_dict = OrderedDict()
