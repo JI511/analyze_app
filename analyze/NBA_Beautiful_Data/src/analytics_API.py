@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as plt_dates
+from analyze import constants
 
 
 plt.switch_backend('agg')
@@ -69,6 +70,20 @@ def filter_df_on_team_names(df, teams):
     return team_df
 
 
+def filter_df_on_player_names(df, players):
+    """
+    Filters the data frame object based on player names as the index of the data set.
+
+    :param pandas.DataFrame df: The data frame to search.
+    :param list players: The player names to filter on.
+    :return: Player name filtered data frame.
+    """
+    player_df = df
+    if isinstance(players, list) and np.any(df.index.isin(players)):
+        player_df = df[df.index.isin(players)]
+    return player_df
+
+
 def get_most_recent_update_date(df, date_col='date'):
     """
     Gets the most recent date from the pandas.DataFrame provided.
@@ -101,6 +116,75 @@ def get_team_result_on_date(team, date, df):
     return res
 
 
+def apply_graph_filters(df, **kwargs):
+
+    search_terms = kwargs.get('search_terms', None)
+    min_seconds = kwargs.get('min_seconds', None)
+    max_seconds = kwargs.get('max_seconds', None)
+
+    # filters
+    print(search_terms)
+    if search_terms is not None and isinstance(search_terms, list):
+        if search_terms[0] in constants.ScatterFilters.teams:
+            df = filter_df_on_team_names(df, search_terms)
+        else:
+            df = filter_df_on_player_names(df, search_terms)
+    if min_seconds is not None and isinstance(min_seconds, int):
+        if min_seconds >= 60:
+            df = df[df['seconds_played'] >= min_seconds]
+        else:
+            df = df[df['minutes_played'] >= min_seconds]
+    if max_seconds is not None and isinstance(max_seconds, int):
+        if max_seconds >= 60:
+            df = df[df['seconds_played'] <= max_seconds]
+        else:
+            df = df[df['minutes_played'] <= max_seconds]
+    return df
+
+
+def handle_plot_output(save_path):
+    """
+    Handles if plotting should output to a svg byte string or save to disk.
+
+    :param str save_path: The path or instructions to save to
+    :return: The svg data or the plot path on disk.
+    """
+    # handle output
+    plot_path = None
+    if save_path is not None:
+        if save_path == 'svg_buffer':
+            fig_file = io.StringIO()
+            plt.savefig(fig_file, format='svg', bbox_inches='tight')
+            fig_data_svg = '<svg' + fig_file.getvalue().split('<svg')[1]
+            fig_file.close()
+            plot_path = fig_data_svg
+        else:
+            # save at the path given
+            plt.savefig(save_path)
+            plot_path = save_path
+        plt.clf()
+        plt.cla()
+        plt.close('all')
+    return plot_path
+
+
+def get_outlier_threshold(y_key, temp_df, num_outliers):
+    """
+    Finds the threshold to filter on given a number of outliers.
+
+    :param y_key: The y key to filter on
+    :param temp_df: The data frame to search in
+    :param num_outliers: The number of outliers to use
+    :return: The largest value that is NOT an outlier point
+    """
+    series_size = temp_df[y_key].shape[0]
+    if series_size > num_outliers:
+        thresh = sorted(temp_df[y_key].to_list())[-num_outliers]
+    else:
+        thresh = 0
+    return thresh
+
+
 def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     """
     Creates a scatter plot for two different series of a pandas data frame.
@@ -116,7 +200,6 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
         int min_seconds: The minimum number of seconds played to filter on if needed.
         int max_seconds: The maximum number of seconds played to filter on if needed.
         str save_path: The path to save the png file created.
-        bool show_plot: Indicates if the png should be shown during execution.
         bool trend_line: Indicates if a trend line should be shown.
 
     :return: The save path of the created png, the outlier DataFrame, the filtered DataFrame.
@@ -124,43 +207,21 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     """
     teams = kwargs.get('teams', None)
     save_path = kwargs.get('save_path', None)
-    show_plot = kwargs.get('show_plot', False)
     min_seconds = kwargs.get('min_seconds', 0)
     max_seconds = kwargs.get('max_seconds', 6000)
     num_outliers = kwargs.get('num_outliers', 5)
     grid = kwargs.get('grid', True)
     trend_line = kwargs.get('trend_line', True)
 
-    if num_outliers > 15:
-        num_outliers = 15
-
     # filters
-    if teams is not None and isinstance(teams, list):
-        df = filter_df_on_team_names(df, teams)
-    if min_seconds is not None and isinstance(min_seconds, int):
-        if min_seconds >= 60:
-            df = df[df['seconds_played'] >= min_seconds]
-        else:
-            df = df[df['minutes_played'] >= min_seconds]
-    if max_seconds is not None and isinstance(max_seconds, int):
-        if max_seconds >= 60:
-            df = df[df['seconds_played'] <= max_seconds]
-        else:
-            df = df[df['minutes_played'] <= max_seconds]
+    df = apply_graph_filters(df=df, search_terms=teams, min_seconds=min_seconds, max_seconds=max_seconds)
     temp_df = df[[x_key, y_key]]
+    thresh = get_outlier_threshold(y_key=y_key, temp_df=temp_df, num_outliers=num_outliers)
 
-    # find outliers
-    series_size = temp_df[y_key].shape[0]
-    if series_size > num_outliers:
-        thresh = sorted(temp_df[y_key].to_list())[-num_outliers]
-    else:
-        thresh = 0
-
-    outlier_df_full = df[df[y_key] >= thresh]
     main_df = temp_df[temp_df[y_key] < thresh]
     title = '%s vs %s (%s samples)' % (x_key.title().replace('_', ' '),
                                        y_key.title().replace('_', ' '),
-                                       series_size)
+                                       temp_df[y_key].shape[0])
 
     outlier_df = temp_df[temp_df[y_key] >= thresh]
     # plot main df and outliers
@@ -190,40 +251,15 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     plt.title(title)
     plt.tight_layout()
 
-    # handle output
-    plot_path = None
-    if save_path is not None:
-        if os.path.isdir(save_path):
-            if not os.path.exists(os.path.join(save_path, 'plots')):
-                os.mkdir(os.path.join(save_path, 'plots'))
-            ymd = datetime.datetime.now().strftime("%y%m%d")
-            plot_path = os.path.join(save_path, 'plots', '%s_VS_%s_%s' % (x_key, y_key, ymd))
-            plt.savefig(plot_path)
-        else:
-            if save_path == 'svg_buffer':
-                fig_file = io.StringIO()
-                plt.savefig(fig_file, format='svg', bbox_inches='tight')
-                fig_data_svg = '<svg' + fig_file.getvalue().split('<svg')[1]
-                fig_file.close()
-                plot_path = fig_data_svg
-            else:
-                # save at the path given
-                plt.savefig(save_path)
-                plot_path = save_path
-            plt.clf()
-            plt.cla()
-            plt.close('all')
-    if show_plot:
-        plt.show()
-    return plot_path, outlier_df_full, df
+    return handle_plot_output(save_path=save_path)
 
 
-def create_date_plot(y_key, player, df, **kwargs):
+def create_date_plot(y_key, players, df, **kwargs):
     """
     Creates a plot of player data based on a given key.
 
     :param y_key: The stat to filter on
-    :param str player: The name of the player to search for
+    :param list players: The names of players to search for
     :param pandas.DataFrame df: The pandas.DataFrame object to search in
 
     Supported kwargs:
@@ -239,50 +275,19 @@ def create_date_plot(y_key, player, df, **kwargs):
     :rtype: tuple
     """
     save_path = kwargs.get('save_path', None)
-    show_plot = kwargs.get('show_plot', False)
     min_seconds = kwargs.get('min_seconds', 0)
     max_seconds = kwargs.get('max_seconds', 6000)
     num_outliers = kwargs.get('num_outliers', 5)  # todo
     grid = kwargs.get('grid', 'both')
     mean_line = kwargs.get('mean_line', True)
-    plot_path = None
-    outlier_df = None
 
-    # filters
-    perform_plot = True
-    if player is not None and isinstance(player, str):
-        if np.any(df.index.isin([player])):
-            df = df[df.index.isin([player])]
-        else:
-            # we don't want to try if the player name is invalid
-            perform_plot = False
-            plot_path = 'Invalid player name of %s' % player
-    if isinstance(min_seconds, int) and isinstance(max_seconds, int):
-        if max_seconds > min_seconds:
-            if min_seconds >= 60:
-                df = df[df['seconds_played'] >= min_seconds]
-            else:
-                df = df[df['minutes_played'] >= min_seconds]
-            if max_seconds >= 60:
-                df = df[df['seconds_played'] <= max_seconds]
-            else:
-                df = df[df['minutes_played'] <= max_seconds]
-        else:
-            plot_path = 'Max seconds < Min seconds'
-            perform_plot = False
-    else:
-        plot_path = 'Max/Min seconds incorrect type %s %s' % (type(min_seconds), type(max_seconds))
-        perform_plot = False
-
-    if perform_plot and df.shape[0] > 0:
-        outlier_df = df.sort_values(by=[y_key], ascending=False)
-        outlier_df = outlier_df.head(n=num_outliers)
-
+    df = apply_graph_filters(df=df, min_seconds=min_seconds, max_seconds=max_seconds, search_terms=players)
+    if df.shape[0] > 0:
         df['datetime'] = pd.to_datetime(df['date'], format='%y_%m_%d')
         x_key = 'datetime'
         temp_df = df[[x_key, y_key]]
         series_size = temp_df[y_key].shape[0]
-        title = '%s: %s (%s samples)' % (player,
+        title = '%s: %s (%s samples)' % (players[0],
                                          y_key.title().replace('_', ' '),
                                          series_size)
         data_mean = np.mean(temp_df[y_key])
@@ -307,7 +312,7 @@ def create_date_plot(y_key, player, df, **kwargs):
         date_format = plt_dates.DateFormatter('%m-%d')
         ax.xaxis.set_major_formatter(date_format)
 
-        # calc y tick dates
+        # calc y ticks
         top = ax.get_ylim()[1]
         if top >= 30:
             y_ticks = [0]
@@ -327,32 +332,8 @@ def create_date_plot(y_key, player, df, **kwargs):
         plt.title(title)
         plt.tight_layout()
 
-        # handle output
-
-        if save_path is not None:
-            if os.path.isdir(save_path):
-                if not os.path.exists(os.path.join(save_path, 'plots')):
-                    os.mkdir(os.path.join(save_path, 'plots'))
-                ymd = datetime.datetime.now().strftime("%y%m%d")
-                plot_path = os.path.join(save_path, 'plots', '%s_VS_%s_%s' % (x_key, y_key, ymd))
-                plt.savefig(plot_path)
-            else:
-                if save_path == 'svg_buffer':
-                    fig_file = io.StringIO()
-                    plt.savefig(fig_file, format='svg', bbox_inches='tight')
-                    fig_data_svg = '<svg' + fig_file.getvalue().split('<svg')[1]
-                    fig_file.close()
-                    plot_path = fig_data_svg
-                else:
-                    # save at the path given
-                    plt.savefig(save_path)
-                    plot_path = save_path
-                plt.clf()
-                plt.cla()
-                plt.close('all')
-        if show_plot:
-            plt.show()
-    return plot_path, outlier_df, df
+    plot_path = handle_plot_output(save_path=save_path)
+    return plot_path
 
 
 def create_bar_plot(df, bar_items, save_path=None, show_plot=False, team=None, date=None):

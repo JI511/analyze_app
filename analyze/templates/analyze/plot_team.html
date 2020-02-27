@@ -1,0 +1,26 @@
+{% extends "analyze/plot.html" %}
+{% block graph_filters %}
+    <div class="selector">
+        <h3>Team Name</h3>
+        <select name="selected_teams" style="font-family: 'Oswald';">
+            {% for team in teams %}
+                {% if team == graph.teams %}
+                    <option name="{{ team }}" value="{{ team }}" selected>{{ team }}</option>
+                {% else %}
+                    <option name="{{ team }}" value="{{ team }}">{{ team }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <div class="selector_divider"></div>
+    <div class="selector">
+        <h3>Trend Line</h3>
+        {% for option in trend_choices %}
+            {% if option == graph.trend_line %}
+                <label>{{ option }}<input type="radio" name="trend_enable" value="{{ option }}" checked></label><br>
+            {% else %}
+                <label>{{ option }}<input type="radio" name="trend_enable" value="{{ option }}"></label><br>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock graph_filters %}

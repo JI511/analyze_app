@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from .models import Graph
+from .models import TeamGraph, PlayerGraph
 import os
 from sendfile import sendfile
 from .constants import Defaults as Vars
@@ -16,7 +16,7 @@ def index(request):
 
 def download_plot_png(request):
     print('\nIN DOWNLOAD VIEW')
-    graph = get_object_or_404(Graph, pk=1)
+    graph = get_object_or_404(TeamGraph, pk=1)
     path = graph.create_png_location()
 
     return sendfile(request, path, attachment=True, attachment_filename='your_plot.png')
@@ -36,51 +36,82 @@ def plot(request, graph_id):
     """
     print('\nIN PLOT VIEW')
 
-    try:
-        graph = Graph.objects.get(pk=graph_id)
-    except Graph.DoesNotExist:
-        return redirect('analyze:plot', graph_id='1')
-
     if request.method == 'POST':
+        print(request.POST)
+        # temporary default
+        graph = TeamGraph.objects.get(pk=2)
+        if 'type_submit' in request.POST:
+            graph_type = request.POST.get('type_submit')
+            print("Type switch: %s" % graph_type)
+            if graph_type == 'Player':
+                # set default Player graph object
+                graph = PlayerGraph.objects.get(pk=1)
+            else:
+                # set default Team graph object
+                graph = TeamGraph.objects.get(pk=2)
 
-        # create graph object from post request
-        template_dict = {
-            'selected_x_key': request.POST.get('x_key_name', default=Vars.x_key),
-            'selected_y_key': request.POST.get('y_key_name', default=Vars.y_key),
-            'selected_team_name': request.POST.get('team_name', default=Vars.team),
-            'grid_enable': request.POST.get('grid_enable', default=Vars.grid),
-            'trend_enable': request.POST.get('trend_enable', default=Vars.trend),
-            'selected_min_seconds': request.POST.get('min_seconds', default=Vars.min_seconds),
-            'selected_max_seconds': request.POST.get('max_seconds', default=Vars.max_seconds),
-            'outlier_count': request.POST.get('outlier_count', default=Vars.outliers),
-        }
-        # check each separately so the other will persist if one is not a valid int
-        try:
-            template_dict['selected_min_seconds'] = int(template_dict['selected_min_seconds'])
-        except ValueError:
-            template_dict['selected_min_seconds'] = 0
-        try:
-            template_dict['selected_max_seconds'] = int(template_dict['selected_max_seconds'])
-        except ValueError:
-            template_dict['selected_max_seconds'] = 100 * 60
-        try:
-            template_dict['outlier_count'] = int(template_dict['outlier_count'])
-        except ValueError:
-            template_dict['outlier_count'] = 5
-        grid_pk = 0 if template_dict['grid_enable'] == 'Enable' else 1
-        trend_pk = 0 if template_dict['trend_enable'] == 'Enable' else 1
-        graph = Graph(x_key=template_dict['selected_x_key'],
-                      y_key=template_dict['selected_y_key'],
-                      team=template_dict['selected_team_name'],
-                      trend_line=sf.trend_choices[trend_pk],
-                      grid=sf.grid_choices[grid_pk],
-                      min_seconds=template_dict['selected_min_seconds'],
-                      max_seconds=template_dict['selected_max_seconds'],
-                      outlier_count=template_dict['outlier_count'])
+        elif 'x_key_name' in request.POST:
+            print('New graph requested')
+            # create graph object from post request
+            selected_x_key = request.POST.get('x_key_name', default=Vars.x_key)
+            selected_y_key = request.POST.get('y_key_name', default=Vars.y_key)
+            grid_enable = request.POST.get('grid_enable', default=Vars.grid)
+            trend_enable = request.POST.get('trend_enable', default=Vars.trend)
+            selected_min_seconds = request.POST.get('min_seconds', default=Vars.min_seconds)
+            selected_max_seconds = request.POST.get('max_seconds', default=Vars.max_seconds)
+            outlier_count = request.POST.get('outlier_count', default=Vars.outliers)
 
-        graph.save()
+            # check each separately so the other will persist if one is not a valid int
+            try:
+                selected_min_seconds = int(selected_min_seconds)
+            except ValueError:
+                selected_min_seconds = 0
+            try:
+                selected_max_seconds = int(selected_max_seconds)
+            except ValueError:
+                selected_max_seconds = 100 * 60
+            try:
+                outlier_count = int(outlier_count)
+            except ValueError:
+                outlier_count = 5
+            grid_pk = 0 if grid_enable == 'Enable' else 1
+            trend_pk = 0 if trend_enable == 'Enable' else 1
+
+            # determine which graph to create
+            if 'selected_players' in request.POST:
+                selected_players = request.POST.get('selected_players', default='Anthony Davis')
+
+                graph = PlayerGraph(x_key=selected_x_key,
+                                    y_key=selected_y_key,
+                                    players=selected_players,
+                                    trend_line=sf.trend_choices[trend_pk],
+                                    grid=sf.grid_choices[grid_pk],
+                                    min_seconds=selected_min_seconds,
+                                    max_seconds=selected_max_seconds,
+                                    outlier_count=outlier_count)
+            else:
+                selected_teams = request.POST.get('selected_teams', default='Los Angeles Lakers')
+                graph = TeamGraph(x_key=selected_x_key,
+                                  y_key=selected_y_key,
+                                  teams=selected_teams,
+                                  trend_line=sf.trend_choices[trend_pk],
+                                  grid=sf.grid_choices[grid_pk],
+                                  min_seconds=selected_min_seconds,
+                                  max_seconds=selected_max_seconds,
+                                  outlier_count=outlier_count)
+            graph.save()
 
         return HttpResponseRedirect(reverse("analyze:plot", args=[graph.graph_id]))
+    else:
+        graph_type = 'Team'
+        try:
+            graph = TeamGraph.objects.get(pk=graph_id)
+        except TeamGraph.DoesNotExist:
+            try:
+                graph = PlayerGraph.objects.get(pk=graph_id)
+                graph_type = 'Player'
+            except PlayerGraph.DoesNotExist:
+                return redirect('analyze:plot', graph_id='2')
 
     d = os.path.dirname(os.path.abspath(__file__))
     if not os.path.exists(os.path.join(d, 'Media')):
@@ -97,13 +128,20 @@ def plot(request, graph_id):
         'outlier_dict': graph.get_outlier_dict(),
         'graph': graph,
         'y_keys': sf.y_keys,
-        'x_keys': sf.x_keys,
+        # 'x_keys': sf.x_keys,
         'teams': sf.teams,
         'grid_choices': sf.grid_choices,
         'trend_choices': sf.trend_choices,
+        'graph_type': graph_type,
+        'graph_options': ['Player', 'Team']
     }  # set the plot data
 
-    return render(request, 'analyze/plot.html', svg_dict)
+    if graph_type == 'Player':
+        svg_dict['x_keys'] = ['date']
+        return render(request, 'analyze/plot_player.html', svg_dict)
+    else:
+        svg_dict['x_keys'] = ['minutes_played', 'seconds_played']
+        return render(request, 'analyze/plot_team.html', svg_dict)
 
 
 def statistics(request):
@@ -116,15 +154,15 @@ def compare_graphs(a, b):
     """
     Compares two graph objects.
 
-    :param Graph a: first graph
-    :param Graph b: second graph
+    :param TeamGraph a: first graph
+    :param TeamGraph b: second graph
     :return:
     """
     x_key = (a.x_key == b.x_key)
     # print('%s %s %s' % (x_key, a.x_key, b.x_key))
     y_key = (a.y_key == b.y_key)
     # print('%s %s %s' % (y_key, a.y_key, b.y_key))
-    team = (a.team == b.team)
+    team = (a.teams == b.teams)
     # print('%s %s %s' % (team, a.team, b.team))
     trend = (a.trend_line == b.trend_line)
     # print('%s %s %s' % (trend, a.trend_line, b.trend_line))

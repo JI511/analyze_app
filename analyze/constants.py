@@ -12,7 +12,7 @@ class Defaults(object):
 
 
 class ScatterFilters(object):
-    x_keys = sorted(['minutes_played', 'seconds_played'])
+    x_keys = sorted(['minutes_played', 'seconds_played', 'date'])
     y_keys = sorted(['points', 'rebounds', 'assists', 'made_field_goals', 'made_three_point_field_goals',
                      'made_free_throws', 'offensive_rebounds', 'defensive_rebounds', 'attempted_field_goals',
                      'attempted_three_point_field_goals', 'attempted_free_throws', 'steals', 'blocks',
@@ -22,7 +22,7 @@ class ScatterFilters(object):
                     'Golden State Warriors', 'Houston Rockets', 'Indiana Pacers', 'Los Angeles Clippers',
                     'Los Angeles Lakers', 'Memphis Grizzlies', 'Miami Heat', 'Milwaukee Bucks',
                     'Minnesota Timberwolves', 'New Orleans Pelicans', 'New York Knicks', 'Oklahoma City Thunder',
-                    'Orlando Magic', 'Philadelphia 76ers', 'Phoenix Suns', 'Portland Trailblazers', 'Sacramento Kings',
+                    'Orlando Magic', 'Philadelphia 76ers', 'Phoenix Suns', 'Portland Trail Blazers', 'Sacramento Kings',
                     'San Antonio Spurs', 'Toronto Raptors'])
     grid_choices = ['Enable', 'Disable']
     trend_choices = ['Enable', 'Disable']

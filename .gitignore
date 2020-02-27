@@ -8,8 +8,8 @@ __pycache__/
 
 # MY IGNORES
 *.idea/
-*migrations/
 /my_venv
+*migrations/
 
 # Distribution / packaging
 .Python
