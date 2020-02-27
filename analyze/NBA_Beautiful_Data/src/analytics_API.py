@@ -302,12 +302,16 @@ def create_date_plot(y_key, players, df, **kwargs):
     grid = kwargs.get('grid', 'both')
     mean_line = kwargs.get('mean_line', True)
 
+    print(df.shape)
     df = apply_graph_filters(df=df, min_seconds=min_seconds, max_seconds=max_seconds, search_terms=players)
-
+    # todo date is getting broken by the above filtering. Not finding all instances.
     if df.shape[0] > 0:
+        print(df.shape)
         df['datetime'] = pd.to_datetime(df['date'], format='%y_%m_%d')
+        print(df.shape)
         x_key = 'datetime'
         temp_df = df[[x_key, y_key]]
+        print(temp_df.shape)
         series_size = temp_df[y_key].shape[0]
         title = '%s: %s (%s samples)' % (players[0],
                                          y_key.title().replace('_', ' '),
