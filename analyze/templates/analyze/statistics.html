@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Statistics</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'analyze/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
+</head>
+<body>
+    <h1>Statistical Analysis</h1>
+    <h2>Game situation breakdowns</h2>
+    <p>Back to backs, X days rest, home vs away, league leaders?</p>
+    <h2>Team breakdowns</h2>
+    <p>record, opponent record?, the above stats?, look for when X player didn't log minutes?, stat avgs per player</p>
+    <p>When opponent plays +500 team the game before, vs +700?, other similar ideas</p>
+    <h1>{{ team_name }}</h1>
+    <h3>filters</h3>
+    <div>
+        <input type="submit" value="Update" name="filter_submit" class="updater">
+    </div>
+    <h2>Current Record: {{ team_record }}, todo%</h2>
+
+</body>
+</html>

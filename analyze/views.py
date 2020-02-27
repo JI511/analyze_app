@@ -106,6 +106,12 @@ def plot(request, graph_id):
     return render(request, 'analyze/plot.html', svg_dict)
 
 
+def statistics(request):
+    view_dict = {'team_name': 'Los Angeles Lakers',
+                 'team_record': '40-10'}
+    return render(request, 'analyze/statistics.html', view_dict)
+
+
 def compare_graphs(a, b):
     """
     Compares two graph objects.
