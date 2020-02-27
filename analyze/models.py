@@ -233,8 +233,6 @@ class TeamGraph(Graph):
         return '%s_%s_%s_%s' % (self.graph_id, str(self.x_key), str(self.y_key), self.teams)
 
     def get_search_terms(self):
-        print(self.teams)
-        print(type(self.teams))
         return str(self.teams).split(",")
 
 

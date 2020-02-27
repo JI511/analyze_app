@@ -53,55 +53,52 @@ def plot(request, graph_id):
         elif 'x_key_name' in request.POST:
             print('New graph requested')
             # create graph object from post request
-            template_dict = {
-                'selected_x_key': request.POST.get('x_key_name', default=Vars.x_key),
-                'selected_y_key': request.POST.get('y_key_name', default=Vars.y_key),
-                'grid_enable': request.POST.get('grid_enable', default=Vars.grid),
-                'trend_enable': request.POST.get('trend_enable', default=Vars.trend),
-                'selected_min_seconds': request.POST.get('min_seconds', default=Vars.min_seconds),
-                'selected_max_seconds': request.POST.get('max_seconds', default=Vars.max_seconds),
-                'outlier_count': request.POST.get('outlier_count', default=Vars.outliers),
-            }
-            if template_dict['selected_x_key'] == 'date':
-                template_dict['selected_team_name'] = 'Anthony Davis'
+            selected_x_key = request.POST.get('x_key_name', default=Vars.x_key)
+            selected_y_key = request.POST.get('y_key_name', default=Vars.y_key)
+            grid_enable = request.POST.get('grid_enable', default=Vars.grid)
+            trend_enable = request.POST.get('trend_enable', default=Vars.trend)
+            selected_min_seconds = request.POST.get('min_seconds', default=Vars.min_seconds)
+            selected_max_seconds = request.POST.get('max_seconds', default=Vars.max_seconds)
+            outlier_count = request.POST.get('outlier_count', default=Vars.outliers)
+
             # check each separately so the other will persist if one is not a valid int
             try:
-                template_dict['selected_min_seconds'] = int(template_dict['selected_min_seconds'])
+                selected_min_seconds = int(selected_min_seconds)
             except ValueError:
-                template_dict['selected_min_seconds'] = 0
+                selected_min_seconds = 0
             try:
-                template_dict['selected_max_seconds'] = int(template_dict['selected_max_seconds'])
+                selected_max_seconds = int(selected_max_seconds)
             except ValueError:
-                template_dict['selected_max_seconds'] = 100 * 60
+                selected_max_seconds = 100 * 60
             try:
-                template_dict['outlier_count'] = int(template_dict['outlier_count'])
+                outlier_count = int(outlier_count)
             except ValueError:
-                template_dict['outlier_count'] = 5
-            grid_pk = 0 if template_dict['grid_enable'] == 'Enable' else 1
-            trend_pk = 0 if template_dict['trend_enable'] == 'Enable' else 1
+                outlier_count = 5
+            grid_pk = 0 if grid_enable == 'Enable' else 1
+            trend_pk = 0 if trend_enable == 'Enable' else 1
 
             # determine which graph to create
             if 'selected_players' in request.POST:
-                template_dict['selected_players'] = request.POST.get('selected_players'),
-                graph = PlayerGraph(x_key=template_dict['selected_x_key'],
-                                    y_key=template_dict['selected_y_key'],
-                                    players=template_dict['selected_team_name'],
+                selected_players = request.POST.get('selected_players', default='Anthony Davis')
+
+                graph = PlayerGraph(x_key=selected_x_key,
+                                    y_key=selected_y_key,
+                                    players=selected_players,
                                     trend_line=sf.trend_choices[trend_pk],
                                     grid=sf.grid_choices[grid_pk],
-                                    min_seconds=template_dict['selected_min_seconds'],
-                                    max_seconds=template_dict['selected_max_seconds'],
-                                    outlier_count=template_dict['outlier_count'])
+                                    min_seconds=selected_min_seconds,
+                                    max_seconds=selected_max_seconds,
+                                    outlier_count=outlier_count)
             else:
-                template_dict['selected_teams'] = request.POST.get('selected_teams')
-                print('td: %s' % template_dict)
-                graph = TeamGraph(x_key=template_dict['selected_x_key'],
-                                  y_key=template_dict['selected_y_key'],
-                                  teams=template_dict['selected_teams'],
+                selected_teams = request.POST.get('selected_teams', default='Los Angeles Lakers')
+                graph = TeamGraph(x_key=selected_x_key,
+                                  y_key=selected_y_key,
+                                  teams=selected_teams,
                                   trend_line=sf.trend_choices[trend_pk],
                                   grid=sf.grid_choices[grid_pk],
-                                  min_seconds=template_dict['selected_min_seconds'],
-                                  max_seconds=template_dict['selected_max_seconds'],
-                                  outlier_count=template_dict['outlier_count'])
+                                  min_seconds=selected_min_seconds,
+                                  max_seconds=selected_max_seconds,
+                                  outlier_count=outlier_count)
             graph.save()
 
         return HttpResponseRedirect(reverse("analyze:plot", args=[graph.graph_id]))
@@ -131,7 +128,7 @@ def plot(request, graph_id):
         'outlier_dict': graph.get_outlier_dict(),
         'graph': graph,
         'y_keys': sf.y_keys,
-        'x_keys': sf.x_keys,
+        # 'x_keys': sf.x_keys,
         'teams': sf.teams,
         'grid_choices': sf.grid_choices,
         'trend_choices': sf.trend_choices,
@@ -140,8 +137,10 @@ def plot(request, graph_id):
     }  # set the plot data
 
     if graph_type == 'Player':
+        svg_dict['x_keys'] = ['date']
         return render(request, 'analyze/plot_player.html', svg_dict)
     else:
+        svg_dict['x_keys'] = ['minutes_played', 'seconds_played']
         return render(request, 'analyze/plot_team.html', svg_dict)
 
 
