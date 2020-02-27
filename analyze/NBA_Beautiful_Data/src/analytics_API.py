@@ -308,7 +308,7 @@ def create_date_plot(y_key, players, df, **kwargs):
         x_key = 'datetime'
         temp_df = df[[x_key, y_key]]
         series_size = temp_df[y_key].shape[0]
-        title = '%s: %s (%s samples)' % (players,
+        title = '%s: %s (%s samples)' % (players[0],
                                          y_key.title().replace('_', ' '),
                                          series_size)
         data_mean = np.mean(temp_df[y_key])
