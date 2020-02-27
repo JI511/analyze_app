@@ -79,8 +79,11 @@ def filter_df_on_player_names(df, players):
     :return: Player name filtered data frame.
     """
     player_df = df
+    print('filter on player name')
+    print(player_df.shape)
     if np.any(df.index.isin(players)):
         player_df = df[df.index.isin(players)]
+        print(player_df.shape)
     return player_df
 
 
@@ -338,7 +341,7 @@ def create_date_plot(y_key, players, df, **kwargs):
         date_format = plt_dates.DateFormatter('%m-%d')
         ax.xaxis.set_major_formatter(date_format)
 
-        # calc y tick dates
+        # calc y ticks
         top = ax.get_ylim()[1]
         if top >= 30:
             y_ticks = [0]
