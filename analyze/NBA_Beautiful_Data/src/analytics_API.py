@@ -69,6 +69,7 @@ def filter_df_on_team_names(df, teams):
     team_df = df[df['team'].isin(teams)]
     return team_df
 
+
 def filter_df_on_player_names(df, players):
     """
     todo
@@ -81,6 +82,7 @@ def filter_df_on_player_names(df, players):
     if np.any(df.index.isin(players)):
         player_df = df[df.index.isin(players)]
     return player_df
+
 
 def get_most_recent_update_date(df, date_col='date'):
     """
@@ -117,8 +119,8 @@ def get_team_result_on_date(team, date, df):
 def apply_graph_filters(df, **kwargs):
 
     search_terms = kwargs.get('search_terms', None)
-    min_seconds = kwargs.get('min_seconds', 0)
-    max_seconds = kwargs.get('max_seconds', 6000)
+    min_seconds = kwargs.get('min_seconds', None)
+    max_seconds = kwargs.get('max_seconds', None)
 
     # filters
     print(search_terms)
@@ -142,9 +144,10 @@ def apply_graph_filters(df, **kwargs):
 
 def handle_plot_output(save_path):
     """
-    todo
-    :param save_path:
-    :return:
+    Handles if plotting should output to a svg byte string or save to disk.
+
+    :param str save_path: The path or instructions to save to
+    :return: The svg data or the plot path on disk.
     """
     # handle output
     plot_path = None
@@ -166,6 +169,14 @@ def handle_plot_output(save_path):
 
 
 def get_outlier_threshold(y_key, temp_df, num_outliers):
+    """
+    Finds the threshold to filter on given a number of outliers.
+
+    :param y_key: The y key to filter on
+    :param temp_df: The data frame to search in
+    :param num_outliers: The number of outliers to use
+    :return: The largest value that is NOT an outlier point
+    """
     series_size = temp_df[y_key].shape[0]
     if series_size > num_outliers:
         thresh = sorted(temp_df[y_key].to_list())[-num_outliers]
@@ -263,12 +274,12 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     return handle_plot_output(save_path=save_path)
 
 
-def create_date_plot(y_key, player, df, **kwargs):
+def create_date_plot(y_key, players, df, **kwargs):
     """
     Creates a plot of player data based on a given key.
 
     :param y_key: The stat to filter on
-    :param str player: The name of the player to search for
+    :param list players: The names of players to search for
     :param pandas.DataFrame df: The pandas.DataFrame object to search in
 
     Supported kwargs:
@@ -290,38 +301,14 @@ def create_date_plot(y_key, player, df, **kwargs):
     grid = kwargs.get('grid', 'both')
     mean_line = kwargs.get('mean_line', True)
 
-    # filters
-    perform_plot = True
-    if player is not None and isinstance(player, str):
-        if np.any(df.index.isin([player])):
-            df = df[df.index.isin([player])]
-        else:
-            # we don't want to try if the player name is invalid
-            perform_plot = False
-            plot_path = 'Invalid player name of %s' % player
-    if isinstance(min_seconds, int) and isinstance(max_seconds, int):
-        if max_seconds > min_seconds:
-            if min_seconds >= 60:
-                df = df[df['seconds_played'] >= min_seconds]
-            else:
-                df = df[df['minutes_played'] >= min_seconds]
-            if max_seconds >= 60:
-                df = df[df['seconds_played'] <= max_seconds]
-            else:
-                df = df[df['minutes_played'] <= max_seconds]
-        else:
-            plot_path = 'Max seconds < Min seconds'
-            perform_plot = False
-    else:
-        plot_path = 'Max/Min seconds incorrect type %s %s' % (type(min_seconds), type(max_seconds))
-        perform_plot = False
+    df = apply_graph_filters(df=df, min_seconds=min_seconds, max_seconds=max_seconds, search_terms=players)
 
-    if perform_plot and df.shape[0] > 0:
+    if df.shape[0] > 0:
         df['datetime'] = pd.to_datetime(df['date'], format='%y_%m_%d')
         x_key = 'datetime'
         temp_df = df[[x_key, y_key]]
         series_size = temp_df[y_key].shape[0]
-        title = '%s: %s (%s samples)' % (player,
+        title = '%s: %s (%s samples)' % (players,
                                          y_key.title().replace('_', ' '),
                                          series_size)
         data_mean = np.mean(temp_df[y_key])
