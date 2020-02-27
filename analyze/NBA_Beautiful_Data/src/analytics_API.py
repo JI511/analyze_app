@@ -294,6 +294,7 @@ def create_date_plot(y_key, players, df, **kwargs):
     :return: The path of the created plot, outlier pandas.DataFrame object, full pandas.DataFrame object.
     :rtype: tuple
     """
+    # todo fix 2020 dates not showing up
     save_path = kwargs.get('save_path', None)
     min_seconds = kwargs.get('min_seconds', 0)
     max_seconds = kwargs.get('max_seconds', 6000)
