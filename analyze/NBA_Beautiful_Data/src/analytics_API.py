@@ -79,11 +79,8 @@ def filter_df_on_player_names(df, players):
     :return: Player name filtered data frame.
     """
     player_df = df
-    print('filter on player name')
-    print(player_df.shape)
     if isinstance(players, list) and np.any(df.index.isin(players)):
         player_df = df[df.index.isin(players)]
-        print(player_df.shape)
     return player_df
 
 
