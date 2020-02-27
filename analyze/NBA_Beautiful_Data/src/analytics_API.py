@@ -72,7 +72,7 @@ def filter_df_on_team_names(df, teams):
 
 def filter_df_on_player_names(df, players):
     """
-    todo
+    Filters the data frame object based on player names as the index of the data set.
 
     :param pandas.DataFrame df: The data frame to search.
     :param list players: The player names to filter on.
@@ -81,7 +81,7 @@ def filter_df_on_player_names(df, players):
     player_df = df
     print('filter on player name')
     print(player_df.shape)
-    if np.any(df.index.isin(players)):
+    if isinstance(players, list) and np.any(df.index.isin(players)):
         player_df = df[df.index.isin(players)]
         print(player_df.shape)
     return player_df
@@ -188,24 +188,6 @@ def get_outlier_threshold(y_key, temp_df, num_outliers):
     return thresh
 
 
-# def get_scatter_outliers(x_key, y_key, df, **kwargs):
-#
-#     teams = kwargs.get('teams', None)
-#     min_seconds = kwargs.get('min_seconds', 0)
-#     max_seconds = kwargs.get('max_seconds', 6000)
-#     num_outliers = kwargs.get('num_outliers', 5)
-#
-#     if num_outliers > 15:
-#         num_outliers = 15
-#
-#     # todo search terms
-#     df = apply_graph_filters(df=df, search_terms=teams, min_seconds=min_seconds, max_seconds=max_seconds)
-#     thresh = get_outlier_threshold(y_key=y_key, temp_df=df[[x_key, y_key]], num_outliers=num_outliers)
-#     outlier_df_full = df[df[y_key] >= thresh]
-#
-#     return outlier_df_full
-
-
 def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     """
     Creates a scatter plot for two different series of a pandas data frame.
@@ -233,11 +215,9 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     num_outliers = kwargs.get('num_outliers', 5)
     grid = kwargs.get('grid', True)
     trend_line = kwargs.get('trend_line', True)
-    print(df.shape)
-    print(teams)
+
     # filters
     df = apply_graph_filters(df=df, search_terms=teams, min_seconds=min_seconds, max_seconds=max_seconds)
-    print(df.shape)
     temp_df = df[[x_key, y_key]]
     thresh = get_outlier_threshold(y_key=y_key, temp_df=temp_df, num_outliers=num_outliers)
 
@@ -297,7 +277,6 @@ def create_date_plot(y_key, players, df, **kwargs):
     :return: The path of the created plot, outlier pandas.DataFrame object, full pandas.DataFrame object.
     :rtype: tuple
     """
-    # todo fix 2020 dates not showing up
     save_path = kwargs.get('save_path', None)
     min_seconds = kwargs.get('min_seconds', 0)
     max_seconds = kwargs.get('max_seconds', 6000)
@@ -305,16 +284,11 @@ def create_date_plot(y_key, players, df, **kwargs):
     grid = kwargs.get('grid', 'both')
     mean_line = kwargs.get('mean_line', True)
 
-    print(df.shape)
     df = apply_graph_filters(df=df, min_seconds=min_seconds, max_seconds=max_seconds, search_terms=players)
-    # todo date is getting broken by the above filtering. Not finding all instances.
     if df.shape[0] > 0:
-        print(df.shape)
         df['datetime'] = pd.to_datetime(df['date'], format='%y_%m_%d')
-        print(df.shape)
         x_key = 'datetime'
         temp_df = df[[x_key, y_key]]
-        print(temp_df.shape)
         series_size = temp_df[y_key].shape[0]
         title = '%s: %s (%s samples)' % (players[0],
                                          y_key.title().replace('_', ' '),
