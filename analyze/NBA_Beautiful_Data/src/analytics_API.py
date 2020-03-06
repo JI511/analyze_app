@@ -277,7 +277,7 @@ def create_date_plot(y_key, players, df, **kwargs):
     save_path = kwargs.get('save_path', None)
     min_seconds = kwargs.get('min_seconds', 0)
     max_seconds = kwargs.get('max_seconds', 6000)
-    num_outliers = kwargs.get('num_outliers', 5)  # todo
+    # num_outliers = kwargs.get('num_outliers', 5)  # todo
     grid = kwargs.get('grid', 'both')
     mean_line = kwargs.get('mean_line', True)
 
