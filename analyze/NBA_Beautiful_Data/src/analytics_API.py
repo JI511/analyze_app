@@ -8,6 +8,7 @@ import os
 import io
 import pandas as pd
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 import matplotlib.dates as plt_dates
 from analyze import constants
@@ -329,9 +330,9 @@ def create_date_plot(y_key, search_terms, df, **kwargs):
         x_key = 'datetime'
         temp_df = df[[x_key, y_key]]
         series_size = temp_df[y_key].shape[0]
-        title = '%s: %s (%s samples)' % (search_terms[0],
-                                         y_key.title().replace('_', ' '),
-                                         series_size)
+        title = '%s: %s (%s Games)' % (search_terms[0],
+                                       y_key.title().replace('_', ' '),
+                                       series_size)
         data_mean = np.mean(temp_df[y_key])
         fig, ax = plt.subplots(figsize=(10, 6))
         temp_df.plot(kind='line', x=x_key, y=y_key, style='.', ms=10, ax=ax)
@@ -356,13 +357,18 @@ def create_date_plot(y_key, search_terms, df, **kwargs):
         ax.tick_params(axis='x', which='major', labelsize=7, labelrotation=45)
 
         # calc y ticks
+        bottom = ax.get_ylim()[0]
         top = ax.get_ylim()[1]
         if top >= 30:
-            y_ticks = [0]
-            temp_tick = 5
+            y_ticks = list()
+            # round down at the lowest point to nearest number divisible by 5
+            y_lim_floor = temp_tick = 5 * math.floor(bottom / 5)
             while temp_tick < top:
                 y_ticks.append(temp_tick)
                 temp_tick += 5
+            y_ticks.append(temp_tick)
+            temp_tick += 5
+            ax.set_ylim([y_lim_floor, temp_tick])
             ax.set_yticks(y_ticks)
 
         if grid != 'none':
