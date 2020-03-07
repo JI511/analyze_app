@@ -124,16 +124,29 @@ def get_team_df(df):
     """
     team_df = None
     # get all team names as list
-    teams = df['team'].drop_duplicates()
+    teams = df['team'].drop_duplicates().to_list()
+    print(teams)
 
     # create temp df to sort by only that team
+    for team in teams:
+        temp_team_df = df[(df['team'] == team)]
+        dates = temp_team_df['date'].drop_duplicates().to_list()
+        print(dates)
+        # for each unique date, create another temp df
+        for date in dates:
+            # sum up all stats on date, store into team_df
+            date_df = df[(df['date'] == date)]
+            temp_df = pd.DataFrame({key: [date_df[key].sum] for key in ['points', 'rebounds']},
+                                   index=[team])
+            print(temp_df.shape)
+            print(temp_df.head(10))
+            if team_df is None:
+                team_df = temp_df
+            else:
+                team_df.merge(temp_df, how='outer')
 
-    # for each unique date, create another temp df
-
-    # sum up all stats on date, store into team_df
-    
-    print(team_df.shape)
-    print(team_df.head(10))
+    # print(team_df.shape)
+    # print(team_df.head(10))
     return team_df
 
 
