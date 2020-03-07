@@ -323,7 +323,8 @@ def create_date_plot(y_key, search_terms, df, **kwargs):
 
     # this will handle teams or players
     df = apply_graph_filters(df=df, min_seconds=min_seconds, max_seconds=max_seconds, search_terms=search_terms)
-    df = get_team_df(df=df)
+    if search_terms[0] in constants.ScatterFilters.teams:
+        df = get_team_df(df=df)
 
     if df.shape[0] > 0:
         df['datetime'] = pd.to_datetime(df['date'], format='%y_%m_%d')
