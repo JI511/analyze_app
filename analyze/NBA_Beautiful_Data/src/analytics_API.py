@@ -122,7 +122,16 @@ def get_team_df(df):
     per each team provided on a specific date.
     :param pandas.DataFrame df: The data set
     """
-    team_df = df['team'].drop_duplicates()
+    team_df = None
+    # get all team names as list
+    teams = df['team'].drop_duplicates()
+
+    # create temp df to sort by only that team
+
+    # for each unique date, create another temp df
+
+    # sum up all stats on date, store into team_df
+    
     print(team_df.shape)
     print(team_df.head(10))
     return team_df
