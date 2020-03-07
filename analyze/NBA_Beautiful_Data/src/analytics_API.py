@@ -353,6 +353,7 @@ def create_date_plot(y_key, search_terms, df, **kwargs):
             ax.set_xticks(x_ticks)
         date_format = plt_dates.DateFormatter('%m-%d')
         ax.xaxis.set_major_formatter(date_format)
+        ax.tick_params(axis='x', which='major', labelsize=7, labelrotation=45)
 
         # calc y ticks
         top = ax.get_ylim()[1]
