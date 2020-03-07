@@ -7,6 +7,7 @@ from collections import OrderedDict
 from django.db import models
 from .NBA_Beautiful_Data.src import analytics_API as Api
 from mysite import settings
+from analyze import constants
 
 
 plot_dir = os.path.dirname(os.path.abspath(__file__))
@@ -82,7 +83,8 @@ def fix_outlier_dict(row_series, df):
 
 class Graph(models.Model):
     """
-    This class is not intended to be used without extending.
+    -NOTE-
+    This class is not intended to be used without extending!
     """
     # SQL fields
     graph_id = models.AutoField(primary_key=True)
@@ -125,6 +127,9 @@ class Graph(models.Model):
         return plot_path
 
     def get_search_terms(self):
+        """
+        :rtype: list
+        """
         return NotImplementedError
 
     def create_graph(self, save_path):
@@ -166,8 +171,11 @@ class Graph(models.Model):
         """
         df = Api.get_existing_data_frame(csv_path=csv_path, logger=logging.getLogger(__name__))
 
-        total_df = Api.apply_graph_filters(df=df, search_terms=self.get_search_terms(), min_seconds=self.min_seconds,
+        search_terms = self.get_search_terms()
+        total_df = Api.apply_graph_filters(df=df, search_terms=search_terms, min_seconds=self.min_seconds,
                                            max_seconds=self.max_seconds)
+        if search_terms[0] in constants.ScatterFilters.teams:
+            total_df = Api.get_team_df(df=total_df)
         outlier_df = total_df.sort_values(by=[self.y_key], ascending=False)
         outlier_df = outlier_df.head(n=self.outlier_count)
 
@@ -177,6 +185,7 @@ class Graph(models.Model):
         operations_dict['(Percentiles)'] = ''
         for k, v in sorted(describe_dict.items()):
             operations_dict['%s:' % k] = round(v, 3)
+        print(operations_dict)
         outliers_data = []
         outliers_list = []
         for _, row in outlier_df.sort_values(by=str(self.y_key), ascending=False).iterrows():
