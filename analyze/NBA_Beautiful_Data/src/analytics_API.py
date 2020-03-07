@@ -136,17 +136,20 @@ def get_team_df(df):
         for date in dates:
             # sum up all stats on date, store into team_df
             date_df = df[(df['date'] == date)]
-            temp_df = pd.DataFrame({key: [date_df[key].sum] for key in ['points', 'rebounds']},
-                                   index=[team])
+            print(date_df.shape)
+            d = {key: [date_df[key].sum()] for key in ['points', 'rebounds']}
+            print(d)
+            temp_df = pd.DataFrame(d, index=[team])
+            temp_df['date'] = [date]
             print(temp_df.shape)
-            print(temp_df.head(10))
+            # print(temp_df.head(10))
             if team_df is None:
                 team_df = temp_df
             else:
-                team_df.merge(temp_df, how='outer')
+                team_df = pd.concat([temp_df, team_df])
 
-    # print(team_df.shape)
-    # print(team_df.head(10))
+    print(team_df.shape)
+    print(team_df.head(10))
     return team_df
 
 
