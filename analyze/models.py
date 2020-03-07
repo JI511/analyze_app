@@ -134,7 +134,7 @@ class Graph(models.Model):
         if self.x_key == 'date':
             # noinspection PyTypeChecker
             plot_path = Api.create_date_plot(y_key=str(self.y_key),
-                                             players=search_terms,
+                                             search_terms=search_terms,
                                              df=df,
                                              save_path=save_path,
                                              grid=(str(self.grid) != 'Disable'),

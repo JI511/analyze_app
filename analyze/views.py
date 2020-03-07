@@ -140,7 +140,7 @@ def plot(request, graph_id):
         svg_dict['x_keys'] = ['date']
         return render(request, 'analyze/plot_player.html', svg_dict)
     else:
-        svg_dict['x_keys'] = ['minutes_played', 'seconds_played']
+        svg_dict['x_keys'] = ['minutes_played', 'seconds_played', 'date']
         return render(request, 'analyze/plot_team.html', svg_dict)
 
 

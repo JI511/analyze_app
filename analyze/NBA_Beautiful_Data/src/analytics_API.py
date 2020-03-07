@@ -116,9 +116,26 @@ def get_team_result_on_date(team, date, df):
     return res
 
 
-def apply_graph_filters(df, **kwargs):
+def get_team_df(df):
+    """
+    Converts a DataFrame into a new DataFrame where the totals are representative of all the player box score sums
+    per each team provided on a specific date.
+    :param pandas.DataFrame df: The data set
+    """
+    team_df = df['team'].drop_duplicates()
+    print(team_df.shape)
+    print(team_df.head(10))
+    return team_df
 
-    search_terms = kwargs.get('search_terms', None)
+
+def apply_graph_filters(df, search_terms, **kwargs):
+    """
+    Sort's the given DataFrame based on the provided filters to then be used for plotting.
+
+    :param pandas.DataFrame df: The data set to search in
+    :param list search_terms: The players or teams to filter on
+    """
+
     min_seconds = kwargs.get('min_seconds', None)
     max_seconds = kwargs.get('max_seconds', None)
 
@@ -254,12 +271,12 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     return handle_plot_output(save_path=save_path)
 
 
-def create_date_plot(y_key, players, df, **kwargs):
+def create_date_plot(y_key, search_terms, df, **kwargs):
     """
     Creates a plot of player data based on a given key.
 
     :param y_key: The stat to filter on
-    :param list players: The names of players to search for
+    :param list search_terms: The names of players or team names to search for
     :param pandas.DataFrame df: The pandas.DataFrame object to search in
 
     Supported kwargs:
@@ -281,13 +298,16 @@ def create_date_plot(y_key, players, df, **kwargs):
     grid = kwargs.get('grid', 'both')
     mean_line = kwargs.get('mean_line', True)
 
-    df = apply_graph_filters(df=df, min_seconds=min_seconds, max_seconds=max_seconds, search_terms=players)
+    # this will handle teams or players
+    df = apply_graph_filters(df=df, min_seconds=min_seconds, max_seconds=max_seconds, search_terms=search_terms)
+    df = get_team_df(df=df)
+
     if df.shape[0] > 0:
         df['datetime'] = pd.to_datetime(df['date'], format='%y_%m_%d')
         x_key = 'datetime'
         temp_df = df[[x_key, y_key]]
         series_size = temp_df[y_key].shape[0]
-        title = '%s: %s (%s samples)' % (players[0],
+        title = '%s: %s (%s samples)' % (search_terms[0],
                                          y_key.title().replace('_', ' '),
                                          series_size)
         data_mean = np.mean(temp_df[y_key])
