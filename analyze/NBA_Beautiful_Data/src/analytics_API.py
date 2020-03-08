@@ -126,7 +126,7 @@ def get_team_df(df):
     team_df = None
     # get all team names as list
     teams = df['team'].drop_duplicates().to_list()
-    print(teams)
+    # print(teams)
 
     # create temp df to sort by only that team
     for team in teams:
@@ -153,8 +153,8 @@ def get_team_df(df):
             else:
                 team_df = pd.concat([temp_df, team_df])
 
-    print(team_df.shape)
-    print(team_df.head(10))
+    # print(team_df.shape)
+    # print(team_df.head(10))
     return team_df
 
 
@@ -170,7 +170,7 @@ def apply_graph_filters(df, search_terms, **kwargs):
     max_seconds = kwargs.get('max_seconds', None)
 
     # filters
-    print(search_terms)
+    # print(search_terms)
     if search_terms is not None and isinstance(search_terms, list):
         if search_terms[0] in constants.ScatterFilters.teams:
             df = filter_df_on_team_names(df, search_terms)

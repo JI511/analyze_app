@@ -141,7 +141,7 @@ class Graph(models.Model):
     def create_graph(self, save_path):
         df = Api.get_existing_data_frame(csv_path, logger=logging.getLogger(__name__))
         search_terms = self.get_search_terms()
-        print('Search terms: %s' % search_terms)
+        # print('Search terms: %s' % search_terms)
         if self.x_key == 'date':
             # noinspection PyTypeChecker
             plot_path = Api.create_date_plot(y_key=str(self.y_key),
@@ -180,7 +180,7 @@ class Graph(models.Model):
         search_terms = self.get_search_terms()
         total_df = Api.apply_graph_filters(df=df, search_terms=search_terms, min_seconds=self.min_seconds,
                                            max_seconds=self.max_seconds)
-        if search_terms[0] in constants.ScatterFilters.teams:
+        if Api.convert_team_name(search_terms[0]) in constants.ScatterFilters.teams:
             total_df = Api.get_team_df(df=total_df)
         outlier_df = total_df.sort_values(by=[self.y_key], ascending=False)
         outlier_df = outlier_df.head(n=self.outlier_count)
@@ -191,24 +191,43 @@ class Graph(models.Model):
         operations_dict['(Percentiles)'] = ''
         for k, v in sorted(describe_dict.items()):
             operations_dict['%s:' % k] = round(v, 3)
-        print(operations_dict)
+        # print(operations_dict)
         outliers_data = []
         outliers_list = []
         for _, row in outlier_df.sort_values(by=str(self.y_key), ascending=False).iterrows():
             outliers_data.append(fix_outlier_dict(row_series=row, df=df))
+        if Api.convert_team_name(search_terms[0]) in constants.ScatterFilters.teams:
+            outlier_df = outlier_df.set_index('date')
         outlier_str = outlier_df[[str(self.y_key)]].sort_values(by=str(self.y_key), ascending=False).to_string()
+        # print(outlier_str)
         outlier_str = ' '.join(outlier_str.split())
         name = ''
         outlier_format_str = '{0: <6}'
-        for o in outlier_str.split()[1:]:
-            if len(outliers_list) >= 15:
-                break
-            try:
-                float(o)
-                outliers_list.append((outlier_format_str.format(float(o)), name[:-1]))
-                name = ''
-            except ValueError:
-                name += '%s ' % o
+        print(outlier_str.split()[2:])
+        if search_terms[0] in constants.ScatterFilters.teams:
+            for index, o in enumerate(outlier_str.split()[2:], start=2):
+                print(index, o)
+                if len(outliers_list) >= 15:
+                    break
+                # print(index % 2)
+                if index % 2 == 0:
+                    converted_date = datetime.datetime.strptime(o, '%y_%m_%d').strftime('%B %d, %Y')
+                    name = '%s ' % converted_date
+                else:
+                    outliers_list.append((outlier_format_str.format(float(o)), name[:-1]))
+                    print(outliers_list)
+                    name = ''
+        else:
+            for o in outlier_str.split()[1:]:
+                if len(outliers_list) >= 15:
+                    break
+                try:
+                    float(o)
+                    outliers_list.append((outlier_format_str.format(float(o)), name[:-1]))
+                    print(outliers_list)
+                    name = ''
+                except ValueError:
+                    name += '%s ' % o
         figure_dict = {
             'operations_dict': operations_dict,
             'outliers_list': outliers_list,
