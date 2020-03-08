@@ -300,7 +300,6 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
         x = df[x_key]
         y = df[y_key]
         m = best_fit_slope(x, y)
-        
         z = np.polyfit(x, y, 1)
         p = np.poly1d(z)
         plt.plot(x, p(x), "r--", label='Slope: %s' % round(m, 3))
