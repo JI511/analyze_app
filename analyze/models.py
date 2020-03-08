@@ -134,10 +134,8 @@ class Graph(models.Model):
         outlier_str = ' '.join(outlier_str.split())
         name = ''
         outlier_format_str = '{0: <6}'
-        print(outlier_str.split()[2:])
         if search_terms[0] in constants.ScatterFilters.teams and self.x_key == 'date':
             for index, o in enumerate(outlier_str.split()[2:], start=2):
-                print(index, o)
                 if len(outliers_list) >= 15:
                     break
                 # print(index % 2)
@@ -146,7 +144,6 @@ class Graph(models.Model):
                     name = '%s ' % converted_date
                 else:
                     outliers_list.append((outlier_format_str.format(float(o)), name[:-1]))
-                    print(outliers_list)
                     name = ''
         else:
             for o in outlier_str.split()[1:]:
@@ -155,7 +152,6 @@ class Graph(models.Model):
                 try:
                     float(o)
                     outliers_list.append((outlier_format_str.format(float(o)), name[:-1]))
-                    print(outliers_list)
                     name = ''
                 except ValueError:
                     name += '%s ' % o
