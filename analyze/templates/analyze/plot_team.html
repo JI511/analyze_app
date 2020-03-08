@@ -41,8 +41,10 @@
                        class="outlier_data_return_button"><br>
 
                 <label class="outlier_player_title">{{ outlier.name }}</label><br>
-                <label class="outlier_team">{{ outlier.team }}</label><br>
-                <label class="outlier_title">{{ outlier.date }}</label><br>
+                {% if graph.x_key != 'date' %}
+                    <label class="outlier_team">{{ outlier.team }}</label><br>
+                    <label class="outlier_title">{{ outlier.date }}</label><br>
+                {% endif %}
                 <label class="outlier_generic">{{ outlier.location }} vs {{ outlier.opponent }}</label><br>
                 <label class="outlier_generic">{{ outlier.outcome }}, {{ outlier.team_result }}</label><br>
                 <label class="outlier_title">Stats</label><br>
@@ -57,13 +59,17 @@
                         <label class="outlier_generic">FG:</label><br>
                         <label class="outlier_generic">3pt:</label><br>
                         <label class="outlier_generic">FT:</label><br>
-                        <label class="outlier_generic">TS:</label><br>
+                        {% if graph.x_key != 'date' %}
+                            <label class="outlier_generic">TS:</label><br>
+                        {% endif %}
                     </div>
                     <div style="padding: 0px 3px;">
                         <label class="outlier_generic_bold">{{ outlier.FGp }}</label><br>
                         <label class="outlier_generic_bold">{{ outlier.3ptFGp }}</label><br>
                         <label class="outlier_generic_bold">{{ outlier.FTp }}</label><br>
-                        <label class="outlier_generic_bold">{{ outlier.true_shooting }}</label><br>
+                        {% if graph.x_key != 'date' %}
+                            <label class="outlier_generic_bold">{{ outlier.true_shooting }}</label><br>
+                        {% endif %}
                     </div>
                 </div>
                 {% for key, value in outlier.items %}
