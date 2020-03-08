@@ -16,7 +16,11 @@ class ScatterFilters(object):
     y_keys = sorted(['points', 'rebounds', 'assists', 'made_field_goals', 'made_three_point_field_goals',
                      'made_free_throws', 'offensive_rebounds', 'defensive_rebounds', 'attempted_field_goals',
                      'attempted_three_point_field_goals', 'attempted_free_throws', 'steals', 'blocks',
-                     'turnovers', 'game_score', 'true_shooting', 'assist_turnover_ratio'])
+                     'turnovers', 'game_score', 'true_shooting', 'assist_turnover_ratio', 'personal_fouls'])
+    team_y_keys = sorted(['points', 'rebounds', 'assists', 'made_field_goals', 'made_three_point_field_goals',
+                          'made_free_throws', 'offensive_rebounds', 'defensive_rebounds', 'attempted_field_goals',
+                          'attempted_three_point_field_goals', 'attempted_free_throws', 'steals', 'blocks',
+                          'turnovers', 'personal_fouls'])
     teams = sorted(['Atlanta Hawks', 'Boston Celtics', 'Brooklyn Nets', 'Charlotte Hornets', 'Chicago Bulls',
                     'Cleveland Cavaliers', 'Dallas Mavericks', 'Denver Nuggets', 'Detroit Pistons',
                     'Golden State Warriors', 'Houston Rockets', 'Indiana Pacers', 'Los Angeles Clippers',

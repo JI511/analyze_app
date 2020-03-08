@@ -18,16 +18,6 @@ def generate_random_alphanumeric(length):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
 
-def convert_date(date_string):
-    """
-    Gets a datetime object from a date string.
-
-    :param date_string: The date string
-    :return: datetime.datetime object
-    """
-    return datetime.datetime.strptime(date_string, '%y_%m_%d')
-
-
 def fix_outlier_dict(row_series, df):
     """
     Cleans up key names for handling outlier data.
@@ -37,12 +27,28 @@ def fix_outlier_dict(row_series, df):
     :return: The more human readable dictionary
     """
     temp_dict = OrderedDict()
+    # print(row_series.describe())
 
-    temp_dict['name'] = row_series.name
-    temp_dict['team'] = row_series['team'].replace('_', ' ').title()
+    converted_date = datetime.datetime.strptime(row_series['date'], '%y_%m_%d').strftime('%B %d, %Y')
+    # print(row_series.name)
+    # print(type(row_series.name))
+    team = None
+    if Api.convert_team_name(row_series.name) in constants.ScatterFilters.teams:
+        print('TEAM OUTLIER')
+        # Date played will appear on main view
+        temp_dict['name'] = converted_date
+        team = row_series.name
+    else:
+        team = row_series['team']
+        temp_dict['name'] = row_series.name
+        temp_dict['team'] = Api.convert_team_name(team)
+        temp_dict['date'] = converted_date
+        temp_dict['ast/to'] = row_series['assist_turnover_ratio']
+        temp_dict['minutes_played'] = round(float(row_series['points']), 1)
+        temp_dict['game_score'] = round(float(row_series['game_score']), 2)
+        temp_dict['true_shooting'] = '%s%%' % round(float(row_series['true_shooting']) * 100, 2)
+
     temp_dict['opponent'] = row_series['opponent'].replace('_', ' ').title()
-    date = convert_date(row_series['date'])
-    temp_dict['date'] = date.strftime('%B %d, %Y')
     fgp = float(row_series['made_field_goals']) / float(row_series['attempted_field_goals']) if \
         float(row_series['attempted_field_goals']) > 0 else 0
     temp_dict['FGp'] = '%s%% (%s/%s)' % (round((fgp * 100), 1),
@@ -61,22 +67,22 @@ def fix_outlier_dict(row_series, df):
                                          int(row_series['attempted_free_throws']))
 
     temp_dict['turnovers'] = int(row_series['turnovers'])
-    temp_dict['ast/to'] = row_series['assist_turnover_ratio']
-    temp_dict['minutes_played'] = round(float(row_series['points']), 1)
+
     temp_dict['personal_fouls'] = int(row_series['personal_fouls'])
     temp_dict['defensive_rebounds'] = int(row_series['defensive_rebounds'])
     temp_dict['offensive_rebounds'] = int(row_series['offensive_rebounds'])
-    temp_dict['game_score'] = round(float(row_series['game_score']), 2)
-
     temp_dict['points'] = int(row_series['points'])
     temp_dict['rebounds'] = int(row_series['rebounds'])
     temp_dict['assists'] = int(row_series['assists'])
     temp_dict['steals'] = int(row_series['steals'])
     temp_dict['blocks'] = int(row_series['blocks'])
+    # todo these will need special care
     temp_dict['outcome'] = row_series['outcome']
     temp_dict['location'] = row_series['location']
-    temp_dict['true_shooting'] = '%s%%' % round(float(row_series['true_shooting']) * 100, 2)
-    temp_dict['team_result'] = Api.get_team_result_on_date(team=temp_dict['team'], date=date, df=df)
+    # todo maybe
+    temp_dict['team_result'] = Api.get_team_result_on_date(team=Api.convert_team_name(team),
+                                                           date=datetime.datetime.strptime(row_series['date'],
+                                                                                           '%y_%m_%d'), df=df)
 
     return temp_dict
 
