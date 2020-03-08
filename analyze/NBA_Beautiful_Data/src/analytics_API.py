@@ -11,6 +11,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import matplotlib.dates as plt_dates
+from statistics import mean
 from analyze import constants
 
 
@@ -30,6 +31,15 @@ def get_existing_data_frame(csv_path, logger):
         logger.info("Existing data frame found.")
         df = pd.read_csv(csv_path, index_col=0)
     return df
+
+
+def best_fit_slope(xs, ys):
+    """
+    Finds best fit slope of a data set.
+    """
+    m = (((mean(xs)*mean(ys)) - mean(xs*ys)) /
+         ((mean(xs)**2) - mean(xs**2)))
+    return m
 
 
 def convert_team_name(team):
@@ -289,9 +299,11 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     if trend_line:
         x = df[x_key]
         y = df[y_key]
+        m = best_fit_slope(x, y)
+        
         z = np.polyfit(x, y, 1)
         p = np.poly1d(z)
-        plt.plot(x, p(x), "r--", label='Trend')
+        plt.plot(x, p(x), "r--", label='Slope: %s' % round(m, 3))
         plt.legend(loc='lower right')
 
     # makes things fit on graph window
