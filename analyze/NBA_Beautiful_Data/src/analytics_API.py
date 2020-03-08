@@ -37,7 +37,7 @@ def convert_team_name(team):
     Converts team string into proper casing format
 
     :param str team: Team enum name
-    :return: Converted string
+    :return: Converted string in grammatical format, 'Los Angeles Lakers'
     """
     return team.title().replace('_', ' ')
 
@@ -132,15 +132,22 @@ def get_team_df(df):
     for team in teams:
         temp_team_df = df[(df['team'] == team)]
         dates = temp_team_df['date'].drop_duplicates().to_list()
-        print(dates)
+
         # for each unique date, create another temp df
         for date in dates:
             # sum up all stats on date, store into team_df
-            date_df = df[(df['date'] == date)]
-            d = {key: [date_df[key].sum()] for key in ['points', 'rebounds']}
+            date_df = temp_team_df[(temp_team_df['date'] == date)]
+            # print(date_df.iloc[0])
+            d = {key: [date_df[key].sum()] for key in constants.ScatterFilters.team_y_keys}
+            temp_series = date_df.iloc[0]
+            d['opponent'] = temp_series['opponent']
+            d['outcome'] = temp_series['outcome']
+            d['location'] = temp_series['location']
             # print(d)
             temp_df = pd.DataFrame(d, index=[team])
             temp_df['date'] = [date]
+            # temp_player = date_df.iteritems()[0]
+
             if team_df is None:
                 team_df = temp_df
             else:
