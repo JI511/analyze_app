@@ -124,74 +124,11 @@
                         {{ graph.get_svg_text|safe }}
                     </div>
                     <div style="padding: 5px;"></div>
-                    <div id="outlier_box" class="outlier_box">
-                        <div id="outlier_list" style="display: inline">
-                            <label style="text-decoration: underline; font-size: 24px;">Outliers</label><br>
-                            {% for val, name in outlier_dict.outliers_list %}
-                                <label onclick="swapToOutlierContent({{ forloop.counter }})"
-                                       style="font-weight: bold; cursor: pointer;">{{ val }} </label>
-                                <label style="font-style: italic;">{{ name }}</label><br>
-                            {% endfor %}
-                        </div>
-                        {% for outlier in outlier_dict.outliers_data %}
-                            <div id="outlier_data_{{ forloop.counter }}" style="display: none;">
-                                <input type="button" onclick="swapToOutlierList({{ forloop.counter }})" value="<--  Return"
-                                       class="outlier_data_return_button"><br>
-
-                                <label class="outlier_player_title">{{ outlier.name }}</label><br>
-                                <label class="outlier_team">{{ outlier.team }}</label><br>
-                                <label class="outlier_title">{{ outlier.date }}</label><br>
-                                <label class="outlier_generic">{{ outlier.location }} vs {{ outlier.opponent }}</label><br>
-                                <label class="outlier_generic">{{ outlier.outcome }}, {{ outlier.team_result }}</label><br>
-                                <label class="outlier_title">Stats</label><br>
-                                <label class="outlier_generic_bold">{{ outlier.points }}<span class="outlier_small">pts</span></label>
-                                <label class="outlier_generic_bold">{{ outlier.rebounds }}<span class="outlier_small">reb</span></label>
-                                <label class="outlier_generic_bold">{{ outlier.assists }}<span class="outlier_small">ast</span></label>
-                                <label class="outlier_generic_bold">{{ outlier.blocks }}<span class="outlier_small">blk</span></label>
-                                <label class="outlier_generic_bold">{{ outlier.steals }}<span class="outlier_small">stl</span></label><br>
-                                <!--Percentages-->
-                                <div style="display: flex;">
-                                    <div>
-                                        <label class="outlier_generic">FG:</label><br>
-                                        <label class="outlier_generic">3pt:</label><br>
-                                        <label class="outlier_generic">FT:</label><br>
-                                        <label class="outlier_generic">TS:</label><br>
-                                    </div>
-                                    <div style="padding: 0px 3px;">
-                                        <label class="outlier_generic_bold">{{ outlier.FGp }}</label><br>
-                                        <label class="outlier_generic_bold">{{ outlier.3ptFGp }}</label><br>
-                                        <label class="outlier_generic_bold">{{ outlier.FTp }}</label><br>
-                                        <label class="outlier_generic_bold">{{ outlier.true_shooting }}</label><br>
-                                    </div>
-                                </div>
-                                {% for key, value in outlier.items %}
-                                    {% if key in outlier_dict.outlier_keys %}
-                                        <label class="outlier_generic">{{ value }}
-                                            <span class="outlier_small">{{ key }}</span>
-                                        </label><br>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                        {% endfor %}
-                        <script>
-                            function swapToOutlierContent(outlier_id) {
-                                outlier_list_div = document.getElementById('outlier_list');
-                                outlier_data_div = document.getElementById('outlier_data_' + outlier_id);
-
-                                outlier_list_div.style.display = 'none';
-                                outlier_data_div.style.display = 'inline';
-                            }
-                            function swapToOutlierList(outlier_id) {
-                                outlier_list_div = document.getElementById('outlier_list');
-                                outlier_data_div = document.getElementById('outlier_data_' + outlier_id);
-
-                                outlier_list_div.style.display = 'inline';
-                                outlier_data_div.style.display = 'none';
-                            }
-                        </script>
-                    </div>
+                    {% block outlier_box %}
+                        <label>This should not happen</label>
+                    {% endblock outlier_box %}
                 </div>
-
+{#           image not available    #}
             {% else %}
                 <p>No data available :(</p>
 
