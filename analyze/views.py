@@ -10,8 +10,7 @@ from .constants import ScatterFilters as sf
 
 # VIEWS
 def index(request):
-    # can provide optional 3rd arg of dictionary to pass to template
-    return render(request, 'analyze/index.html', {})
+    return redirect('analyze:plot', graph_id='1')
 
 
 def download_plot_png(request):
