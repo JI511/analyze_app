@@ -1,5 +1,7 @@
 # analyze_app
 
+Website is now live at http://johningwersen.pythonanywhere.com/
+
 This is a Python Django web application created to analyze my NBA data set.
 
 The repository for my data set generator can be found here: https://github.com/JI511/NBA_Beautiful_Data. This repository
