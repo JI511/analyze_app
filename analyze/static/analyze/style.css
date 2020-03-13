@@ -72,8 +72,21 @@
     font-size: 14px;
     font-weight: bold;
 }
+.reset_filter_button {
+    background-color: #C9082A; /* Dark Cornflower Blue */
+    border: 1px solid black;
+    border-radius: 4px;
+    color: white;
+    width: 80px;
+    height: 25px;
+    text-align: center;
+    text-decoration: none;
+    font-family: "Oswald";
+    font-size: 12px;
+    cursor: pointer;
+}
 .selector {
-    padding: 5px;
+    padding: 3px;
 }
 .selector_content {
     display: flex;

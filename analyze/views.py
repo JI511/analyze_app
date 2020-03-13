@@ -10,8 +10,7 @@ from .constants import ScatterFilters as sf
 
 # VIEWS
 def index(request):
-    # can provide optional 3rd arg of dictionary to pass to template
-    return render(request, 'analyze/index.html', {})
+    return redirect('analyze:plot', graph_id='1')
 
 
 def download_plot_png(request):
@@ -50,56 +49,62 @@ def plot(request, graph_id):
                 # set default Team graph object
                 graph = TeamGraph.objects.get(pk=2)
 
-        elif 'x_key_name' in request.POST:
-            print('New graph requested')
-            # create graph object from post request
-            selected_x_key = request.POST.get('x_key_name', default=Vars.x_key)
-            selected_y_key = request.POST.get('y_key_name', default=Vars.y_key)
-            grid_enable = request.POST.get('grid_enable', default=Vars.grid)
-            trend_enable = request.POST.get('trend_enable', default=Vars.trend)
-            selected_min_seconds = request.POST.get('min_seconds', default=Vars.min_seconds)
-            selected_max_seconds = request.POST.get('max_seconds', default=Vars.max_seconds)
-            outlier_count = request.POST.get('outlier_count', default=Vars.outliers)
-
-            # check each separately so the other will persist if one is not a valid int
-            try:
-                selected_min_seconds = int(selected_min_seconds)
-            except ValueError:
-                selected_min_seconds = 0
-            try:
-                selected_max_seconds = int(selected_max_seconds)
-            except ValueError:
-                selected_max_seconds = 100 * 60
-            try:
-                outlier_count = int(outlier_count)
-            except ValueError:
-                outlier_count = 5
-            grid_pk = 0 if grid_enable == 'Enable' else 1
-            trend_pk = 0 if trend_enable == 'Enable' else 1
-
-            # determine which graph to create
-            if 'selected_players' in request.POST:
-                selected_players = request.POST.get('selected_players', default='Anthony Davis')
-
-                graph = PlayerGraph(x_key=selected_x_key,
-                                    y_key=selected_y_key,
-                                    players=selected_players,
-                                    trend_line=sf.trend_choices[trend_pk],
-                                    grid=sf.grid_choices[grid_pk],
-                                    min_seconds=selected_min_seconds,
-                                    max_seconds=selected_max_seconds,
-                                    outlier_count=outlier_count)
+        elif 'filter_submit' in request.POST:
+            if request.POST.get('filter_submit') == 'Reset Filters':
+                if 'selected_players' in request.POST:
+                    graph = PlayerGraph.objects.get(pk=1)
+                else:
+                    graph = TeamGraph.objects.get(pk=2)
             else:
-                selected_teams = request.POST.get('selected_teams', default='Los Angeles Lakers')
-                graph = TeamGraph(x_key=selected_x_key,
-                                  y_key=selected_y_key,
-                                  teams=selected_teams,
-                                  trend_line=sf.trend_choices[trend_pk],
-                                  grid=sf.grid_choices[grid_pk],
-                                  min_seconds=selected_min_seconds,
-                                  max_seconds=selected_max_seconds,
-                                  outlier_count=outlier_count)
-            graph.save()
+                print('New graph requested')
+                # create graph object from post request
+                selected_x_key = request.POST.get('x_key_name', default=Vars.x_key)
+                selected_y_key = request.POST.get('y_key_name', default=Vars.y_key)
+                grid_enable = request.POST.get('grid_enable', default=Vars.grid)
+                trend_enable = request.POST.get('trend_enable', default=Vars.trend)
+                selected_min_seconds = request.POST.get('min_seconds', default=Vars.min_seconds)
+                selected_max_seconds = request.POST.get('max_seconds', default=Vars.max_seconds)
+                outlier_count = request.POST.get('outlier_count', default=Vars.outliers)
+
+                # check each separately so the other will persist if one is not a valid int
+                try:
+                    selected_min_seconds = int(selected_min_seconds)
+                except ValueError:
+                    selected_min_seconds = 0
+                try:
+                    selected_max_seconds = int(selected_max_seconds)
+                except ValueError:
+                    selected_max_seconds = 100 * 60
+                try:
+                    outlier_count = int(outlier_count)
+                except ValueError:
+                    outlier_count = 5
+                grid_pk = 0 if grid_enable == 'Enable' else 1
+                trend_pk = 0 if trend_enable == 'Enable' else 1
+
+                # determine which graph to create
+                if 'selected_players' in request.POST:
+                    selected_players = request.POST.get('selected_players', default='Anthony Davis')
+
+                    graph = PlayerGraph(x_key=selected_x_key,
+                                        y_key=selected_y_key,
+                                        players=selected_players,
+                                        trend_line=sf.trend_choices[trend_pk],
+                                        grid=sf.grid_choices[grid_pk],
+                                        min_seconds=selected_min_seconds,
+                                        max_seconds=selected_max_seconds,
+                                        outlier_count=outlier_count)
+                else:
+                    selected_teams = request.POST.get('selected_teams', default='Los Angeles Lakers')
+                    graph = TeamGraph(x_key=selected_x_key,
+                                      y_key=selected_y_key,
+                                      teams=selected_teams,
+                                      trend_line=sf.trend_choices[trend_pk],
+                                      grid=sf.grid_choices[grid_pk],
+                                      min_seconds=selected_min_seconds,
+                                      max_seconds=selected_max_seconds,
+                                      outlier_count=outlier_count)
+                graph.save()
 
         return HttpResponseRedirect(reverse("analyze:plot", args=[graph.graph_id]))
     else:
@@ -140,7 +145,7 @@ def plot(request, graph_id):
         svg_dict['x_keys'] = ['date']
         return render(request, 'analyze/plot_player.html', svg_dict)
     else:
-        svg_dict['x_keys'] = ['minutes_played', 'seconds_played']
+        svg_dict['x_keys'] = ['minutes_played', 'seconds_played', 'date']
         return render(request, 'analyze/plot_team.html', svg_dict)
 
 

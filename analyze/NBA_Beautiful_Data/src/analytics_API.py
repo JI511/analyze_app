@@ -8,8 +8,10 @@ import os
 import io
 import pandas as pd
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 import matplotlib.dates as plt_dates
+from statistics import mean
 from analyze import constants
 
 
@@ -31,12 +33,21 @@ def get_existing_data_frame(csv_path, logger):
     return df
 
 
+def best_fit_slope(xs, ys):
+    """
+    Finds best fit slope of a data set.
+    """
+    m = (((mean(xs)*mean(ys)) - mean(xs*ys)) /
+         ((mean(xs)**2) - mean(xs**2)))
+    return m
+
+
 def convert_team_name(team):
     """
     Converts team string into proper casing format
 
     :param str team: Team enum name
-    :return: Converted string
+    :return: Converted string in grammatical format, 'Los Angeles Lakers'
     """
     return team.title().replace('_', ' ')
 
@@ -116,14 +127,60 @@ def get_team_result_on_date(team, date, df):
     return res
 
 
-def apply_graph_filters(df, **kwargs):
+def get_team_df(df):
+    """
+    Converts a DataFrame into a new DataFrame where the totals are representative of all the player box score sums
+    per each team provided on a specific date.
+    :param pandas.DataFrame df: The data set
+    """
+    team_df = None
+    # get all team names as list
+    teams = df['team'].drop_duplicates().to_list()
+    # print(teams)
 
-    search_terms = kwargs.get('search_terms', None)
+    # create temp df to sort by only that team
+    for team in teams:
+        temp_team_df = df[(df['team'] == team)]
+        dates = temp_team_df['date'].drop_duplicates().to_list()
+
+        # for each unique date, create another temp df
+        for date in dates:
+            # sum up all stats on date, store into team_df
+            date_df = temp_team_df[(temp_team_df['date'] == date)]
+            # print(date_df.iloc[0])
+            d = {key: [date_df[key].sum()] for key in constants.ScatterFilters.team_y_keys}
+            temp_series = date_df.iloc[0]
+            d['opponent'] = temp_series['opponent']
+            d['outcome'] = temp_series['outcome']
+            d['location'] = temp_series['location']
+            # print(d)
+            temp_df = pd.DataFrame(d, index=[team])
+            temp_df['date'] = [date]
+            # temp_player = date_df.iteritems()[0]
+
+            if team_df is None:
+                team_df = temp_df
+            else:
+                team_df = pd.concat([temp_df, team_df])
+
+    # print(team_df.shape)
+    # print(team_df.head(10))
+    return team_df
+
+
+def apply_graph_filters(df, search_terms, **kwargs):
+    """
+    Sort's the given DataFrame based on the provided filters to then be used for plotting.
+
+    :param pandas.DataFrame df: The data set to search in
+    :param list search_terms: The players or teams to filter on
+    """
+
     min_seconds = kwargs.get('min_seconds', None)
     max_seconds = kwargs.get('max_seconds', None)
 
     # filters
-    print(search_terms)
+    # print(search_terms)
     if search_terms is not None and isinstance(search_terms, list):
         if search_terms[0] in constants.ScatterFilters.teams:
             df = filter_df_on_team_names(df, search_terms)
@@ -242,9 +299,10 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     if trend_line:
         x = df[x_key]
         y = df[y_key]
+        m = best_fit_slope(x, y)
         z = np.polyfit(x, y, 1)
         p = np.poly1d(z)
-        plt.plot(x, p(x), "r--", label='Trend')
+        plt.plot(x, p(x), "r--", label='Slope: %s' % round(m, 3))
         plt.legend(loc='lower right')
 
     # makes things fit on graph window
@@ -254,12 +312,12 @@ def create_scatter_plot_with_trend_line(x_key, y_key, df, **kwargs):
     return handle_plot_output(save_path=save_path)
 
 
-def create_date_plot(y_key, players, df, **kwargs):
+def create_date_plot(y_key, search_terms, df, **kwargs):
     """
     Creates a plot of player data based on a given key.
 
     :param y_key: The stat to filter on
-    :param list players: The names of players to search for
+    :param list search_terms: The names of players or team names to search for
     :param pandas.DataFrame df: The pandas.DataFrame object to search in
 
     Supported kwargs:
@@ -277,19 +335,23 @@ def create_date_plot(y_key, players, df, **kwargs):
     save_path = kwargs.get('save_path', None)
     min_seconds = kwargs.get('min_seconds', 0)
     max_seconds = kwargs.get('max_seconds', 6000)
-    num_outliers = kwargs.get('num_outliers', 5)  # todo
+    # num_outliers = kwargs.get('num_outliers', 5)  # todo
     grid = kwargs.get('grid', 'both')
     mean_line = kwargs.get('mean_line', True)
 
-    df = apply_graph_filters(df=df, min_seconds=min_seconds, max_seconds=max_seconds, search_terms=players)
+    # this will handle teams or players
+    df = apply_graph_filters(df=df, min_seconds=min_seconds, max_seconds=max_seconds, search_terms=search_terms)
+    if search_terms[0] in constants.ScatterFilters.teams:
+        df = get_team_df(df=df)
+
     if df.shape[0] > 0:
         df['datetime'] = pd.to_datetime(df['date'], format='%y_%m_%d')
         x_key = 'datetime'
         temp_df = df[[x_key, y_key]]
         series_size = temp_df[y_key].shape[0]
-        title = '%s: %s (%s samples)' % (players[0],
-                                         y_key.title().replace('_', ' '),
-                                         series_size)
+        title = '%s: %s (%s Games)' % (search_terms[0],
+                                       y_key.title().replace('_', ' '),
+                                       series_size)
         data_mean = np.mean(temp_df[y_key])
         fig, ax = plt.subplots(figsize=(10, 6))
         temp_df.plot(kind='line', x=x_key, y=y_key, style='.', ms=10, ax=ax)
@@ -311,15 +373,21 @@ def create_date_plot(y_key, players, df, **kwargs):
             ax.set_xticks(x_ticks)
         date_format = plt_dates.DateFormatter('%m-%d')
         ax.xaxis.set_major_formatter(date_format)
+        ax.tick_params(axis='x', which='major', labelsize=7, labelrotation=45)
 
         # calc y ticks
+        bottom = ax.get_ylim()[0]
         top = ax.get_ylim()[1]
         if top >= 30:
-            y_ticks = [0]
-            temp_tick = 5
+            y_ticks = list()
+            # round down at the lowest point to nearest number divisible by 5
+            y_lim_floor = temp_tick = 5 * math.floor(bottom / 5)
             while temp_tick < top:
                 y_ticks.append(temp_tick)
                 temp_tick += 5
+            y_ticks.append(temp_tick)
+            temp_tick += 5
+            ax.set_ylim([y_lim_floor, temp_tick])
             ax.set_yticks(y_ticks)
 
         if grid != 'none':

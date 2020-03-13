@@ -7,6 +7,7 @@ from collections import OrderedDict
 from django.db import models
 from .NBA_Beautiful_Data.src import analytics_API as Api
 from mysite import settings
+from analyze import constants
 
 
 plot_dir = os.path.dirname(os.path.abspath(__file__))
@@ -17,72 +18,10 @@ def generate_random_alphanumeric(length):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
 
-def convert_date(date_string):
-    """
-    Gets a datetime object from a date string.
-
-    :param date_string: The date string
-    :return: datetime.datetime object
-    """
-    return datetime.datetime.strptime(date_string, '%y_%m_%d')
-
-
-def fix_outlier_dict(row_series, df):
-    """
-    Cleans up key names for handling outlier data.
-
-    :param pandas.Series row_series: The row to iterate over
-    :param pandas.DataFrame df: The data set to reference
-    :return: The more human readable dictionary
-    """
-    temp_dict = OrderedDict()
-
-    temp_dict['name'] = row_series.name
-    temp_dict['team'] = row_series['team'].replace('_', ' ').title()
-    temp_dict['opponent'] = row_series['opponent'].replace('_', ' ').title()
-    date = convert_date(row_series['date'])
-    temp_dict['date'] = date.strftime('%B %d, %Y')
-    fgp = float(row_series['made_field_goals']) / float(row_series['attempted_field_goals']) if \
-        float(row_series['attempted_field_goals']) > 0 else 0
-    temp_dict['FGp'] = '%s%% (%s/%s)' % (round((fgp * 100), 1),
-                                         int(row_series['made_field_goals']),
-                                         int(row_series['attempted_field_goals']))
-    three_pt = float(row_series['made_three_point_field_goals']) / float(
-        row_series['attempted_three_point_field_goals']) if \
-        float(row_series['attempted_three_point_field_goals']) > 0 else 0
-    temp_dict['3ptFGp'] = '%s%% (%s/%s)' % (round((three_pt * 100), 1),
-                                            int(row_series['made_three_point_field_goals']),
-                                            int(row_series['attempted_three_point_field_goals']))
-    ftp = float(row_series['made_free_throws']) / float(row_series['attempted_free_throws']) if \
-        float(row_series['attempted_free_throws']) > 0 else 0
-    temp_dict['FTp'] = '%s%% (%s/%s)' % (round((ftp * 100), 1),
-                                         int(row_series['made_free_throws']),
-                                         int(row_series['attempted_free_throws']))
-
-    temp_dict['turnovers'] = int(row_series['turnovers'])
-    temp_dict['ast/to'] = row_series['assist_turnover_ratio']
-    temp_dict['minutes_played'] = round(float(row_series['points']), 1)
-    temp_dict['personal_fouls'] = int(row_series['personal_fouls'])
-    temp_dict['defensive_rebounds'] = int(row_series['defensive_rebounds'])
-    temp_dict['offensive_rebounds'] = int(row_series['offensive_rebounds'])
-    temp_dict['game_score'] = round(float(row_series['game_score']), 2)
-
-    temp_dict['points'] = int(row_series['points'])
-    temp_dict['rebounds'] = int(row_series['rebounds'])
-    temp_dict['assists'] = int(row_series['assists'])
-    temp_dict['steals'] = int(row_series['steals'])
-    temp_dict['blocks'] = int(row_series['blocks'])
-    temp_dict['outcome'] = row_series['outcome']
-    temp_dict['location'] = row_series['location']
-    temp_dict['true_shooting'] = '%s%%' % round(float(row_series['true_shooting']) * 100, 2)
-    temp_dict['team_result'] = Api.get_team_result_on_date(team=temp_dict['team'], date=date, df=df)
-
-    return temp_dict
-
-
 class Graph(models.Model):
     """
-    This class is not intended to be used without extending.
+    -NOTE-
+    This class is not intended to be used without extending!
     """
     # SQL fields
     graph_id = models.AutoField(primary_key=True)
@@ -125,16 +64,19 @@ class Graph(models.Model):
         return plot_path
 
     def get_search_terms(self):
+        """
+        :rtype: list
+        """
         return NotImplementedError
 
     def create_graph(self, save_path):
         df = Api.get_existing_data_frame(csv_path, logger=logging.getLogger(__name__))
         search_terms = self.get_search_terms()
-        print('Search terms: %s' % search_terms)
+        # print('Search terms: %s' % search_terms)
         if self.x_key == 'date':
             # noinspection PyTypeChecker
             plot_path = Api.create_date_plot(y_key=str(self.y_key),
-                                             players=search_terms,
+                                             search_terms=search_terms,
                                              df=df,
                                              save_path=save_path,
                                              grid=(str(self.grid) != 'Disable'),
@@ -166,8 +108,11 @@ class Graph(models.Model):
         """
         df = Api.get_existing_data_frame(csv_path=csv_path, logger=logging.getLogger(__name__))
 
-        total_df = Api.apply_graph_filters(df=df, search_terms=self.get_search_terms(), min_seconds=self.min_seconds,
+        search_terms = self.get_search_terms()
+        total_df = Api.apply_graph_filters(df=df, search_terms=search_terms, min_seconds=self.min_seconds,
                                            max_seconds=self.max_seconds)
+        if Api.convert_team_name(search_terms[0]) in constants.ScatterFilters.teams and self.x_key == 'date':
+            total_df = Api.get_team_df(df=total_df)
         outlier_df = total_df.sort_values(by=[self.y_key], ascending=False)
         outlier_df = outlier_df.head(n=self.outlier_count)
 
@@ -177,23 +122,39 @@ class Graph(models.Model):
         operations_dict['(Percentiles)'] = ''
         for k, v in sorted(describe_dict.items()):
             operations_dict['%s:' % k] = round(v, 3)
+        # print(operations_dict)
         outliers_data = []
         outliers_list = []
         for _, row in outlier_df.sort_values(by=str(self.y_key), ascending=False).iterrows():
-            outliers_data.append(fix_outlier_dict(row_series=row, df=df))
+            outliers_data.append(self.fix_outlier_dict(row_series=row, df=df))
+        if Api.convert_team_name(search_terms[0]) in constants.ScatterFilters.teams and self.x_key == 'date':
+            outlier_df = outlier_df.set_index('date')
         outlier_str = outlier_df[[str(self.y_key)]].sort_values(by=str(self.y_key), ascending=False).to_string()
+        # print(outlier_str)
         outlier_str = ' '.join(outlier_str.split())
         name = ''
         outlier_format_str = '{0: <6}'
-        for o in outlier_str.split()[1:]:
-            if len(outliers_list) >= 15:
-                break
-            try:
-                float(o)
-                outliers_list.append((outlier_format_str.format(float(o)), name[:-1]))
-                name = ''
-            except ValueError:
-                name += '%s ' % o
+        if search_terms[0] in constants.ScatterFilters.teams and self.x_key == 'date':
+            for index, o in enumerate(outlier_str.split()[2:], start=2):
+                if len(outliers_list) >= 15:
+                    break
+                # print(index % 2)
+                if index % 2 == 0:
+                    converted_date = datetime.datetime.strptime(o, '%y_%m_%d').strftime('%B %d, %Y')
+                    name = '%s ' % converted_date
+                else:
+                    outliers_list.append((outlier_format_str.format(float(o)), name[:-1]))
+                    name = ''
+        else:
+            for o in outlier_str.split()[1:]:
+                if len(outliers_list) >= 15:
+                    break
+                try:
+                    float(o)
+                    outliers_list.append((outlier_format_str.format(float(o)), name[:-1]))
+                    name = ''
+                except ValueError:
+                    name += '%s ' % o
         figure_dict = {
             'operations_dict': operations_dict,
             'outliers_list': outliers_list,
@@ -215,6 +176,74 @@ class Graph(models.Model):
                                          'ast/to', 'personal_fouls', 'defensive_rebounds', 'offensive_rebounds']
 
         return template_dict
+
+    def fix_outlier_dict(self, row_series, df):
+        """
+        Cleans up key names for handling outlier data.
+
+        :param pandas.Series row_series: The row to iterate over
+        :param pandas.DataFrame df: The data set to reference
+        :return: The more human readable dictionary
+        """
+        temp_dict = OrderedDict()
+        # print(row_series.describe())
+
+        converted_date = datetime.datetime.strptime(row_series['date'], '%y_%m_%d').strftime('%B %d, %Y')
+        # print(row_series.name)
+        # print(type(row_series.name))
+        team = None
+        if Api.convert_team_name(row_series.name) in constants.ScatterFilters.teams and self.x_key == 'date':
+            print('TEAM OUTLIER')
+            # Date played will appear on main view
+            temp_dict['name'] = converted_date
+            team = row_series.name
+        else:
+            team = row_series['team']
+            temp_dict['name'] = row_series.name
+            temp_dict['team'] = Api.convert_team_name(team)
+            temp_dict['date'] = converted_date
+            temp_dict['ast/to'] = row_series['assist_turnover_ratio']
+            temp_dict['minutes_played'] = round(float(row_series['points']), 1)
+            temp_dict['game_score'] = round(float(row_series['game_score']), 2)
+            temp_dict['true_shooting'] = '%s%%' % round(float(row_series['true_shooting']) * 100, 2)
+
+        temp_dict['opponent'] = row_series['opponent'].replace('_', ' ').title()
+        fgp = float(row_series['made_field_goals']) / float(row_series['attempted_field_goals']) if \
+            float(row_series['attempted_field_goals']) > 0 else 0
+        temp_dict['FGp'] = '%s%% (%s/%s)' % (round((fgp * 100), 1),
+                                             int(row_series['made_field_goals']),
+                                             int(row_series['attempted_field_goals']))
+        three_pt = float(row_series['made_three_point_field_goals']) / float(
+            row_series['attempted_three_point_field_goals']) if \
+            float(row_series['attempted_three_point_field_goals']) > 0 else 0
+        temp_dict['3ptFGp'] = '%s%% (%s/%s)' % (round((three_pt * 100), 1),
+                                                int(row_series['made_three_point_field_goals']),
+                                                int(row_series['attempted_three_point_field_goals']))
+        ftp = float(row_series['made_free_throws']) / float(row_series['attempted_free_throws']) if \
+            float(row_series['attempted_free_throws']) > 0 else 0
+        temp_dict['FTp'] = '%s%% (%s/%s)' % (round((ftp * 100), 1),
+                                             int(row_series['made_free_throws']),
+                                             int(row_series['attempted_free_throws']))
+
+        temp_dict['turnovers'] = int(row_series['turnovers'])
+
+        temp_dict['personal_fouls'] = int(row_series['personal_fouls'])
+        temp_dict['defensive_rebounds'] = int(row_series['defensive_rebounds'])
+        temp_dict['offensive_rebounds'] = int(row_series['offensive_rebounds'])
+        temp_dict['points'] = int(row_series['points'])
+        temp_dict['rebounds'] = int(row_series['rebounds'])
+        temp_dict['assists'] = int(row_series['assists'])
+        temp_dict['steals'] = int(row_series['steals'])
+        temp_dict['blocks'] = int(row_series['blocks'])
+        # todo these will need special care
+        temp_dict['outcome'] = row_series['outcome']
+        temp_dict['location'] = row_series['location']
+        # todo maybe
+        temp_dict['team_result'] = Api.get_team_result_on_date(team=Api.convert_team_name(team),
+                                                               date=datetime.datetime.strptime(row_series['date'],
+                                                                                               '%y_%m_%d'), df=df)
+
+        return temp_dict
 
     def create_png_location(self, save_dir=os.path.join(plot_dir, 'Media', 'Plots')):
         save_path = os.path.join(save_dir, '%s_vs_%s_min_%s_max_%s.png' % (str(self.x_key),
