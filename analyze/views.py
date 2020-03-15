@@ -10,7 +10,7 @@ from .constants import ScatterFilters as sf
 
 # VIEWS
 def index(request):
-    return redirect('analyze:plot', graph_id='1')
+    return render(request, 'analyze/index.html', {})
 
 
 def download_plot_png(request):

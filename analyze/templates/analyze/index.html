@@ -1,13 +1,33 @@
-<h1>Analyze Index</h1>
-<form>
-  First name:<br>
-  <input type="text" name="firstname"><br>
-  Last name:<br>
-  <input type="text" name="lastname"><br><br>
-  <input type="submit" value="Submit"><br><br>
-  <input type="reset"><br><br>
-  <input type="checkbox" name="vehicle1" value="Bike"> I have a bike<br>
-  <input type="button" onclick="alert('Hello World!')" value="Click Me!"><br><br>
-  Birthday:
-  <input type="date" name="bday">
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>NBA Beautiful Data</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'analyze/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
+</head>
+<body>
+    <div class="all_content">
+        <div class="content">
+            <img src="{% static 'analyze/images/header.png'%}">
+        </div>
+        <div class="index_form_choices">
+            <div class="index_choice">
+                <form>
+                {% csrf_token %}
+                    <input type="submit" value="Team Statistics" name="type_submit" class="type_submit_button_red">
+                </form>
+            </div>
+            <div class="index_choice">
+                <form>
+                {% csrf_token %}
+                    <input type="submit" value="Plotting" name="type_submit" class="type_submit_button_red">
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
