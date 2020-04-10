@@ -20,5 +20,6 @@ from analyze import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('analyze/', include('analyze.urls')),
+    path('houseplants/', include('houseplants.urls')),
     path('', views.plot_redirect),
 ]
