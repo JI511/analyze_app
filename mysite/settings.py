@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['192.168.0.12', 'localhost', 'johningwersen.pythonanywhere.com'
 INSTALLED_APPS = [
     'analyze.apps.AnalyzeConfig',
     'houseplants.apps.HouseplantsConfig',
+    'selector.apps.SelectorConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

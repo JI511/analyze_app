@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>App Selector</title>
+</head>
+<body>
+
+<form action="{% url 'analyze:index' %}" method="post">
+{% csrf_token %}
+    <div style="text-align: center;">
+        <input type="submit" value="NBA Beautiful Data" name="app_submit">
+    </div>
+</form>
+
+<form action="{% url 'houseplants:index' %}" method="post">
+{% csrf_token %}
+    <div style="text-align: center;">
+        <input type="submit" value="Houseplants Community" name="app_submit">
+    </div>
+</form>
+
+
+</body>
+</html>

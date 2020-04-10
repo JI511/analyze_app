@@ -15,11 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from analyze import views
+# from analyze import views
+from selector import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('analyze/', include('analyze.urls')),
     path('houseplants/', include('houseplants.urls')),
-    path('', views.plot_redirect),
+    path('selector/', include('selector.urls')),
+    path('', views.index),
 ]
