@@ -1,25 +1,33 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>App Selector</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'selector/selector_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
 </head>
-<body>
+<body style="background-color: #000000;">
 
-<form action="{% url 'analyze:index' %}" method="post">
-{% csrf_token %}
-    <div style="text-align: center;">
-        <input type="submit" value="NBA Beautiful Data" name="app_submit">
+<section class="form_box">
+    <div class="analyze_box">
+        <form action="{% url 'analyze:index' %}" method="post">
+        {% csrf_token %}
+            <div style="text-align: center;">
+                <input type="submit" value="NBA Beautiful Data" name="app_submit">
+            </div>
+        </form>
     </div>
-</form>
-
-<form action="{% url 'houseplants:index' %}" method="post">
-{% csrf_token %}
-    <div style="text-align: center;">
-        <input type="submit" value="Houseplants Community" name="app_submit">
+    <div class="divider_wall"></div>
+    <div class="houseplants_box">
+        <form action="{% url 'houseplants:index' %}" method="post">
+        {% csrf_token %}
+            <div style="text-align: center;">
+                <input type="submit" value="Houseplants Community" name="app_submit">
+            </div>
+        </form>
     </div>
-</form>
-
+</section>
 
 </body>
 </html>
