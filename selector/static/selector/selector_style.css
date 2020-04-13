@@ -8,6 +8,17 @@
     height: 100%;
 }
 
+.analyze_image {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -150%);
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
 .form_box {
     display: table;
     width: 100%;
