@@ -3,7 +3,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>App Selector</title>
+    <title>Home</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'selector/favicon.ico' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'selector/selector_style.css' %}">
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
 </head>
@@ -13,16 +14,14 @@
     <div class="analyze_box">
         <form action="{% url 'analyze:index' %}" method="post">
         {% csrf_token %}
-            <input type="image" src="{% static 'selector/nba_header.png' %}" alt="Submit" class="analyze_image" width="531" height="100">
+            <input type="image" src="{% static 'selector/nba_header.png' %}" alt="Submit" class="form_image" width="531" height="100">
         </form>
     </div>
     <div class="divider_wall"></div>
     <div class="houseplants_box">
         <form action="{% url 'houseplants:index' %}" method="post">
         {% csrf_token %}
-            <div style="text-align: center;">
-                <input type="submit" value="Houseplants Community" name="app_submit">
-            </div>
+            <input type="image" src="{% static 'selector/houseplant_header.png' %}" alt="Submit" class="form_image" width="531" height="100">
         </form>
     </div>
 </section>
