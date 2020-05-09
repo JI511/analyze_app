@@ -5,3 +5,7 @@ from django.shortcuts import render
 
 def index(request):
     return render(request, 'houseplants/index.html', {})
+
+
+def reddit_images(request):
+    return render(request, 'houseplants/reddit_images.html', {})
