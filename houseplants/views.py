@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import HouseplantItem
 
 # Create your views here.
 
@@ -8,4 +9,7 @@ def index(request):
 
 
 def reddit_images(request):
-    return render(request, 'houseplants/reddit_images.html', {})
+    template_dict = {
+        'houseplant_images': HouseplantItem.objects.all()
+    }
+    return render(request, 'houseplants/reddit_images.html', template_dict)
