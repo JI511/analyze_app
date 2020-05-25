@@ -10,7 +10,7 @@ class HouseplantItem(models.Model):
     image_name = models.CharField(max_length=200)
 
     def get_media_url(self):
-        return os.path.join('Houseplant_Images', str(self.image_name) + '.jpg')
+        return '/media/Houseplant_Images/' + str(self.image_name) + '.jpg'
 
     def __str__(self):
         return str(self.image_name)
