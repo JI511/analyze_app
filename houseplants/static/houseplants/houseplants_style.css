@@ -2,3 +2,8 @@
     border: 1px solid black;
     border-radius: 10px;
 }
+
+.houseplant_image {
+    max-width: 30%;
+    height: auto;
+}

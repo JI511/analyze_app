@@ -10,7 +10,7 @@ __pycache__/
 *.idea/
 /my_venv
 *migrations/
-/houseplants/Media/Houseplant_Images
+/media/
 
 # Distribution / packaging
 .Python
