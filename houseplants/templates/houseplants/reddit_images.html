@@ -9,8 +9,11 @@
 <body style="background-color: #6DDCBD">
 
 <h1>reddit images</h1>
-{% for image_item in houseplant_images %}
-    <img class="houseplant_image" src="{{ image_item.get_media_url }}"><br>
+{% for image_list in houseplant_images %}
+    {% for image_item in image_list %}
+        <img class="houseplant_image" src="{{ image_item.get_media_url }}">
+    {% endfor %}
+    <br>
 {% endfor %}
 
 </body>
