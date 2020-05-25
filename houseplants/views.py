@@ -9,7 +9,20 @@ def index(request):
 
 
 def reddit_images(request):
+    image_display_count = 3
+    obj_list = list()
+    sub_list = list()
+    for i, item in enumerate(HouseplantItem.objects.all(), start=1):
+        sub_list.append(item)
+        if i % image_display_count == 0:
+            obj_list.append(sub_list)
+            sub_list = list()
+
+    if len(sub_list) != 0:
+        obj_list.append(sub_list)
+
+    print(obj_list)
     template_dict = {
-        'houseplant_images': HouseplantItem.objects.all()
+        'houseplant_images': obj_list
     }
     return render(request, 'houseplants/reddit_images.html', template_dict)
