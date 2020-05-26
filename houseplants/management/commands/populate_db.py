@@ -7,12 +7,11 @@ import os
 
 class Command(BaseCommand):
     """
-
+    Base class for creating command.
     """
-
     def _create_items(self):
         """
-
+        Creates houseplant model objects in a given directory.
         :return:
         """
         directory = r'C:\Users\ingwe\Desktop\Programs\analyze_django\mysite\analyze_app\media\Houseplant_Images'
@@ -23,4 +22,7 @@ class Command(BaseCommand):
             print("Item named '%s' has been added." % image_name)
 
     def handle(self, *args, **options):
+        """
+        Calls what is relevant
+        """
         self._create_items()
