@@ -10,11 +10,15 @@
 
 <h1>reddit images</h1>
 {% for image_list in houseplant_images %}
-    {% for image_item in image_list %}
-        <img class="houseplant_image" src="{{ image_item.get_media_url }}">
-    {% endfor %}
+    <div style="display: flex; align-items: center;">
+        {% for image_item in image_list %}
+            <div class="houseplant_image_box">
+                <img class="houseplant_image" src="{{ image_item.get_media_url }}">
+            </div>
+            <div style="padding: 6px;"></div>
+        {% endfor %}
+    </div>
     <br>
 {% endfor %}
-
 </body>
 </html>

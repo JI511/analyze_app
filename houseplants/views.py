@@ -21,7 +21,6 @@ def reddit_images(request):
     if len(sub_list) != 0:
         obj_list.append(sub_list)
 
-    print(obj_list)
     template_dict = {
         'houseplant_images': obj_list
     }
