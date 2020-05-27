@@ -19,12 +19,23 @@ class Command(BaseCommand):
             help='Delete model objects before creating/adding',
         )
 
+    def rename_all_in_dir(self, dir_path):
+        for file in os.listdir(dir_path):
+            file_path = os.path.join(dir_path, file)
+            if not os.path.isdir(file_path):
+                if len(file) > 50:
+                    extension = os.path.splitext(file_path)[1]
+                    file_rename = os.path.join(dir_path, file[:50] + extension)
+                    os.rename(file_path, file_rename)
+                    print('%s renamed to %s' % (file_path, file_rename))
+
     def _create_items(self, directory):
         """
         Creates houseplant model objects in a given directory.
         :return:
         """
         if os.path.exists(directory) and os.path.isdir(directory):
+            self.rename_all_in_dir(directory)
             for plant_image in os.listdir(directory):
                 img = np.array(Image.open(os.path.join(directory, plant_image)))
                 image_name = os.path.splitext(plant_image)[0]

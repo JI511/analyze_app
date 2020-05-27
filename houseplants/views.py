@@ -9,7 +9,7 @@ def index(request):
 
 
 def reddit_images(request):
-    image_display_count = 3
+    image_display_count = 5
     obj_list = list()
     sub_list = list()
     # currently sorting by aspect ratio, maybe also some function of image area?
