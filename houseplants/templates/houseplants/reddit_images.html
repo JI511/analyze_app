@@ -10,7 +10,7 @@
 
 <h1>reddit images</h1>
 {% for image_list in houseplant_images %}
-    <div style="display: flex; align-items: center;">
+    <div class="houseplant_row">
         {% for image_item in image_list %}
             <div class="houseplant_image_box">
                 <img class="houseplant_image" src="{{ image_item.get_media_url }}">

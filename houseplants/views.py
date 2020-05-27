@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import HouseplantItem
+import random
 
 # Create your views here.
 
@@ -16,6 +17,8 @@ def reddit_images(request):
     for i, item in enumerate(sorted(HouseplantItem.objects.all(), key=lambda obj: obj.get_aspect_ratio()), start=1):
         sub_list.append(item)
         if i % image_display_count == 0:
+            # reorder the sub list so everything doesnt look ordered as much
+            random.shuffle(sub_list)
             obj_list.append(sub_list)
             sub_list = list()
 
