@@ -3,6 +3,8 @@
 from django.core.management.base import BaseCommand
 from houseplants.models import HouseplantItem
 import os
+from PIL import Image
+import numpy as np
 
 
 class Command(BaseCommand):
@@ -24,10 +26,14 @@ class Command(BaseCommand):
         """
         if os.path.exists(directory) and os.path.isdir(directory):
             for plant_image in os.listdir(directory):
+                img = np.array(Image.open(os.path.join(directory, plant_image)))
                 image_name = os.path.splitext(plant_image)[0]
-                model_item = HouseplantItem(image_name=image_name)
+                model_item = HouseplantItem(image_name=image_name,
+                                            height=img.shape[0],
+                                            width=img.shape[1])
                 model_item.save()
-                print("Item named '%s' has been added." % image_name)
+                # Shape is H x W x D, but the convention is W x H
+                print("'%s' has been added. Dimensions: %s" % (image_name, model_item.get_aspect_ratio()))
 
     def _remove_items(self):
         """
