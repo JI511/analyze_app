@@ -12,7 +12,8 @@ def reddit_images(request):
     image_display_count = 3
     obj_list = list()
     sub_list = list()
-    for i, item in enumerate(HouseplantItem.objects.all(), start=1):
+    # currently sorting by aspect ratio, maybe also some function of image area?
+    for i, item in enumerate(sorted(HouseplantItem.objects.all(), key=lambda obj: obj.get_aspect_ratio()), start=1):
         sub_list.append(item)
         if i % image_display_count == 0:
             obj_list.append(sub_list)
