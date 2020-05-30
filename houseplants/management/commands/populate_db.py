@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
                 # clear away any bad characters
                 img_file = ''.join(char for char in img_file if char.isalnum() or char in '_-')
-                
+
                 file_rename = os.path.join(dir_path, img_file[:50] + extension)
                 os.rename(file_path, file_rename)
                 print('renamed to %s' % img_file)
