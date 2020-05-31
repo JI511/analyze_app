@@ -9,17 +9,36 @@
 <body>
 
 <div class="houseplants_box">
-    <div class="houseplant_selector">
-        <label>Image Sorting: </label>
-        <select name="sorting_method">
-            {% for sort_item in sorting_items %}
-                {% if sort_item == selected_sort %}
-                    <option name="{{ sort_item }}" value="{{ sort_item }}" selected>{{ sort_item }}</option>
-                {% else %}
-                    <option name="{{ sort_item }}" value="{{ sort_item }}">{{ sort_item }}</option>
-                {% endif %}
-            {% endfor %}
-        </select>
+    <div style="padding: 8px;"></div>
+    <div class="houseplant_reddit_images_header">
+<!--        form will be needed here-->
+        <form action="{% url 'houseplants:reddit_images' %}" method="post">
+        {% csrf_token %}
+            <div class="houseplant_selectors">
+                    <div>
+                        <label>Image Sorting: </label>
+                        <select name="sorting_method">
+                            {% for sort_item in sorting_items %}
+                                {% if sort_item == selected_sort %}
+                                    <option name="{{ sort_item }}" value="{{ sort_item }}" selected>{{ sort_item }}</option>
+                                {% else %}
+                                    <option name="{{ sort_item }}" value="{{ sort_item }}">{{ sort_item }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                        <label>Display Count: </label>
+                        <textarea name="display_count_text" class="houseplant_display_count">20</textarea>
+                    </div>
+                    <div style="padding: 8px;"></div>
+                    <div style="text-align: center;">
+                        <input type="submit" value="Go" name="sorting_submit" class="reddit_images_updater">
+                    </div>
+            </div>
+        </form>
+        <div class="houseplant_pages">
+            <label>1 2 3 4 5</label>
+        </div>
     </div>
 
     <div style="padding: 6px;"></div>
