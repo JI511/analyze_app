@@ -10,6 +10,11 @@ def index(request):
 
 
 def reddit_images(request):
+    if request.method == 'POST':
+        print(request.POST)
+        selected_sort = request.POST.get('sorting_method')
+        print(selected_sort)
+        
     image_display_count = 5
     obj_list = list()
     sub_list = list()
