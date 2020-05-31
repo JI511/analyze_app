@@ -6,17 +6,33 @@
     <title>Reddit Images</title>
     <link rel="stylesheet" type="text/css" href="{% static 'houseplants/houseplants_style.css' %}">
 </head>
-<body class="houseplants_box">
+<body>
 
-<h1>reddit images</h1>
-{% for image_list in houseplant_images %}
-    <div class="houseplant_row">
-        {% for image_item in image_list %}
-            <img class="houseplant_image" src="{{ image_item.get_media_url }}">
-            <div style="padding: 6px;"></div>
-        {% endfor %}
+<div class="houseplants_box">
+    <div class="houseplant_selector">
+        <label>Image Sorting: </label>
+        <select name="sorting_method">
+            {% for sort_item in sorting_items %}
+                {% if sort_item == selected_sort %}
+                    <option name="{{ sort_item }}" value="{{ sort_item }}" selected>{{ sort_item }}</option>
+                {% else %}
+                    <option name="{{ sort_item }}" value="{{ sort_item }}">{{ sort_item }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
     </div>
-    <br>
-{% endfor %}
+
+    <div style="padding: 6px;"></div>
+
+    {% for image_list in houseplant_images %}
+        <div class="houseplant_row">
+            {% for image_item in image_list %}
+                <img class="houseplant_image" src="{{ image_item.get_media_url }}">
+                <div style="padding: 6px;"></div>
+            {% endfor %}
+        </div>
+        <br>
+    {% endfor %}
+</div>
 </body>
 </html>

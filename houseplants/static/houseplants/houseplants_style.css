@@ -12,10 +12,10 @@
     border-radius: 4px;
 }
 
-.houseplant_image_box {
-    background-color: #4f4f4f;
-    border: 4px solid red;
-    max-width: 25%;
+.houseplant_selector {
+    background-color: #ffffff;
+    width: 100%;
+    height: 100px;
 }
 
 .houseplant_row {

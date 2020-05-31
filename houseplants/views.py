@@ -26,6 +26,8 @@ def reddit_images(request):
         obj_list.append(sub_list)
 
     template_dict = {
-        'houseplant_images': obj_list
+        'houseplant_images': obj_list,
+        'sorting_items': ['Aspect Ratio (High to Low)', 'Aspect Ratio (Low to High)'],
+        'selected_sort': 'Aspect Ratio (Low to High)',
     }
     return render(request, 'houseplants/reddit_images.html', template_dict)
