@@ -1,4 +1,5 @@
 {% load static %}
+{% load houseplant_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,13 +38,18 @@
             </div>
         </form>
         <div class="houseplant_pages">
-            <label>1 2 3 4 5</label>
+            <form action="{% url 'houseplants:reddit_images' %}" method="post">
+            {% csrf_token %}
+                {% for page in houseplant_images|available_pages:current_page %}
+                    <input type="submit" value="{{ page }}" name="page_select" class="reddit_images_updater">
+                {% endfor %}
+            </form>
         </div>
     </div>
 
     <div style="padding: 6px;"></div>
 
-    {% for image_list in houseplant_images %}
+    {% for image_list in houseplant_images|index:current_page %}
         <div class="houseplant_row">
             {% for image_item in image_list %}
                 <img class="houseplant_image" src="{{ image_item.get_media_url }}">
