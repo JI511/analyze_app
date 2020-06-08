@@ -1,5 +1,5 @@
-{% load static %}
 {% load houseplant_tags %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,8 +40,12 @@
         <div class="houseplant_pages">
             <form action="{% url 'houseplants:reddit_images' %}" method="post">
             {% csrf_token %}
-                {% for page in houseplant_images|available_pages:current_page %}
-                    <input type="submit" value="{{ page }}" name="page_select" class="reddit_images_updater">
+                {% for page in houseplant_images %}
+                    {% if not page|check_current_page:current_page %}
+                        <input type="submit" value="{{ page }}" name="page_select" class="reddit_images_other_page">
+                    {% else %}
+                        <label class="reddit_images_current_page">{{ page }}</label>
+                    {% endif %}
                 {% endfor %}
             </form>
         </div>
