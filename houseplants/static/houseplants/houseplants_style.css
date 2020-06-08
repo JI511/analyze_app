@@ -64,3 +64,26 @@
     font-size: 20px;
     cursor: pointer;
 }
+
+.reddit_images_other_page {
+    background-color: #C9082A;
+    border: 1px solid black;
+    border-radius: 4px;
+    color: white;
+    padding: 2px 2px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.reddit_images_current_page {
+    background-color: #C9082A;
+    border: 1px solid black;
+    border-radius: 4px;
+    color: white;
+    padding: 10px 5px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 20px;
+}

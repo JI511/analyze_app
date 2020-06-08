@@ -21,3 +21,11 @@ def available_pages(my_dict, i):
     if isinstance(my_dict, dict):
         [my_keys.append(key) for key in my_dict.keys() if key != i]
     return my_keys
+
+
+@register.filter
+def check_current_page(page, current_page):
+    """
+    Checks if a page is the same as the current page.
+    """
+    return int(page) == int(current_page)
