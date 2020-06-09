@@ -11,6 +11,13 @@ sorting_items = [
 ]
 
 
+def gather_new_images():
+    """
+    Get's the latest reddit images
+    """
+    pass
+
+
 def index(request):
     return render(request, 'houseplants/index.html', {})
 
@@ -26,19 +33,21 @@ def reddit_images(request):
     houseplant_objs = sorted(HouseplantItem.objects.all(), key=lambda obj: obj.get_aspect_ratio(), reverse=True)
 
     if request.method == 'POST':
-        page_image_limit = int(request.POST.get('display_count_text'))
         print(request.POST)
-        if 'sorting_method' in request.POST:
-            selected_sort = request.POST.get('sorting_method')
-            if selected_sort == sorting_items[0]:
-                houseplant_objs = sorted(HouseplantItem.objects.all(), key=lambda obj: obj.get_aspect_ratio(),
-                                         reverse=True)
-                print('High to Low')
-            elif selected_sort == sorting_items[1]:
-                houseplant_objs = sorted(HouseplantItem.objects.all(), key=lambda obj: obj.get_aspect_ratio())
-                print('Low to High')
+        page_image_limit = int(request.POST.get('display_count_text'))
+        # image sorting options
+        selected_sort = request.POST.get('sorting_method')
+        if selected_sort == sorting_items[0]:
+            houseplant_objs = sorted(HouseplantItem.objects.all(), key=lambda obj: obj.get_aspect_ratio(),
+                                     reverse=True)
+            print('High to Low')
+        elif selected_sort == sorting_items[1]:
+            houseplant_objs = sorted(HouseplantItem.objects.all(), key=lambda obj: obj.get_aspect_ratio())
+            print('Low to High')
         if 'page_select' in request.POST:
             current_page = int(request.POST.get('page_select'))
+        if 'update_submit' in request.POST:
+            gather_new_images()
 
     # create rows
     for i, item in enumerate(houseplant_objs, start=1):

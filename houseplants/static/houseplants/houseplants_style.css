@@ -54,7 +54,7 @@
     width: 60px;
 }
 
-.reddit_images_updater {
+.reddit_images_sorting_update {
     background-color: #C9082A;
     border: 1px solid black;
     border-radius: 4px;
@@ -87,4 +87,17 @@
     text-align: center;
     text-decoration: none;
     font-size: 20px;
+}
+
+.reddit_images_update_images {
+    background-color: #6dc961;
+    border: 1px solid black;
+    border-radius: 4px;
+    color: black;
+    padding: 5px 5px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
 }
