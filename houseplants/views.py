@@ -26,6 +26,7 @@ def reddit_images(request):
     houseplant_objs = sorted(HouseplantItem.objects.all(), key=lambda obj: obj.get_aspect_ratio(), reverse=True)
 
     if request.method == 'POST':
+        page_image_limit = int(request.POST.get('display_count_text'))
         print(request.POST)
         if 'sorting_method' in request.POST:
             selected_sort = request.POST.get('sorting_method')
@@ -36,7 +37,7 @@ def reddit_images(request):
             elif selected_sort == sorting_items[1]:
                 houseplant_objs = sorted(HouseplantItem.objects.all(), key=lambda obj: obj.get_aspect_ratio())
                 print('Low to High')
-        elif 'page_select' in request.POST:
+        if 'page_select' in request.POST:
             current_page = int(request.POST.get('page_select'))
 
     # create rows
@@ -65,6 +66,7 @@ def reddit_images(request):
         'sorting_items': sorting_items,
         'selected_sort': selected_sort,
         'current_page': current_page,
+        'page_image_limit': page_image_limit,
     }
 
     return render(request, 'houseplants/reddit_images.html', template_dict)

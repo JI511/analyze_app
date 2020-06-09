@@ -11,38 +11,35 @@
 
 <div class="houseplants_box">
     <div style="padding: 8px;"></div>
-    <div class="houseplant_reddit_images_header">
-        <div style="display: flex;">
-            <div style="padding: 8px;"></div>
-            <form action="{% url 'houseplants:reddit_images' %}" method="post">
-            {% csrf_token %}
+    <form action="{% url 'houseplants:reddit_images' %}" method="post">
+    {% csrf_token %}
+        <div class="houseplant_reddit_images_header">
+            <div style="display: flex;">
+                <div style="padding: 8px;"></div>
                 <div class="houseplant_selectors">
-                        <div>
-                            <label>Image Sorting: </label>
-                            <select name="sorting_method">
-                                {% for sort_item in sorting_items %}
-                                    {% if sort_item == selected_sort %}
-                                        <option name="{{ sort_item }}" value="{{ sort_item }}" selected>{{ sort_item }}</option>
-                                    {% else %}
-                                        <option name="{{ sort_item }}" value="{{ sort_item }}">{{ sort_item }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                            <br><br>
-                            <label>Display Count: </label>
-                            <textarea name="display_count_text" class="houseplant_display_count">20</textarea>
-                        </div>
-                        <div style="padding: 8px;"></div>
-                        <div style="text-align: center;">
-                            <input type="submit" value="Go" name="sorting_submit" class="reddit_images_updater">
-                        </div>
+                    <div>
+                        <label>Image Sorting: </label>
+                        <select name="sorting_method">
+                            {% for sort_item in sorting_items %}
+                                {% if sort_item == selected_sort %}
+                                    <option name="{{ sort_item }}" value="{{ sort_item }}" selected>{{ sort_item }}</option>
+                                {% else %}
+                                    <option name="{{ sort_item }}" value="{{ sort_item }}">{{ sort_item }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <br><br>
+                        <label>Display Count: </label>
+                        <textarea name="display_count_text" class="houseplant_display_count">{{ page_image_limit }}</textarea>
+                    </div>
+                    <div style="padding: 8px;"></div>
+                    <div style="text-align: center;">
+                        <input type="submit" value="Go" name="sorting_submit" class="reddit_images_updater">
+                    </div>
                 </div>
-            </form>
-        </div>
-        <div style="display: flex;">
-            <div class="houseplant_pages">
-                <form action="{% url 'houseplants:reddit_images' %}" method="post">
-                {% csrf_token %}
+            </div>
+            <div style="display: flex;">
+                <div class="houseplant_pages">
                     {% for page in houseplant_images %}
                         {% if not page|check_current_page:current_page %}
                             <input type="submit" value="{{ page }}" name="page_select" class="reddit_images_other_page">
@@ -50,11 +47,11 @@
                             <label class="reddit_images_current_page">{{ page }}</label>
                         {% endif %}
                     {% endfor %}
-                </form>
+                </div>
+                <div style="padding: 8px;"></div>
             </div>
-            <div style="padding: 8px;"></div>
         </div>
-    </div>
+    </form>
 
     <div style="padding: 6px;"></div>
 
