@@ -16,18 +16,14 @@
 <body>
 
 <div class="row">
-    <div class="col">
-        <form action="{% url 'analyze:index' %}" method="post">
-        {% csrf_token %}
-            <input type="image" src="{% static 'selector/nba_header.png' %}" alt="Submit" class="form_image">
-        </form>
-    </div>
-    <div class="col">
-        <form action="{% url 'houseplants:index' %}" method="post">
-        {% csrf_token %}
-            <input type="image" src="{% static 'selector/houseplant_header.png' %}" alt="Submit" class="form_image">
-        </form>
-    </div>
+    {% for app_name in app_names %}
+        <div class="col">
+            <form action="{% url 'selector:redirect_to_app' %}" method="post">
+            {% csrf_token %}
+                <input type="image" src="{% static 'selector/nba_header.png' %}" alt="Submit" class="form_image" name="selector_button" value="{{ app_name }}">
+            </form>
+        </div>
+    {% endfor %}
 </div>
 
 {#<section class="form_box">#}
