@@ -9,14 +9,10 @@
 }
 
 .form_image {
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -150%);
-    background-color: white;
+    background-color: green;
     border: 1px solid black;
     border-radius: 10px;
+    max-width: 100%;
 }
 
 .form_box {
