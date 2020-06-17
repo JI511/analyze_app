@@ -1,4 +1,5 @@
 {% load static %}
+{% load selector_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +21,7 @@
         <div class="col">
             <form action="{% url 'selector:redirect_to_app' %}" method="post">
             {% csrf_token %}
-                <input type="image" src="{% static 'selector/nba_header.png' %}" alt="Submit" class="form_image" name="selector_button" value="{{ app_name }}">
+                <input type="image" src="{% static 'selector/'|add_image:app_name %}" alt="Submit" class="form_image" name="selector_button" value="{{ app_name }}">
             </form>
         </div>
     {% endfor %}
