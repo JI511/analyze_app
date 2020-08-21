@@ -6,7 +6,7 @@ The home page showcases all of the separate applications.
 
 ![current](https://github.com/JI511/analyze_app/blob/master/analyze/extra/snips/selector_page.png)
 
-###### **NBA Beautiful Data**
+**NBA Beautiful Data**
 
 The repository for my data set generator can be found here: https://github.com/JI511/NBA_Beautiful_Data. This repository
  also handles the plotting functionality so this repository only calls the API.
