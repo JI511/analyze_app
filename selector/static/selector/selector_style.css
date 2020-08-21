@@ -1,34 +1,15 @@
-
-.analyze_box {
-    background-image: url("beautiful_data.jpg");
-    background-size: 200px 356px;
-    position: absolute;
-    left: 0px;
-    width: 49.5%;
-    height: 100%;
+.app_column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
 }
 
-.form_image {
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -150%);
-    background-color: white;
-    border: 1px solid black;
+.form_submit_button {
+    background-color: green;
+    border: 4px solid black;
     border-radius: 10px;
-}
-
-.form_box {
-    display: table;
-    width: 100%;
-}
-
-.houseplants_box {
-    background-image: url("houseplants.jpg");
-    background-size: 400px 480px;
-    position: absolute;
-    right: 0px;
-    width: 49.5%;
-    height: 100%;
+    padding: 16px 36px;
+    font-family: "Oswald";
+    font-size: 24px;
 }
