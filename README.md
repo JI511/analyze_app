@@ -21,14 +21,14 @@ Outlier In-Depth view:
 
 ![current](https://github.com/JI511/analyze_app/blob/master/analyze/extra/snips/12_29_outlier_data_box.png)
 
-###### **Houseplants**
+**Houseplants**
 
 todo
 
-###### **Stocks**
+**Stocks**
 
 todo
 
-###### **Object Detection**
+**Object Detection**
 
 todo
