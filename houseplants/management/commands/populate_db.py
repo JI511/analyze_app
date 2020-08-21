@@ -13,6 +13,9 @@ class Command(BaseCommand):
     Base class for creating command.
     """
     def add_arguments(self, parser):
+        """
+        Handles the addition of command line arguments.
+        """
         parser.add_argument('image_dir', type=str)
         parser.add_argument(
             '--remove',
@@ -20,7 +23,11 @@ class Command(BaseCommand):
             help='Delete model objects before creating/adding',
         )
 
-    def rename_all_in_dir(self, dir_path):
+    @staticmethod
+    def rename_all_in_dir(dir_path):
+        """
+        Renames provided files by removing any special characters and limiting to 50 characters.
+        """
         for img_file in os.listdir(dir_path):
             file_path = os.path.join(dir_path, img_file)
             if not os.path.isdir(file_path):

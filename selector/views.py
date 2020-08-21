@@ -14,4 +14,9 @@ def redirect_to_app(request):
     """
     redirects application to appropriate django sub-app.
     """
-    return redirect('houseplants:index')
+    app_name = 'selector'
+    if request.method == 'POST':
+        print(request.POST)
+        if 'selector_button' in request.POST:
+            app_name = request.POST.get('selector_button')
+    return redirect('%s:index' % app_name)
