@@ -5,7 +5,11 @@ from django.shortcuts import render, redirect
 
 def index(request):
     temp_dict = {
-        'app_names': ['analyze', 'houseplants', 'stocks'],
+        # list of tuples of app name and background image
+        'app_names': [('analyze', 'beautiful_data.jpg'),
+                      ('houseplants', 'houseplants.jpg'),
+                      ('stocks', 'stock_exchange.jpg'),
+                      ('image_detection', 'object_detection.png')],
     }
     return render(request, 'selector/index.html', temp_dict)
 

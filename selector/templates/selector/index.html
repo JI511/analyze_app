@@ -14,16 +14,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </head>
-<body style="background-color: red">
+<body style="background-color: darkred">
 
 <div class="container-fluid">
     <div class="row">
-        {% for app_name in app_names %}
-            <div class="col" style="border: 4px solid black; display: flex; align-items: center; justify-content: center; height: 100vh;">
+        {% for app_name, app_background in app_names %}
+            <div class="col" >
                 <form action="{% url 'selector:redirect_to_app' %}" method="post">
                 {% csrf_token %}
-                    <div>
-                        <input type="submit" class="form_image" name="selector_button" value="{{ app_name }}">
+                    <div class="app_column" style="background: url('/static/selector/{{ app_background }}') repeat;">
+                        <input type="submit" class="form_submit_button" name="selector_button" value="{{ app_name }}">
                     </div>
                 </form>
             </div>
