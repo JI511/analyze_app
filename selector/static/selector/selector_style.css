@@ -1,30 +1,12 @@
-
-.analyze_box {
-    background-image: url("beautiful_data.jpg");
-    background-size: 200px 356px;
-    position: absolute;
-    left: 0px;
-    width: 49.5%;
-    height: 100%;
-}
-
 .form_image {
     background-color: green;
     border: 1px solid black;
     border-radius: 10px;
     max-width: 100%;
+    min-width: 50%;
 }
 
 .form_box {
     display: table;
     width: 100%;
-}
-
-.houseplants_box {
-    background-image: url("houseplants.jpg");
-    background-size: 400px 480px;
-    position: absolute;
-    right: 0px;
-    width: 49.5%;
-    height: 100%;
 }

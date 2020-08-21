@@ -16,34 +16,20 @@
 </head>
 <body style="background-color: red">
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         {% for app_name in app_names %}
-            <div class="col" style="border: 4px solid black; display: flex; align-items: center; justify-content: center; height: 100vh; background-image: '{% static 'selector/houseplants.jpg' %}'">
+            <div class="col" style="border: 4px solid black; display: flex; align-items: center; justify-content: center; height: 100vh;">
                 <form action="{% url 'selector:redirect_to_app' %}" method="post">
                 {% csrf_token %}
-                    <input type="submit" src="{% static 'selector/'|add_image:app_name %}" class="form_image" name="selector_button" value="{{ app_name }}">
+                    <div>
+                        <input type="submit" class="form_image" name="selector_button" value="{{ app_name }}">
+                    </div>
                 </form>
             </div>
         {% endfor %}
     </div>
 </div>
-
-{#<section class="form_box">#}
-{#    <div class="analyze_box">#}
-{#        <form action="{% url 'analyze:index' %}" method="post">#}
-{#        {% csrf_token %}#}
-{#            <input type="image" src="{% static 'selector/nba_header.png' %}" alt="Submit" class="form_image" width="531" height="100">#}
-{#        </form>#}
-{#    </div>#}
-{#    <div class="divider_wall"></div>#}
-{#    <div class="houseplants_box">#}
-{#        <form action="{% url 'houseplants:index' %}" method="post">#}
-{#        {% csrf_token %}#}
-{#            <input type="image" src="{% static 'selector/houseplant_header.png' %}" alt="Submit" class="form_image" width="531" height="100">#}
-{#        </form>#}
-{#    </div>#}
-{#</section>#}
 
 </body>
 </html>
