@@ -9,7 +9,9 @@ def index(request):
         'app_names': [('analyze', 'beautiful_data.jpg'),
                       ('houseplants', 'houseplants.jpg'),
                       ('stocks', 'stock_exchange.jpg'),
-                      ('image_detection', 'object_detection.png')],
+                      ('image_detection', 'object_detection.png'),
+                      ('music_finder', 'music.jpg'),
+                      ('team_tweets', 'twitter.jpg')],
     }
     return render(request, 'selector/index.html', temp_dict)
 
