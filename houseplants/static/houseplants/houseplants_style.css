@@ -4,8 +4,7 @@
 }
 
 .houseplant_image {
-    margin: auto;
-    max-width: 94%;
+    max-width: 90%;
     background-color: #4f4f4f;
     border: 4px solid black;
     border-radius: 4px;
@@ -38,7 +37,6 @@
 
 .houseplant_row {
     display: flex;
-    align-items: center;
     justify-content: center;
 }
 
@@ -55,9 +53,8 @@
 
 .reddit_images_body {
     height: 100%;
-    width: 100%;
+    width: 99%;
     background-image: url('/static/houseplants/houseplants.jpg');
-    overflow: hidden;
     padding: 8px;
 }
 

@@ -58,7 +58,7 @@
     {% for image_list in houseplant_images|index:current_page %}
         <div class="row" style="padding: 8px 0px;">
             {% for image_item in image_list %}
-                <div class="column">
+                <div class="col">
                     <div class="houseplant_row">
                         <img class="houseplant_image" src="{{ image_item.get_media_url }}">
                     </div>
