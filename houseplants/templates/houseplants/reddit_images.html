@@ -7,16 +7,19 @@
     <title>Reddit Images</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="{% static 'houseplants/houseplants_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </head>
-<body style="max-width: 100%;">
+<body class="reddit_images_body">
 
-<div class="houseplants_box">
-    <div style="padding: 8px;"></div>
+<div class="container_fluid">
     <form action="{% url 'houseplants:reddit_images' %}" method="post">
     {% csrf_token %}
         <div class="houseplant_reddit_images_header">
             <div style="display: flex;">
-                <div style="padding: 8px;"></div>
                 <div class="houseplant_selectors">
                     <div>
                         <label>Image Sorting: </label>
@@ -33,7 +36,6 @@
                         <label>Display Count: </label>
                         <textarea name="display_count_text" class="houseplant_display_count">{{ page_image_limit }}</textarea>
                     </div>
-                    <div style="padding: 8px;"></div>
                     <div style="text-align: center;">
                         <input type="submit" value="Go" name="sorting_submit" class="reddit_images_updater">
                     </div>
@@ -49,18 +51,18 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-                <div style="padding: 8px;"></div>
             </div>
         </div>
     </form>
 
-    <div style="padding: 6px;"></div>
-
     {% for image_list in houseplant_images|index:current_page %}
-        <div class="houseplant_row">
+        <div class="row" style="padding: 8px 0px;">
             {% for image_item in image_list %}
-                <img class="houseplant_image" src="{{ image_item.get_media_url }}">
-                <div style="padding: 6px;"></div>
+                <div class="col">
+                    <div class="houseplant_row">
+                        <img class="houseplant_image" src="{{ image_item.get_media_url }}">
+                    </div>
+                </div>
             {% endfor %}
         </div>
         <br>
