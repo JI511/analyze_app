@@ -79,3 +79,7 @@ def reddit_images(request):
     }
 
     return render(request, 'houseplants/reddit_images.html', template_dict)
+
+
+def watering_schedule(request):
+    return render(request, 'houseplants/watering_schedule.html', {})

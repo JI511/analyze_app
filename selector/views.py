@@ -22,7 +22,6 @@ def redirect_to_app(request):
     """
     app_name = 'selector'
     if request.method == 'POST':
-        print(request.POST)
         if 'selector_button' in request.POST:
             app_name = request.POST.get('selector_button')
     return redirect('%s:index' % app_name)
