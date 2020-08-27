@@ -93,3 +93,18 @@
     text-decoration: none;
     font-size: 20px;
 }
+
+.watering_current_date {
+    font-family: "Oswald";
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.watering_outside_dates {
+    background:none;
+    border:none;
+    cursor: pointer;
+    font-family: "Oswald";
+    font-size: 20px;
+    opacity: 70%;
+}

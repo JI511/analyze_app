@@ -6,6 +6,7 @@
     <title>Watering Schedule</title>
     <link rel="shortcut icon" type="image/png" href="{% static 'houseplants/favicon.ico' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'houseplants/houseplants_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
 </head>
 <body>
 
@@ -13,15 +14,19 @@
 
 <form action="{% url 'houseplants:reddit_images' %}" method="post">
 {% csrf_token %}
-    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row;">
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 36px;">
         {% for week, day in early_dates %}
-            <button>{{ week }}<br/>{{ day }}</button>
+            <button class="watering_outside_dates">{{ week }}<br/>{{ day }}</button>
         {% endfor %}
         {% for week, day in current_date %}
-            <button>{{ week }}<br/>{{ day }}</button>
+            <div>
+                <label class="watering_current_date">{{ week }}</label>
+                <br>
+                <label class="watering_current_date">{{ day }}</label>
+            </div>
         {% endfor %}
         {% for week, day in later_dates %}
-            <button>{{ week }}<br/>{{ day }}</button>
+            <button class="watering_outside_dates">{{ week }}<br/>{{ day }}</button>
         {% endfor %}
     </div>
 </form>
