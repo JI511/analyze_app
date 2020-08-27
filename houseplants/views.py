@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import HouseplantItem
 import random
+import datetime
 
 # Create your views here.
 
@@ -82,4 +83,17 @@ def reddit_images(request):
 
 
 def watering_schedule(request):
-    return render(request, 'houseplants/watering_schedule.html', {})
+    weekly_dates = []
+    # we want a weeks worth of days centered on the current day
+    current = datetime.datetime.today() - datetime.timedelta(days=4)
+    for i in range(1, 8):
+        current += datetime.timedelta(days=1)
+        # add tuple of format (Day of week, Month_Name Day)
+        weekly_dates.append((current.strftime('%A'), current.strftime('%B %d')))
+
+    template_dict = {
+        'early_dates': weekly_dates[0:3],
+        'current_date': [weekly_dates[3]],
+        'later_dates': weekly_dates[4:],
+    }
+    return render(request, 'houseplants/watering_schedule.html', template_dict)

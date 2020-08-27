@@ -38,6 +38,7 @@
 .houseplant_row {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 .houseplants_box {
