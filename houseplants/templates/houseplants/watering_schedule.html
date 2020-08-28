@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+<div class="flex_columns">
     <h1 class="watering_header">Watering Schedule</h1>
     <div class="watering_divider"></div>
     <br>
@@ -34,6 +34,21 @@
         {% endfor %}
     </div>
 </form>
+
+<div class="flex_columns">
+    <br>
+    <div class="watering_divider"></div>
+    <br>
+    <div style="border: 1px solid black;">
+        {% for plant in user_plants %}
+{#            <label class="watering_header">{{ plant }}</label><br>#}
+            <label class="plant_label_container">{{ plant }}
+                <input type="checkbox">
+                <span class="checkmark"></span>
+            </label>
+        {% endfor %}
+    </div>
+</div>
 
 </body>
 </html>

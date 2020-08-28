@@ -95,5 +95,6 @@ def watering_schedule(request):
         'early_dates': weekly_dates[0:3],
         'current_date': [weekly_dates[3]],
         'later_dates': weekly_dates[4:],
+        'user_plants': ['Monstera', 'Silver Pothos', 'Philodendron Heartleaf'],
     }
     return render(request, 'houseplants/watering_schedule.html', template_dict)
