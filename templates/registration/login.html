@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+
 <h1>Create an account!</h1>
 <form method="post" action="{% url 'login' %}">
 {% csrf_token %}
@@ -17,3 +25,6 @@
   
 {# Assumes you setup the password_reset view in your URLconf #}
 <p><a href="{% url 'password_reset' %}">Lost password?</a></p>
+
+</body>
+</html>
