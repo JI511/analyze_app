@@ -1,6 +1,7 @@
 import os
 import uuid
 from django.db import models
+from django.contrib.auth.models import User
 
 media_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -38,6 +39,8 @@ class PlantInstance(models.Model):
     water_rate = models.IntegerField(default=7, help_text='Rate of watering in days')
     # date the instance was created
     date_added = models.DateField(null=True, blank=True)
+    # owner of the plant instance
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         # Python f-string syntax
