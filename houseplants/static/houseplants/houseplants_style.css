@@ -193,3 +193,16 @@
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+
+.watering_button {
+    background-color: #009b10; /* Dark Cornflower Blue */
+    border: 1px solid black;
+    border-radius: 4px;
+    color: white;
+    padding: 10px 30px;
+    text-align: center;
+    text-decoration: none;
+    font-family: "Oswald";
+    font-size: 20px;
+    cursor: pointer;
+}
