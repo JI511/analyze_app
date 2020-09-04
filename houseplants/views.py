@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import HouseplantItem, PlantInstance
+from django.contrib.auth.decorators import login_required
 import random
 import datetime
 
@@ -82,6 +83,7 @@ def reddit_images(request):
     return render(request, 'houseplants/reddit_images.html', template_dict)
 
 
+@login_required(login_url='/accounts/login/')
 def watering_schedule(request):
     weekly_dates = []
     # we want a weeks worth of days centered on the current day

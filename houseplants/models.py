@@ -37,6 +37,8 @@ class PlantInstance(models.Model):
     plant = models.ForeignKey('Plant', on_delete=models.SET_NULL, null=True)
     # number of days between watering
     water_rate = models.IntegerField(default=7, help_text='Rate of watering in days')
+    # The most recent water date
+    last_watered = models.DateField(null=True, blank=True)
     # date the instance was created
     date_added = models.DateField(null=True, blank=True)
     # owner of the plant instance
