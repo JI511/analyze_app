@@ -93,11 +93,10 @@ def watering_schedule(request):
         # add tuple of format (Day of week, Month_Name Day)
         weekly_dates.append((current.strftime('%A'), current.strftime('%B %d')))
 
-    user_plants = [''] if not request.user else PlantInstance.objects.filter(owner=request.user)
     template_dict = {
         'early_dates': weekly_dates[0:3],
         'current_date': [weekly_dates[3]],
         'later_dates': weekly_dates[4:],
-        'user_plants': user_plants,
+        'user_plants': PlantInstance.objects.filter(owner=request.user),
     }
     return render(request, 'houseplants/watering_schedule.html', template_dict)

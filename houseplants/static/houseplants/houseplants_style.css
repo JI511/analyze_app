@@ -206,3 +206,8 @@
     font-size: 20px;
     cursor: pointer;
 }
+
+.watering_last_watered {
+    font-family: "Oswald";
+    font-size: 20px;
+}

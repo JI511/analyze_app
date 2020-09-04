@@ -43,11 +43,14 @@
     <br>
     <div>
         {% for plant in user_plants %}
-{#            <label class="watering_header">{{ plant }}</label><br>#}
-            <label class="plant_label_container">{{ plant }}
-                <input type="checkbox">
-                <span class="checkmark"></span>
-            </label>
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <label class="plant_label_container">{{ plant }},
+                    <input type="checkbox">
+                    <span class="checkmark"></span>
+                </label>
+                <div style="padding: 6px;"></div>
+                <label class="watering_last_watered">(Last {{ plant.last_watered }})</label>
+            </div>
         {% endfor %}
     </div>
 </div>
