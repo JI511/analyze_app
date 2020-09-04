@@ -1,5 +1,7 @@
 import os
+import uuid
 from django.db import models
+from django.contrib.auth.models import User
 
 media_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -19,3 +21,35 @@ class HouseplantItem(models.Model):
 
     def __str__(self):
         return str(self.image_name)
+
+
+# When designing models it makes sense to have separate models for every "object". Plants,
+# plant instances.
+
+# There can be many instances of the same plant (monstera), but each plant type is unique
+class PlantInstance(models.Model):
+    """
+    Model representing a specific plant instance (that a user owns).
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
+                          help_text='Unique ID for this plant across all users')
+    # Foreign key to plant model object
+    plant = models.ForeignKey('Plant', on_delete=models.SET_NULL, null=True)
+    # number of days between watering
+    water_rate = models.IntegerField(default=7, help_text='Rate of watering in days')
+    # The most recent water date
+    last_watered = models.DateField(null=True, blank=True)
+    # date the instance was created
+    date_added = models.DateField(null=True, blank=True)
+    # owner of the plant instance
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.plant.plant_name
+
+
+class Plant(models.Model):
+    plant_name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.plant_name
