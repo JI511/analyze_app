@@ -26,6 +26,8 @@
                     <li><a href="{% url 'houseplants:index' %}">Home</a></li>
                     <li><a href="{% url 'houseplants:reddit_images' %}">Reddit Images</a></li>
                     <li><a href="{% url 'houseplants:watering_schedule' %}">Watering Schedule</a></li>
+                    <br>
+                    <li><a href="{% url 'logout'%}?next={{request.path}}" class="watering_button">Logout</a></li>
                 </ul>
             {% endblock %}
         </div>
