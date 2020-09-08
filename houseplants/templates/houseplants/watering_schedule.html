@@ -1,3 +1,4 @@
+{% extends "houseplants/base_generic.html" %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -10,50 +11,44 @@
 </head>
 <body>
 
-<div class="flex_columns">
-    <h1 class="watering_header">Welcome, {{ user.get_username }}</h1>
-    <a href="{% url 'logout'%}?next={{request.path}}" class="watering_button">Logout</a>
-    <br>
-    <div class="watering_divider"></div>
-    <br>
-</div>
+{% block content %}
+    <form action="{% url 'houseplants:reddit_images' %}" method="post">
+    {% csrf_token %}
+        <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 36px;">
+            {% for week, day in early_dates %}
+                <button class="watering_outside_dates">{{ week }},<br/>{{ day }}</button>
+            {% endfor %}
+            {% for week, day in current_date %}
+                <div>
+                    <label class="watering_current_date">{{ week }},</label>
+                    <br>
+                    <label class="watering_current_date">{{ day }}</label>
+                </div>
+            {% endfor %}
+            {% for week, day in later_dates %}
+                <button class="watering_outside_dates">{{ week }},<br/>{{ day }}</button>
+            {% endfor %}
+        </div>
+    </form>
 
-<form action="{% url 'houseplants:reddit_images' %}" method="post">
-{% csrf_token %}
-    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 36px;">
-        {% for week, day in early_dates %}
-            <button class="watering_outside_dates">{{ week }},<br/>{{ day }}</button>
-        {% endfor %}
-        {% for week, day in current_date %}
-            <div>
-                <label class="watering_current_date">{{ week }},</label>
-                <br>
-                <label class="watering_current_date">{{ day }}</label>
-            </div>
-        {% endfor %}
-        {% for week, day in later_dates %}
-            <button class="watering_outside_dates">{{ week }},<br/>{{ day }}</button>
-        {% endfor %}
+    <div class="flex_columns">
+        <br>
+        <div class="watering_divider"></div>
+        <br>
+        <div>
+            {% for plant in user_plants %}
+                <div style="display: flex; flex-direction: row; align-items: center;">
+                    <label class="plant_label_container">{{ plant }},
+                        <input type="checkbox">
+                        <span class="checkmark"></span>
+                    </label>
+                    <div style="padding: 6px;"></div>
+                    <label class="oswald_midsize">(Last {{ plant.last_watered }})</label>
+                </div>
+            {% endfor %}
+        </div>
     </div>
-</form>
-
-<div class="flex_columns">
-    <br>
-    <div class="watering_divider"></div>
-    <br>
-    <div>
-        {% for plant in user_plants %}
-            <div style="display: flex; flex-direction: row; align-items: center;">
-                <label class="plant_label_container">{{ plant }},
-                    <input type="checkbox">
-                    <span class="checkmark"></span>
-                </label>
-                <div style="padding: 6px;"></div>
-                <label class="watering_last_watered">(Last {{ plant.last_watered }})</label>
-            </div>
-        {% endfor %}
-    </div>
-</div>
+{% endblock %}
 
 </body>
 </html>

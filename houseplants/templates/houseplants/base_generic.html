@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block title %}<title>Houseplants App</title>{% endblock %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
+    <link rel="stylesheet" type="text/css" href="{% static 'houseplants/houseplants_style.css' %}">
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-2">
+            {% block sidebar %}
+                <ul class="sidebar-nav">
+                    <li><label class="sidebar_header">&lt;Site Logo TODO&gt;</label></li>
+                    <br>
+                    {% if user.is_authenticated  %}
+                        <li><label class="oswald_midsize">{{ user.get_username }}</label></li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Home</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'houseplants:index' %}">Home</a></li>
+                    <li><a href="{% url 'houseplants:reddit_images' %}">Reddit Images</a></li>
+                    <li><a href="{% url 'houseplants:watering_schedule' %}">Watering Schedule</a></li>
+                    <br>
+                    <li><a href="{% url 'logout'%}?next={{request.path}}" class="watering_button">Logout</a></li>
+                </ul>
+            {% endblock %}
+        </div>
+        <div class="col-sm-10 ">{% block content %}{% endblock %}</div>
+    </div>
+</div>
+
+</body>
+</html>

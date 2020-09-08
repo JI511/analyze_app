@@ -52,13 +52,6 @@
     width: 60px;
 }
 
-.reddit_images_body {
-    height: 100%;
-    width: 99%;
-    background-image: url('/static/houseplants/houseplants.jpg');
-    padding: 8px;
-}
-
 .reddit_images_updater {
     background-color: #C9082A;
     border: 1px solid black;
@@ -195,11 +188,11 @@
 }
 
 .watering_button {
-    background-color: #009b10; /* Dark Cornflower Blue */
+    background-color: #b11012;
     border: 1px solid black;
     border-radius: 4px;
     color: white;
-    padding: 10px 30px;
+    padding: 0px 15px;
     text-align: center;
     text-decoration: none;
     font-family: "Oswald";
@@ -207,7 +200,19 @@
     cursor: pointer;
 }
 
-.watering_last_watered {
+.oswald_midsize {
     font-family: "Oswald";
     font-size: 20px;
+}
+
+.sidebar-nav {
+    margin-top: 40px;
+    padding: 0;
+    list-style: none;
+    border-right: 2px solid black;
+}
+
+.sidebar_header {
+    font-family: "Oswald";
+    font-size: 30px;
 }
