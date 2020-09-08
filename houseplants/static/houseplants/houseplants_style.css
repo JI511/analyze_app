@@ -207,13 +207,19 @@
     cursor: pointer;
 }
 
-.watering_last_watered {
+.oswald_midsize {
     font-family: "Oswald";
     font-size: 20px;
 }
 
 .sidebar-nav {
-    margin-top: 20px;
+    margin-top: 40px;
     padding: 0;
     list-style: none;
+    border-right: 2px solid black;
+}
+
+.sidebar_header {
+    font-family: "Oswald";
+    font-size: 30px;
 }
