@@ -100,3 +100,8 @@ def watering_schedule(request):
         'user_plants': PlantInstance.objects.filter(owner=request.user),
     }
     return render(request, 'houseplants/watering_schedule.html', template_dict)
+
+
+@login_required(login_url='/accounts/login/')
+def add_plants(request):
+    return render(request, 'houseplants/add_plants.html', {})

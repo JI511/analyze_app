@@ -18,14 +18,16 @@
                 <ul class="sidebar-nav">
                     <li><label class="sidebar_header">&lt;Site Logo TODO&gt;</label></li>
                     <br>
+                    <li style="font-size: 24px;"><a href="{% url 'houseplants:index' %}">Home</a></li>
+                    <li><a href="{% url 'houseplants:reddit_images' %}">Reddit Images</a></li>
+                    <br>
                     {% if user.is_authenticated  %}
-                        <li><label class="oswald_midsize">{{ user.get_username }}</label></li>
+                        <li><label style="font-size: 30px;" class="oswald_midsize">{{ user.get_username }}</label></li>
                     {% else %}
                         <li><a href="{% url 'login' %}">Home</a></li>
                     {% endif %}
-                    <li><a href="{% url 'houseplants:index' %}">Home</a></li>
-                    <li><a href="{% url 'houseplants:reddit_images' %}">Reddit Images</a></li>
                     <li><a href="{% url 'houseplants:watering_schedule' %}">Watering Schedule</a></li>
+                    <li><a href="{% url 'houseplants:add_plants' %}">Add Plants</a></li>
                     <br>
                     <li><a href="{% url 'logout'%}?next={{request.path}}" class="watering_button">Logout</a></li>
                 </ul>
