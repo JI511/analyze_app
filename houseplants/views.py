@@ -1,10 +1,11 @@
-from django.shortcuts import render
-from .models import HouseplantItem, PlantInstance
-from django.contrib.auth.decorators import login_required
 import random
 import datetime
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
-# Create your views here.
+from .models import HouseplantItem, PlantInstance, Plant
+from .forms import AddPlantForm
 
 
 sorting_items = [
@@ -104,4 +105,18 @@ def watering_schedule(request):
 
 @login_required(login_url='/accounts/login/')
 def add_plants(request):
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+        # Create a form instance and populate it with data from the request (binding):
+        form = AddPlantForm(request.POST)
+
+        if form.is_valid() and request.user.is_authenticated():
+            plant_instance = PlantInstance(
+                plant=Plant(plant_name=form.cleaned_data['plant_name']),
+                water_rate=form.cleaned_data['water_rate'],
+                last_watered=form.cleaned_data['last_watered'],
+                date_added=datetime.datetime.today(),
+                owner=User()
+            )
+
     return render(request, 'houseplants/add_plants.html', {})
