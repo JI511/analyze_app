@@ -13,11 +13,18 @@ class AddPlantForm(forms.Form):
 
     def clean_plant_name(self):
         name = self.cleaned_data['plant_name']
-        for name in [plant_obj_names.plant_name for plant_obj_names in Plant.objects.all()]:
-            if name
+        if name not in [plant_obj_names.plant_name for plant_obj_names in Plant.objects.all()]:
+            raise ValidationError(_('Invalid Plant - plant not in known object list!'))
+        return name
 
     def clean_water_rate(self):
-        pass
+        rate = self.cleaned_data['water_rate']
+        try:
+            rate = round(rate)
+            if rate < 0:
+                raise ValueError
+        except ValueError:
+            raise ValidationError(_('Invalid watering rate - Please enter a valid number larger than 0'))
 
     def clean_last_watered(self):
         data = self.cleaned_data['last_watered']

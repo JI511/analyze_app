@@ -105,6 +105,7 @@ def watering_schedule(request):
 
 @login_required(login_url='/accounts/login/')
 def add_plants(request):
+    status_message = 'Add a new plant!'
     # If this is a POST request then process the Form data
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
@@ -118,5 +119,14 @@ def add_plants(request):
                 date_added=datetime.datetime.today(),
                 owner=User()
             )
+            plant_instance.save()
 
-    return render(request, 'houseplants/add_plants.html', {})
+            status_message = 'Plant added successfully!'
+    else:
+        form = AddPlantForm(initial={'water_rate': 7})
+    template_dict = {
+        'form': form,
+        'status_message': status_message
+    }
+
+    return render(request, 'houseplants/add_plants.html', template_dict)

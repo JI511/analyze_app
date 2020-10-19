@@ -10,10 +10,19 @@
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
 </head>
 <body>
-
 {% block content %}
-<h1>Add Plants!</h1>
-{% endblock content %}
 
+<h1>Add Plants!</h1>
+<h2>{{ status_message }}</h2>
+<form action="" method="post">
+{% csrf_token %}
+    <table>
+{#        Need to get dropdown of plants? Or how to type and it recommend?#}
+    {{ form.plant_name }}
+    </table>
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock content %}
 </body>
 </html>
