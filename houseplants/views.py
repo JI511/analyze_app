@@ -126,7 +126,8 @@ def add_plants(request):
         form = AddPlantForm(initial={'water_rate': 7})
     template_dict = {
         'form': form,
-        'status_message': status_message
+        'status_message': status_message,
+        'plants': Plant.objects.all(),
     }
 
     return render(request, 'houseplants/add_plants.html', template_dict)

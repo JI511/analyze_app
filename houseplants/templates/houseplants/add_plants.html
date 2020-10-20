@@ -16,10 +16,11 @@
 <h2>{{ status_message }}</h2>
 <form action="" method="post">
 {% csrf_token %}
-    <table>
-{#        Need to get dropdown of plants? Or how to type and it recommend?#}
-    {{ form.plant_name }}
-    </table>
+    <select name="plant_name">
+        {% for plant in plants %}
+            <option value="{{ plant.plant_name }}">{{ plant.plant_name }}</option>
+        {% endfor %}
+    </select>
     <input type="submit" value="Submit">
 </form>
 
