@@ -45,7 +45,7 @@ class PlantInstance(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
-        return self.plant.plant_name
+        return '%s %s' % (self.plant.plant_name, self.owner)
 
 
 class Plant(models.Model):

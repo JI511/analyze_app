@@ -111,17 +111,19 @@ def add_plants(request):
         # Create a form instance and populate it with data from the request (binding):
         form = AddPlantForm(request.POST)
 
-        if form.is_valid() and request.user.is_authenticated():
+        if form.is_valid() and request.user.is_authenticated:
             plant_instance = PlantInstance(
-                plant=Plant(plant_name=form.cleaned_data['plant_name']),
+                plant=Plant.objects.get(plant_name=form.cleaned_data['plant_name']),
+                # plant=Plant.ge(plant_name=form.cleaned_data['plant_name']),
                 water_rate=form.cleaned_data['water_rate'],
                 last_watered=form.cleaned_data['last_watered'],
                 date_added=datetime.datetime.today(),
-                owner=User()
+                owner=User.objects.get(username=request.user.username)
             )
+            print(plant_instance)
             plant_instance.save()
 
-            status_message = 'Plant added successfully!'
+            status_message = 'Plant added successfully!: ' % plant_instance.plant.plant_name
     else:
         form = AddPlantForm(initial={'water_rate': 7})
     template_dict = {
