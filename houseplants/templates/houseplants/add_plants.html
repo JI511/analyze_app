@@ -29,11 +29,11 @@
 <body>
 {% block content %}
 
-<h1>Add Plants!</h1>
-<h2>{{ status_message }}</h2>
+<h1 class="page_header">{{ status_message }}</h1>
 <form action="" method="post">
 {% csrf_token %}
-    <div>
+    <div class="form_item">
+        <label class="form_label">Plant Name</label><br>
         {{ form.plant_name.errors }}
         <select name="plant_name">
             <option selected>Select a Plant</option>
@@ -42,19 +42,21 @@
             {% endfor %}
         </select>
     </div>
-    <div>
+    <div class="form_item">
         {{ form.water_rate.errors }}
-        <label for="{{ form.water_rate.id_for_label }}">Water rate:</label>
+        <label class="form_label">Water Rate:</label><br>
         {{ form.water_rate }}
     </div>
-    <div>
+    <div class="form_item">
         {{ form.last_watered.errors }}
-        <div class="md-form">
+        <div class="md-form" style="max-width: 25%">
+            <label class="form_label" for="inputMDEx">Last Watered Date</label>
             <input type="date" id="inputMDEx" class="form-control" name="last_watered">
-            <label for="inputMDEx">Choose your date</label>
         </div>
     </div>
-    <input type="submit" value="Submit">
+    <div style="padding: 15px 0px;">
+        <input type="submit" value="Submit">
+    </div>
 
 </form>
 

@@ -98,9 +98,11 @@
     padding: 0px 180px;
 }
 
-.watering_header {
+.page_header {
     font-family: "Oswald";
-    font-size: 30px;
+    font-size: 36px;
+    font-weight: bold;
+    padding: 20px 0px;
 }
 
 .watering_outside_dates {
@@ -215,4 +217,15 @@
 .sidebar_header {
     font-family: "Oswald";
     font-size: 30px;
+}
+
+.form_item {
+    padding: 15px 5px;
+    font-family: "Oswald";
+    font-size: 20px;
+}
+
+.form_label {
+    font-size: 26px;
+    font-weight: bold;
 }

@@ -120,10 +120,10 @@ def add_plants(request):
                 date_added=datetime.datetime.today(),
                 owner=User.objects.get(username=request.user.username)
             )
-            print(plant_instance)
             plant_instance.save()
+            print(plant_instance.plant.plant_name)
 
-            status_message = 'Plant added successfully!: ' % plant_instance.plant.plant_name
+            status_message = 'Plant added successfully: %s' % plant_instance.plant.plant_name
     else:
         form = AddPlantForm(initial={'water_rate': 7})
     template_dict = {
