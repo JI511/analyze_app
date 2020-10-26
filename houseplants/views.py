@@ -1,10 +1,11 @@
-from django.shortcuts import render
-from .models import HouseplantItem, PlantInstance
-from django.contrib.auth.decorators import login_required
 import random
 import datetime
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
-# Create your views here.
+from .models import HouseplantItem, PlantInstance, Plant
+from .forms import AddPlantForm
 
 
 sorting_items = [
@@ -100,3 +101,35 @@ def watering_schedule(request):
         'user_plants': PlantInstance.objects.filter(owner=request.user),
     }
     return render(request, 'houseplants/watering_schedule.html', template_dict)
+
+
+@login_required(login_url='/accounts/login/')
+def add_plants(request):
+    status_message = 'Add a new plant!'
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+        # Create a form instance and populate it with data from the request (binding):
+        form = AddPlantForm(request.POST)
+
+        if form.is_valid() and request.user.is_authenticated:
+            plant_instance = PlantInstance(
+                plant=Plant.objects.get(plant_name=form.cleaned_data['plant_name']),
+                # plant=Plant.ge(plant_name=form.cleaned_data['plant_name']),
+                water_rate=form.cleaned_data['water_rate'],
+                last_watered=form.cleaned_data['last_watered'],
+                date_added=datetime.datetime.today(),
+                owner=User.objects.get(username=request.user.username)
+            )
+            plant_instance.save()
+            print(plant_instance.plant.plant_name)
+
+            status_message = 'Plant added successfully: %s' % plant_instance.plant.plant_name
+    else:
+        form = AddPlantForm(initial={'water_rate': 7})
+    template_dict = {
+        'form': form,
+        'status_message': status_message,
+        'plants': Plant.objects.all(),
+    }
+
+    return render(request, 'houseplants/add_plants.html', template_dict)
