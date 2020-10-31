@@ -86,8 +86,12 @@ def reddit_images(request):
 
 @login_required(login_url='/accounts/login/')
 def watering_schedule(request):
-    # TODO Need to fix how dates are displayed with selected date in middle
-    # Changes could also make displaying easier in template
+    # TODO Notes
+    # Dates in the past should only show plants that were watered on that day
+    #    Does this mean all historical watered dates should be kept?
+    #    Seems like there would be a benefit to yes, you could show over time how often it was watered (also gather data across all users
+    # Dates in the future should only show the current iteration for water rate, ie if rate = 7, dont show needs watering on 28th day in future, only the 7 days out
+    
 
     current_date = datetime.date.today()
     if request.method == 'POST':
