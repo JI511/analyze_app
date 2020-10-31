@@ -12,21 +12,17 @@
 <body>
 
 {% block content %}
-    <form action="{% url 'houseplants:reddit_images' %}" method="post">
+    <form action="{% url 'houseplants:watering_schedule' %}" method="post">
     {% csrf_token %}
         <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 36px;">
-            {% for week, day in early_dates %}
-                <button class="watering_outside_dates">{{ week }},<br/>{{ day }}</button>
-            {% endfor %}
-            {% for week, day in current_date %}
-                <div>
-                    <label class="watering_current_date">{{ week }},</label>
+            {% for date, dow, is_main in weekly_dates %}
+                {% if not is_main %}
+                    <button name="calendar_select" value="{{ date.month }}-{{ date.day }}-{{ date.year }}" type="submit" class="watering_outside_dates">{{ dow }},<br/>{{ date.day }}</button>
+                {% else %}
+                    <label class="watering_current_date">{{ dow }},</label>
                     <br>
-                    <label class="watering_current_date">{{ day }}</label>
-                </div>
-            {% endfor %}
-            {% for week, day in later_dates %}
-                <button class="watering_outside_dates">{{ week }},<br/>{{ day }}</button>
+                    <label class="watering_current_date">{{ date.day }}</label>
+                {% endif %}
             {% endfor %}
         </div>
     </form>

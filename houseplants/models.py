@@ -1,5 +1,6 @@
 import os
 import uuid
+import datetime
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -46,6 +47,15 @@ class PlantInstance(models.Model):
 
     def __str__(self):
         return '%s %s' % (self.plant.plant_name, self.owner)
+
+    def due_for_watering(self):
+        """
+        Indicates if the last water date plus water rate has reached or passed the current day.
+        """
+        is_due = False
+        if datetime.date.today().toordinal() > self.last_watered.toordinal() + self.water_rate:
+            is_due = True
+        return is_due
 
 
 class Plant(models.Model):

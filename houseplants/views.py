@@ -89,24 +89,37 @@ def watering_schedule(request):
     # TODO Need to fix how dates are displayed with selected date in middle
     # Changes could also make displaying easier in template
 
+    current_date = datetime.date.today()
+    if request.method == 'POST':
+        if 'calendar_select' in request.POST:
+            temp_date = request.POST.get('calendar_select')
+            current_date = datetime.datetime.strptime(temp_date, '%m-%d-%Y').date()
+            current_date.strftime('%A')
+
+    current_ord = current_date.toordinal()
     weekly_dates = []
-    # we want a weeks worth of days centered on the current day
-    current = datetime.datetime.today() - datetime.timedelta(days=4)
-    for i in range(1, 8):
-        current += datetime.timedelta(days=1)
-        # add tuple of format (Day of week, Month_Name Day)
-        weekly_dates.append((current.strftime('%A'), current.strftime('%B %d')))
+    for i in range(current_ord - 3, current_ord + 4):
+        if i == current_ord:
+            weekly_dates.append((datetime.date.fromordinal(i), datetime.date.fromordinal(i).strftime('%A'), True))
+        else:
+            weekly_dates.append((datetime.date.fromordinal(i), datetime.date.fromordinal(i).strftime('%A'), False))
+
+    # weekly_dates = []
+    # # we want a weeks worth of days centered on the current day
+    # current = datetime.datetime.today() - datetime.timedelta(days=4)
+    # for i in range(1, 8):
+    #     current += datetime.timedelta(days=1)
+    #     # add tuple of format (Day of week, Month_Name Day)
+    #     weekly_dates.append((current.strftime('%A'), current.strftime('%B %d')))
 
     user_plants = []
     for pi in PlantInstance.objects.filter(owner=request.user):
-        if pi.last_watered.toordinal() + pi.water_rate == datetime.date.today().toordinal():
+        if pi.due_for_watering():
             user_plants.append(pi)
 
-    # all_plants = [pi if  else for pi in PlantInstance.objects.filter(owner=request.user)]
+    # need datetime list with current date bool
     template_dict = {
-        'early_dates': weekly_dates[0:3],
-        'current_date': [weekly_dates[3]],
-        'later_dates': weekly_dates[4:],
+        'weekly_dates': weekly_dates,
         'user_plants': user_plants,
     }
 
