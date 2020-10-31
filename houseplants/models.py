@@ -48,12 +48,18 @@ class PlantInstance(models.Model):
     def __str__(self):
         return '%s %s' % (self.plant.plant_name, self.owner)
 
-    def due_for_watering(self):
+    def due_for_watering(self, active_date=None):
         """
         Indicates if the last water date plus water rate has reached or passed the current day.
+
+        :param datetime.date active_date: The date to compare against.
         """
+        # TODO, while there isnt a lot of benefit to looking at watering in the past, the future needs to have the date change
+        # TODO, The past could still show when something was last watered with a checkmark filled in?
+        if active_date is None:
+            active_date = datetime.date.today()
         is_due = False
-        if datetime.date.today().toordinal() > self.last_watered.toordinal() + self.water_rate:
+        if active_date.toordinal() > self.last_watered.toordinal() + self.water_rate:
             is_due = True
         return is_due
 

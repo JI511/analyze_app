@@ -11,6 +11,8 @@
 </head>
 <body>
 
+{#TODO Add reset to today button if not on current day#}
+
 {% block content %}
     <form action="{% url 'houseplants:watering_schedule' %}" method="post">
     {% csrf_token %}
