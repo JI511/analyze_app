@@ -15,13 +15,15 @@
     <form action="{% url 'houseplants:watering_schedule' %}" method="post">
     {% csrf_token %}
         <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 36px;">
-            {% for date, dow, is_main in weekly_dates %}
+            {% for date, dow, dom, is_main in weekly_dates %}
                 {% if not is_main %}
-                    <button name="calendar_select" value="{{ date.month }}-{{ date.day }}-{{ date.year }}" type="submit" class="watering_outside_dates">{{ dow }},<br/>{{ date.day }}</button>
+                    <button name="calendar_select" value="{{ date.month }}-{{ date.day }}-{{ date.year }}" type="submit" class="watering_outside_dates">{{ dow }},<br/>{{ dom }} {{ date.day }}</button>
                 {% else %}
-                    <label class="watering_current_date">{{ dow }},</label>
-                    <br>
-                    <label class="watering_current_date">{{ date.day }}</label>
+                    <div>
+                        <label class="watering_current_date">{{ dow }},</label>
+                        <br>
+                        <label class="watering_current_date">{{ dom }} {{ date.day }}</label>
+                    </div>
                 {% endif %}
             {% endfor %}
         </div>

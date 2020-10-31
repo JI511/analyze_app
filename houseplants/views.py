@@ -99,10 +99,11 @@ def watering_schedule(request):
     current_ord = current_date.toordinal()
     weekly_dates = []
     for i in range(current_ord - 3, current_ord + 4):
+        td = datetime.date.fromordinal(i)
         if i == current_ord:
-            weekly_dates.append((datetime.date.fromordinal(i), datetime.date.fromordinal(i).strftime('%A'), True))
+            weekly_dates.append((td, td.strftime('%A'), td.strftime('%B'), True))
         else:
-            weekly_dates.append((datetime.date.fromordinal(i), datetime.date.fromordinal(i).strftime('%A'), False))
+            weekly_dates.append((td, td.strftime('%A'), td.strftime('%B'), False))
 
     # weekly_dates = []
     # # we want a weeks worth of days centered on the current day
