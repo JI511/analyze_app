@@ -35,8 +35,6 @@ class AddPlantForm(forms.Form):
 
     def clean_last_watered(self):
         data = self.cleaned_data['last_watered']
-        print(type(data))
-        print(data)
 
         current_date = datetime.datetime.now(pytz.timezone(settings.TIME_ZONE))
 

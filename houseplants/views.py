@@ -86,6 +86,9 @@ def reddit_images(request):
 
 @login_required(login_url='/accounts/login/')
 def watering_schedule(request):
+    # TODO Need to fix how dates are displayed with selected date in middle
+    # Changes could also make displaying easier in template
+
     weekly_dates = []
     # we want a weeks worth of days centered on the current day
     current = datetime.datetime.today() - datetime.timedelta(days=4)
@@ -94,12 +97,19 @@ def watering_schedule(request):
         # add tuple of format (Day of week, Month_Name Day)
         weekly_dates.append((current.strftime('%A'), current.strftime('%B %d')))
 
+    user_plants = []
+    for pi in PlantInstance.objects.filter(owner=request.user):
+        if pi.last_watered.toordinal() + pi.water_rate == datetime.date.today().toordinal():
+            user_plants.append(pi)
+
+    # all_plants = [pi if  else for pi in PlantInstance.objects.filter(owner=request.user)]
     template_dict = {
         'early_dates': weekly_dates[0:3],
         'current_date': [weekly_dates[3]],
         'later_dates': weekly_dates[4:],
-        'user_plants': PlantInstance.objects.filter(owner=request.user),
+        'user_plants': user_plants,
     }
+
     return render(request, 'houseplants/watering_schedule.html', template_dict)
 
 
