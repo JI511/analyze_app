@@ -1,4 +1,5 @@
 {% extends "houseplants/base_generic.html" %}
+{% load houseplant_tags %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -8,26 +9,50 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'houseplants/favicon.ico' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'houseplants/houseplants_style.css' %}">
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
+
+    <!-- Bootstrap 4 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+    <!-- Font Awesome -->
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <!-- Moment.js -->
+    <script src="{% static 'vendor/moment.js-2.23.0/moment.min.js' %}"></script>
+
+    <!-- Bootstrap DateTimePicker -->
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-4-5.1.2/css/tempusdominus-bootstrap-4.min.css' %}">
+    <script src="{% static 'vendor/bootstrap-4-5.1.2/js/tempusdominus-bootstrap-4.min.js' %}"></script>
 </head>
 <body>
 
 {% block content %}
-    <form action="{% url 'houseplants:reddit_images' %}" method="post">
+    <form action="" method="post">
     {% csrf_token %}
         <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 36px;">
-            {% for week, day in early_dates %}
-                <button class="watering_outside_dates">{{ week }},<br/>{{ day }}</button>
+            {% for date, dow, dom, is_main in weekly_dates %}
+                {% if not is_main %}
+                    <button name="calendar_select" value="{{ date.month }}-{{ date.day }}-{{ date.year }}" type="submit" class="watering_outside_dates">{{ dow }},<br/>{{ dom }} {{ date.day }}</button>
+                {% else %}
+                    <div>
+                        <label class="watering_current_date">{{ dow }},</label>
+                        <br>
+                        <label class="watering_current_date">{{ dom }} {{ date.day }}</label>
+                    </div>
+                {% endif %}
             {% endfor %}
-            {% for week, day in current_date %}
-                <div>
-                    <label class="watering_current_date">{{ week }},</label>
-                    <br>
-                    <label class="watering_current_date">{{ day }}</label>
-                </div>
-            {% endfor %}
-            {% for week, day in later_dates %}
-                <button class="watering_outside_dates">{{ week }},<br/>{{ day }}</button>
-            {% endfor %}
+        </div>
+    </form>
+    <form action="" method="post">
+    {% csrf_token %}
+        <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; padding: 10px; gap: 10px;">
+            <label class="form_label">Jump to Date:</label>
+            <div class="md-form" style="max-width: 25%">
+                <input type="date" id="inputMDEx" class="form-control" name="jump_to_date">
+            </div>
+            <button class="watering_button" type="submit">Go</button>
         </div>
     </form>
 
@@ -36,16 +61,28 @@
         <div class="watering_divider"></div>
         <br>
         <div>
-            {% for plant in user_plants %}
+        {% if not watering %}
+            {% for plant in user_plant_instances %}
                 <div style="display: flex; flex-direction: row; align-items: center;">
                     <label class="plant_label_container">{{ plant }},
                         <input type="checkbox">
                         <span class="checkmark"></span>
                     </label>
                     <div style="padding: 6px;"></div>
-                    <label class="oswald_midsize">(Last {{ plant.last_watered }})</label>
+                    <label class="oswald_midsize">(Last {{ plant.get_last_watered|convert_date }})</label>
                 </div>
             {% endfor %}
+        {% else %}
+            {% for water in watering %}
+                <div style="display: flex; flex-direction: row; align-items: center;">
+                    <label class="plant_label_container">{{ water.get_plant_name }}
+                        <input type="checkbox">
+                        <span class="checkmark"></span>
+                    </label>
+                    <div style="padding: 6px;"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
         </div>
     </div>
 {% endblock %}

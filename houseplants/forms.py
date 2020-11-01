@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from mysite import settings
-from .models import Plant
+from .models import Plant, Watering
 
 
 class AddPlantForm(forms.Form):
@@ -34,9 +34,7 @@ class AddPlantForm(forms.Form):
         return rate
 
     def clean_last_watered(self):
-        data = self.cleaned_data['last_watered']
-        print(type(data))
-        print(data)
+        data = self.cleaned_data['watering']
 
         current_date = datetime.datetime.now(pytz.timezone(settings.TIME_ZONE))
 
@@ -48,5 +46,6 @@ class AddPlantForm(forms.Form):
         if data > current_date:
             raise ValidationError(_('Invalid date - you can\'t water the future!'))
 
-        # Remember to always return the cleaned data.
-        return data
+        watering = Watering()
+
+        return

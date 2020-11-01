@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-from .models import HouseplantItem, PlantInstance, Plant
+from .models import HouseplantItem, PlantInstance, Plant, Watering
 from .forms import AddPlantForm
 
 
@@ -86,20 +86,43 @@ def reddit_images(request):
 
 @login_required(login_url='/accounts/login/')
 def watering_schedule(request):
+    # TODO Notes
+    # Dates in the past should gather any Watering objects from that day and display them
+
+    current_date = datetime.date.today()
+    if request.method == 'POST':
+        if 'calendar_select' in request.POST:
+            temp_date = request.POST.get('calendar_select')
+            current_date = datetime.datetime.strptime(temp_date, '%m-%d-%Y').date()
+        elif 'jump_to_date' in request.POST:
+            temp_date = request.POST.get('jump_to_date')
+            current_date = datetime.datetime.strptime(temp_date, '%Y-%m-%d').date()
+
+    current_ord = current_date.toordinal()
     weekly_dates = []
-    # we want a weeks worth of days centered on the current day
-    current = datetime.datetime.today() - datetime.timedelta(days=4)
-    for i in range(1, 8):
-        current += datetime.timedelta(days=1)
-        # add tuple of format (Day of week, Month_Name Day)
-        weekly_dates.append((current.strftime('%A'), current.strftime('%B %d')))
+    for i in range(current_ord - 3, current_ord + 4):
+        td = datetime.date.fromordinal(i)
+        if i == current_ord:
+            # create tuple of: full datetime.date object, day of week, day of month, is middle date
+            weekly_dates.append((td, td.strftime('%A'), td.strftime('%B'), True))
+        else:
+            weekly_dates.append((td, td.strftime('%A'), td.strftime('%B'), False))
+
+    user_plant_instances = []
+    watering = []
+    if current_ord < datetime.datetime.today().toordinal():
+        watering = Watering.objects.filter(watering_date=current_date)
+    else:
+        for pi in PlantInstance.objects.filter(owner=request.user):
+            if pi.due_for_watering(active_date=current_date):
+                user_plant_instances.append(pi)
 
     template_dict = {
-        'early_dates': weekly_dates[0:3],
-        'current_date': [weekly_dates[3]],
-        'later_dates': weekly_dates[4:],
-        'user_plants': PlantInstance.objects.filter(owner=request.user),
+        'weekly_dates': weekly_dates,
+        'user_plant_instances': user_plant_instances,
+        'watering': watering,
     }
+
     return render(request, 'houseplants/watering_schedule.html', template_dict)
 
 
@@ -114,14 +137,15 @@ def add_plants(request):
         if form.is_valid() and request.user.is_authenticated:
             plant_instance = PlantInstance(
                 plant=Plant.objects.get(plant_name=form.cleaned_data['plant_name']),
-                # plant=Plant.ge(plant_name=form.cleaned_data['plant_name']),
                 water_rate=form.cleaned_data['water_rate'],
-                last_watered=form.cleaned_data['last_watered'],
                 date_added=datetime.datetime.today(),
                 owner=User.objects.get(username=request.user.username)
             )
             plant_instance.save()
-            print(plant_instance.plant.plant_name)
+            # Create an initial watering instance from the created plant instance
+            watering = Watering(plant_instance=PlantInstance.objects.get(id=plant_instance.id),
+                                watering_date=form.cleaned_data['watering'])
+            watering.save()
 
             status_message = 'Plant added successfully: %s' % plant_instance.plant.plant_name
     else:
