@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-from .models import HouseplantItem, PlantInstance, Plant
+from .models import HouseplantItem, PlantInstance, Plant, Watering
 from .forms import AddPlantForm
 
 
@@ -87,11 +87,7 @@ def reddit_images(request):
 @login_required(login_url='/accounts/login/')
 def watering_schedule(request):
     # TODO Notes
-    # Dates in the past should only show plants that were watered on that day
-    #    Does this mean all historical watered dates should be kept?
-    #    Seems like there would be a benefit to yes, you could show over time how often it was watered (also gather data across all users
-    # Dates in the future should only show the current iteration for water rate, ie if rate = 7, dont show needs watering on 28th day in future, only the 7 days out
-    
+    # Dates in the past should gather any Watering objects from that day and display them
 
     current_date = datetime.date.today()
     if request.method == 'POST':
@@ -112,7 +108,7 @@ def watering_schedule(request):
 
     user_plants = []
     for pi in PlantInstance.objects.filter(owner=request.user):
-        if pi.due_for_watering():
+        if pi.due_for_watering(active_date=current_date):
             user_plants.append(pi)
 
     template_dict = {
@@ -136,12 +132,14 @@ def add_plants(request):
                 plant=Plant.objects.get(plant_name=form.cleaned_data['plant_name']),
                 # plant=Plant.ge(plant_name=form.cleaned_data['plant_name']),
                 water_rate=form.cleaned_data['water_rate'],
-                last_watered=form.cleaned_data['last_watered'],
                 date_added=datetime.datetime.today(),
                 owner=User.objects.get(username=request.user.username)
             )
             plant_instance.save()
-            print(plant_instance.plant.plant_name)
+            # Create an initial watering instance from the created plant instance
+            watering = Watering(plant_instance=PlantInstance.objects.get(id=plant_instance.id),
+                                watering_date=form.cleaned_data['watering'])
+            watering.save()
 
             status_message = 'Plant added successfully: %s' % plant_instance.plant.plant_name
     else:

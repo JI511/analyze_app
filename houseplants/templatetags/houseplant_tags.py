@@ -1,3 +1,5 @@
+import datetime
+
 from django import template
 
 register = template.Library()
@@ -29,3 +31,12 @@ def check_current_page(page, current_page):
     Checks if a page is the same as the current page.
     """
     return int(page) == int(current_page)
+
+
+@register.filter
+def convert_date(date_obj):
+    """
+    Converts a datetime.date or datetime.datetime object into a human readable date.
+    """
+    if isinstance(date_obj, (datetime.date, datetime.datetime)):
+        return date_obj.strftime('%A, %B %d')

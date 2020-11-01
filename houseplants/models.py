@@ -39,8 +39,6 @@ class PlantInstance(models.Model):
     plant = models.ForeignKey('Plant', on_delete=models.SET_NULL, null=True)
     # number of days between watering
     water_rate = models.IntegerField(default=7, help_text='Rate of watering in days')
-    # The most recent water date
-    last_watered = models.DateField(default=now)
     # date the instance was created
     date_added = models.DateField(default=now)
     # owner of the plant instance
@@ -55,14 +53,25 @@ class PlantInstance(models.Model):
 
         :param datetime.date active_date: The date to compare against.
         """
-        # TODO, while there isnt a lot of benefit to looking at watering in the past, the future needs to have the date change
-        # TODO, The past could still show when something was last watered with a checkmark filled in?
         if active_date is None:
-            active_date = datetime.date.today()
+            active_date = datetime.date.today().toordinal()
+        else:
+            active_date = active_date.toordinal()
         is_due = False
-        if active_date.toordinal() > self.last_watered.toordinal() + self.water_rate:
+        last_watered = self.get_last_watered().toordinal()
+        if active_date > last_watered + self.water_rate:
             is_due = True
         return is_due
+
+    def get_last_watered(self):
+        """
+        Gets the most recent watering date for the plant instance.
+
+        :rtype Datetime.date object
+        """
+        watering = Watering.objects.filter(plant_instance=self)
+        last_watered = max([water.watering_date.toordinal() for water in watering])
+        return datetime.date.fromordinal(last_watered)
 
 
 class Plant(models.Model):
@@ -74,5 +83,10 @@ class Plant(models.Model):
 
 class Watering(models.Model):
     watering_id = models.AutoField(primary_key=True)
+
     plant_instance = models.ForeignKey(PlantInstance, on_delete=models.SET_NULL, null=True)
     watering_date = models.DateField(default=now)
+
+    def __str__(self):
+        return '%s: %s on %s' % (self.plant_instance.owner.username, self.plant_instance.plant.plant_name,
+                                 self.watering_date.strftime('%A %B %d, %Y'))
