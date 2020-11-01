@@ -9,13 +9,29 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'houseplants/favicon.ico' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'houseplants/houseplants_style.css' %}">
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
+
+    <!-- Bootstrap 4 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+    <!-- Font Awesome -->
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <!-- Moment.js -->
+    <script src="{% static 'vendor/moment.js-2.23.0/moment.min.js' %}"></script>
+
+    <!-- Bootstrap DateTimePicker -->
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap-4-5.1.2/css/tempusdominus-bootstrap-4.min.css' %}">
+    <script src="{% static 'vendor/bootstrap-4-5.1.2/js/tempusdominus-bootstrap-4.min.js' %}"></script>
 </head>
 <body>
 
 {#TODO Add reset to today button if not on current day#}
 
 {% block content %}
-    <form action="{% url 'houseplants:watering_schedule' %}" method="post">
+    <form action="" method="post">
     {% csrf_token %}
         <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 36px;">
             {% for date, dow, dom, is_main in weekly_dates %}
@@ -29,6 +45,16 @@
                     </div>
                 {% endif %}
             {% endfor %}
+        </div>
+    </form>
+    <form action="" method="post">
+    {% csrf_token %}
+        <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; padding: 10px; gap: 10px;">
+            <label class="form_label">Jump to Date:</label>
+            <div class="md-form" style="max-width: 25%">
+                <input type="date" id="inputMDEx" class="form-control" name="jump_to_date">
+            </div>
+            <button class="watering_button" type="submit">Go</button>
         </div>
     </form>
 

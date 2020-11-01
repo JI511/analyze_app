@@ -94,7 +94,9 @@ def watering_schedule(request):
         if 'calendar_select' in request.POST:
             temp_date = request.POST.get('calendar_select')
             current_date = datetime.datetime.strptime(temp_date, '%m-%d-%Y').date()
-            current_date.strftime('%A')
+        elif 'jump_to_date' in request.POST:
+            temp_date = request.POST.get('jump_to_date')
+            current_date = datetime.datetime.strptime(temp_date, '%Y-%m-%d').date()
 
     current_ord = current_date.toordinal()
     weekly_dates = []
@@ -130,7 +132,6 @@ def add_plants(request):
         if form.is_valid() and request.user.is_authenticated:
             plant_instance = PlantInstance(
                 plant=Plant.objects.get(plant_name=form.cleaned_data['plant_name']),
-                # plant=Plant.ge(plant_name=form.cleaned_data['plant_name']),
                 water_rate=form.cleaned_data['water_rate'],
                 date_added=datetime.datetime.today(),
                 owner=User.objects.get(username=request.user.username)
