@@ -28,8 +28,6 @@
 </head>
 <body>
 
-{#TODO Add reset to today button if not on current day#}
-
 {% block content %}
     <form action="" method="post">
     {% csrf_token %}
@@ -63,7 +61,8 @@
         <div class="watering_divider"></div>
         <br>
         <div>
-            {% for plant in user_plants %}
+        {% if not watering %}
+            {% for plant in user_plant_instances %}
                 <div style="display: flex; flex-direction: row; align-items: center;">
                     <label class="plant_label_container">{{ plant }},
                         <input type="checkbox">
@@ -73,6 +72,17 @@
                     <label class="oswald_midsize">(Last {{ plant.get_last_watered|convert_date }})</label>
                 </div>
             {% endfor %}
+        {% else %}
+            {% for water in watering %}
+                <div style="display: flex; flex-direction: row; align-items: center;">
+                    <label class="plant_label_container">{{ water.get_plant_name }}
+                        <input type="checkbox">
+                        <span class="checkmark"></span>
+                    </label>
+                    <div style="padding: 6px;"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
         </div>
     </div>
 {% endblock %}

@@ -90,3 +90,6 @@ class Watering(models.Model):
     def __str__(self):
         return '%s: %s on %s' % (self.plant_instance.owner.username, self.plant_instance.plant.plant_name,
                                  self.watering_date.strftime('%A %B %d, %Y'))
+
+    def get_plant_name(self):
+        return self.plant_instance.plant.plant_name

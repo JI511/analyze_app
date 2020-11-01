@@ -108,14 +108,19 @@ def watering_schedule(request):
         else:
             weekly_dates.append((td, td.strftime('%A'), td.strftime('%B'), False))
 
-    user_plants = []
-    for pi in PlantInstance.objects.filter(owner=request.user):
-        if pi.due_for_watering(active_date=current_date):
-            user_plants.append(pi)
+    user_plant_instances = []
+    watering = []
+    if current_ord < datetime.datetime.today().toordinal():
+        watering = Watering.objects.filter(watering_date=current_date)
+    else:
+        for pi in PlantInstance.objects.filter(owner=request.user):
+            if pi.due_for_watering(active_date=current_date):
+                user_plant_instances.append(pi)
 
     template_dict = {
         'weekly_dates': weekly_dates,
-        'user_plants': user_plants,
+        'user_plant_instances': user_plant_instances,
+        'watering': watering,
     }
 
     return render(request, 'houseplants/watering_schedule.html', template_dict)
