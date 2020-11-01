@@ -105,24 +105,16 @@ def watering_schedule(request):
     for i in range(current_ord - 3, current_ord + 4):
         td = datetime.date.fromordinal(i)
         if i == current_ord:
+            # create tuple of: full datetime.date object, day of week, day of month, is middle date
             weekly_dates.append((td, td.strftime('%A'), td.strftime('%B'), True))
         else:
             weekly_dates.append((td, td.strftime('%A'), td.strftime('%B'), False))
-
-    # weekly_dates = []
-    # # we want a weeks worth of days centered on the current day
-    # current = datetime.datetime.today() - datetime.timedelta(days=4)
-    # for i in range(1, 8):
-    #     current += datetime.timedelta(days=1)
-    #     # add tuple of format (Day of week, Month_Name Day)
-    #     weekly_dates.append((current.strftime('%A'), current.strftime('%B %d')))
 
     user_plants = []
     for pi in PlantInstance.objects.filter(owner=request.user):
         if pi.due_for_watering():
             user_plants.append(pi)
 
-    # need datetime list with current date bool
     template_dict = {
         'weekly_dates': weekly_dates,
         'user_plants': user_plants,
