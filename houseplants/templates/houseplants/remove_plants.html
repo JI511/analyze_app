@@ -1,0 +1,32 @@
+{% extends "houseplants/base_generic.html" %}
+{% load houseplant_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Remove plants</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'houseplants/favicon.ico' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'houseplants/houseplants_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald" />
+</head>
+<body>
+{% block content %}
+
+<div class="flex_columns">
+    <h1>Which plants would you like to delete?</h1>
+    {% for plant in user_plants %}
+        <div style="display: flex; flex-direction: row; align-items: center;">
+            <label class="plant_label_container">{{ plant }},
+                <input type="checkbox">
+                <span class="checkmark"></span>
+            </label>
+            <div style="padding: 6px;"></div>
+            <label class="oswald_midsize">(Added: {{ plant.date_added|convert_date }})</label>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+</body>
+</html>
