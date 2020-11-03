@@ -23,13 +23,16 @@
                     <br>
                     {% if user.is_authenticated  %}
                         <li><label style="font-size: 30px;" class="oswald_midsize">{{ user.get_username }}</label></li>
+                        <li><a href="{% url 'houseplants:watering_schedule' %}">Watering Schedule</a></li>
+                        <li><a href="{% url 'houseplants:my_plants' %}">My Plants</a></li>
+                        <li><a href="{% url 'houseplants:add_plants' %}">Add Plants</a></li>
+                        <li><a href="{% url 'houseplants:remove_plants' %}">Remove Plants</a></li>
+                        <br>
+                        <li><a href="{% url 'logout'%}?next={{request.path}}" class="watering_button">Logout</a></li>
                     {% else %}
-                        <li><a href="{% url 'login' %}">Home</a></li>
+                        <li><a href="{% url 'login' %}">Login/Todo</a></li>
                     {% endif %}
-                    <li><a href="{% url 'houseplants:watering_schedule' %}">Watering Schedule</a></li>
-                    <li><a href="{% url 'houseplants:add_plants' %}">Add Plants</a></li>
-                    <br>
-                    <li><a href="{% url 'logout'%}?next={{request.path}}" class="watering_button">Logout</a></li>
+
                 </ul>
             {% endblock %}
         </div>

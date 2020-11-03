@@ -127,6 +127,16 @@ def watering_schedule(request):
 
 
 @login_required(login_url='/accounts/login/')
+def my_plants(request):
+    """
+
+    :param request:
+    :return:
+    """
+    return render(request, 'houseplants/my_plants.html', {})
+
+
+@login_required(login_url='/accounts/login/')
 def add_plants(request):
     status_message = 'Add a new plant!'
     # If this is a POST request then process the Form data
@@ -157,3 +167,13 @@ def add_plants(request):
     }
 
     return render(request, 'houseplants/add_plants.html', template_dict)
+
+
+@login_required(login_url='/accounts/login/')
+def remove_plants(request):
+    """
+
+    :param request:
+    :return:
+    """
+    return render(request, 'houseplants/remove_plants.html', {})
