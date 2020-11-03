@@ -180,4 +180,9 @@ def remove_plants(request):
     :param request:
     :return:
     """
-    return render(request, 'houseplants/remove_plants.html', {})
+    # TODO add logic for removal
+    user_plants = PlantInstance.objects.filter(owner=request.user)
+    template_dict = {
+        'user_plants': user_plants
+    }
+    return render(request, 'houseplants/remove_plants.html', template_dict)

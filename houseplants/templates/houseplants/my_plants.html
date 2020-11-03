@@ -13,7 +13,8 @@
 <body>
 {% block content %}
 
-<div style="display: flex; flex-direction: column; align-items: center;">
+<div class="flex_columns">
+    <h1>Here are your plants!</h1>
     {% for plant in user_plants %}
         <div>
             <label>{{ plant.plant.plant_name }}</label>
