@@ -133,7 +133,11 @@ def my_plants(request):
     :param request:
     :return:
     """
-    return render(request, 'houseplants/my_plants.html', {})
+    user_plants = PlantInstance.objects.filter(owner=request.user)
+    template_dict = {
+        'user_plants': user_plants
+    }
+    return render(request, 'houseplants/my_plants.html', template_dict)
 
 
 @login_required(login_url='/accounts/login/')
