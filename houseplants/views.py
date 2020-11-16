@@ -88,7 +88,7 @@ def reddit_images(request):
 def watering_schedule(request):
     # TODO Notes
     # Dates in the past should gather any Watering objects from that day and display them
-
+    print(request.POST)
     current_date = datetime.date.today()
     if request.method == 'POST':
         if 'calendar_select' in request.POST:
@@ -97,6 +97,9 @@ def watering_schedule(request):
         elif 'jump_to_date' in request.POST:
             temp_date = request.POST.get('jump_to_date')
             current_date = datetime.datetime.strptime(temp_date, '%Y-%m-%d').date()
+        elif 'plant_water_update' in request.POST:
+            # Do water things with plant instance, plant id in name
+            pass
 
     current_ord = current_date.toordinal()
     weekly_dates = []
