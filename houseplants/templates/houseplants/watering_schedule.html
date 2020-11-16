@@ -69,7 +69,7 @@
                         <span class="checkmark"></span>
                     </label>
                     <div style="padding: 6px;"></div>
-                    <label class="oswald_midsize">(Last {{ plant.get_last_watered|convert_date }})</label>
+                    <label class="oswald_midsize">(Last Watered: {{ plant.get_last_watered|convert_date }})</label>
                 </div>
             {% endfor %}
         {% else %}
