@@ -3,6 +3,7 @@ import datetime
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 
 from .models import HouseplantItem, PlantInstance, Plant, Watering
 from .forms import AddPlantForm
@@ -98,8 +99,10 @@ def watering_schedule(request):
             temp_date = request.POST.get('jump_to_date')
             current_date = datetime.datetime.strptime(temp_date, '%Y-%m-%d').date()
         elif 'plant_water_update' in request.POST:
-            # Do water things with plant instance, plant id in name
-            pass
+            # iterate over user's plants and match with which IDs were in POST
+            for plant in PlantInstance.objects.filter(owner=request.user):
+                if str(plant.id) in request.POST:
+                    plant.water_plant(now())
 
     current_ord = current_date.toordinal()
     weekly_dates = []

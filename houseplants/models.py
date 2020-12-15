@@ -73,6 +73,12 @@ class PlantInstance(models.Model):
         last_watered = max([water.watering_date.toordinal() for water in watering])
         return datetime.date.fromordinal(last_watered)
 
+    def water_plant(self, date_watered):
+        """
+        Creates a watering for the plant instance on the specified day.
+        """
+        Watering.objects.create(plant_instance=self, watering_date=date_watered)
+
 
 class Plant(models.Model):
     plant_name = models.CharField(max_length=50)
