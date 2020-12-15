@@ -116,17 +116,34 @@ def watering_schedule(request):
 
     user_plant_instances = []
     watering = []
+    watering_label = None
     if current_ord < datetime.datetime.today().toordinal():
         watering = Watering.objects.filter(watering_date=current_date)
+        if not watering:
+            watering_label = "You didn't water anything on this day!"
+        else:
+            watering_label = "You watered these plants on this day!"
     else:
         for pi in PlantInstance.objects.filter(owner=request.user):
+            a = pi.get_last_watered().toordinal()
+            b = datetime.datetime.today().toordinal()
             if pi.due_for_watering(active_date=current_date):
                 user_plant_instances.append(pi)
+            # TODO fix future date handling
+            if pi.get_last_watered().toordinal() == now().toordinal():
+                watering.append(pi)
+
+        if watering:
+            watering_label = "You already watered these plants today!"
+
+        if not watering and not user_plant_instances:
+            watering_label = "Nothing to do today!"
 
     template_dict = {
         'weekly_dates': weekly_dates,
         'user_plant_instances': user_plant_instances,
         'watering': watering,
+        'watering_label': watering_label,
     }
 
     return render(request, 'houseplants/watering_schedule.html', template_dict)
