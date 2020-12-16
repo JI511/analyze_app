@@ -81,10 +81,7 @@
                 <label>{{ watering_label }}</label>
                 {% for water in watering %}
                     <div style="display: flex; flex-direction: row; align-items: center;">
-                        <label class="plant_label_container">{{ water.get_plant_name }}
-                            <input type="checkbox">
-                            <span class="checkmark"></span>
-                        </label>
+                        <label class="plant_label_container">{{ water.get_plant_name }}</label>
                         <div style="padding: 6px;"></div>
                     </div>
                 {% endfor %}

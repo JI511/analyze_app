@@ -90,7 +90,7 @@ def watering_schedule(request):
     # TODO Notes
     # Dates in the past should gather any Watering objects from that day and display them
     print(request.POST)
-    current_date = datetime.date.today()
+    current_date = now()
     if request.method == 'POST':
         if 'calendar_select' in request.POST:
             temp_date = request.POST.get('calendar_select')
@@ -117,7 +117,7 @@ def watering_schedule(request):
     user_plant_instances = []
     watering = []
     watering_label = None
-    if current_ord < datetime.datetime.today().toordinal():
+    if current_ord < now().toordinal():
         watering = Watering.objects.filter(watering_date=current_date)
         if not watering:
             watering_label = "You didn't water anything on this day!"
@@ -125,12 +125,11 @@ def watering_schedule(request):
             watering_label = "You watered these plants on this day!"
     else:
         for pi in PlantInstance.objects.filter(owner=request.user):
-            a = pi.get_last_watered().toordinal()
-            b = datetime.datetime.today().toordinal()
             if pi.due_for_watering(active_date=current_date):
                 user_plant_instances.append(pi)
             # TODO fix future date handling
-            if pi.get_last_watered().toordinal() == now().toordinal():
+            last_watered = pi.get_last_watered()
+            if last_watered is not None and last_watered.toordinal() == now().toordinal():
                 watering.append(pi)
 
         if watering:

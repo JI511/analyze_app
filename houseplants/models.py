@@ -54,12 +54,12 @@ class PlantInstance(models.Model):
         :param datetime.date active_date: The date to compare against.
         """
         if active_date is None:
-            active_date = datetime.date.today().toordinal()
+            active_date = now().toordinal()
         else:
             active_date = active_date.toordinal()
         is_due = False
-        last_watered = self.get_last_watered().toordinal()
-        if active_date > last_watered + self.water_rate:
+        last_watered = self.get_last_watered()
+        if last_watered is None or active_date > last_watered.toordinal() + self.water_rate:
             is_due = True
         return is_due
 
@@ -70,8 +70,10 @@ class PlantInstance(models.Model):
         :rtype Datetime.date object
         """
         watering = Watering.objects.filter(plant_instance=self)
-        last_watered = max([water.watering_date.toordinal() for water in watering])
-        return datetime.date.fromordinal(last_watered)
+        last_watered_date = None
+        if watering:
+            last_watered_date = datetime.date.fromordinal(max([water.watering_date.toordinal() for water in watering]))
+        return last_watered_date
 
     def water_plant(self, date_watered):
         """
