@@ -128,6 +128,7 @@ def watering_schedule(request):
             if pi.due_for_watering(active_date=current_date):
                 user_plant_instances.append(pi)
             # TODO fix future date handling
+            # TODO fix timezone issue? Some plants are showing up on tomorrow for watering
             last_watered = pi.get_last_watered()
             if last_watered is not None and last_watered.toordinal() == now().toordinal():
                 watering.append(pi)
