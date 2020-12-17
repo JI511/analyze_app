@@ -1,9 +1,12 @@
 import random
 import datetime
+import pytz
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.utils import timezone
 from django.utils.timezone import now
+from django.utils.timezone import activate
 
 from .models import HouseplantItem, PlantInstance, Plant, Watering
 from .forms import AddPlantForm
@@ -90,19 +93,23 @@ def watering_schedule(request):
     # TODO Notes
     # Dates in the past should gather any Watering objects from that day and display them
     print(request.POST)
-    current_date = now()
+    activate(pytz.timezone('America/Chicago'))
+    current_date = timezone.localtime(now(), timezone.get_current_timezone())
     if request.method == 'POST':
+        # User selected different date to display
         if 'calendar_select' in request.POST:
             temp_date = request.POST.get('calendar_select')
             current_date = datetime.datetime.strptime(temp_date, '%m-%d-%Y').date()
+        # Calendar used to select date
         elif 'jump_to_date' in request.POST:
             temp_date = request.POST.get('jump_to_date')
             current_date = datetime.datetime.strptime(temp_date, '%Y-%m-%d').date()
+        # Watering checkbox submitted
         elif 'plant_water_update' in request.POST:
             # iterate over user's plants and match with which IDs were in POST
             for plant in PlantInstance.objects.filter(owner=request.user):
                 if str(plant.id) in request.POST:
-                    plant.water_plant(now())
+                    plant.water_plant(current_date)
 
     current_ord = current_date.toordinal()
     weekly_dates = []
@@ -117,7 +124,7 @@ def watering_schedule(request):
     user_plant_instances = []
     watering = []
     watering_label = None
-    if current_ord < now().toordinal():
+    if current_ord < timezone.localtime(now(), timezone.get_current_timezone()).toordinal():
         watering = Watering.objects.filter(watering_date=current_date)
         if not watering:
             watering_label = "You didn't water anything on this day!"
@@ -128,9 +135,10 @@ def watering_schedule(request):
             if pi.due_for_watering(active_date=current_date):
                 user_plant_instances.append(pi)
             # TODO fix future date handling
-            # TODO fix timezone issue? Some plants are showing up on tomorrow for watering
             last_watered = pi.get_last_watered()
-            if last_watered is not None and last_watered.toordinal() == now().toordinal():
+            if last_watered is not None and \
+                    last_watered.toordinal() == timezone.localtime(now(), timezone.get_current_timezone()).toordinal():
+                # TODO this needs to append waterings not plant instances
                 watering.append(pi)
 
         if watering:

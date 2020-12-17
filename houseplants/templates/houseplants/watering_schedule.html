@@ -82,6 +82,7 @@
                 {% for water in watering %}
                     <div style="display: flex; flex-direction: row; align-items: center;">
                         <label class="plant_label_container">{{ water.get_plant_name }}</label>
+                        <label class="oswald_midsize">({{ water.watering_date|convert_datetime }})</label>
                         <div style="padding: 6px;"></div>
                     </div>
                 {% endfor %}
