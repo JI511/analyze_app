@@ -62,33 +62,37 @@
         <br>
         <div>
             {% if user_plant_instances %}
+                {% if plant_instance_label is not None %}
+                    <label>{{ plant_instance_label }}</label>
+                {% endif %}
                 <form action="" method="post">
                 {% csrf_token %}
-                    {% for plant in user_plant_instances %}
+                    {% for plant_instance in user_plant_instances %}
                         <div style="display: flex; flex-direction: row; align-items: center;">
-                            <label class="plant_label_container">{{ plant }},
-                                <input type="checkbox" name="{{ plant.id }}">
+                            <label>({{ plant_instance.water_rate }})</label>
+                            <label class="plant_label_container">{{ plant_instance }},
+                                <input type="checkbox" name="{{ plant_instance.id }}">
                                 <span class="checkmark"></span>
                             </label>
                             <div style="padding: 6px;"></div>
-                            <label class="oswald_midsize">(Last {{ plant.get_last_watered|convert_date }})</label>
+                            <label class="oswald_midsize">(Last {{ plant_instance.get_last_watered|convert_date }})</label>
                         </div>
                     {% endfor %}
                 <button type="submit" class="watering_button" value="submit" name="plant_water_update">Update</button>
                 </form>
             {% endif %}
             {% if watering %}
-                <label>{{ watering_label }}</label>
+                {% if watering_label is not None %}
+                    <label>{{ watering_label }}</label>
+                {% endif %}
                 {% for water in watering %}
                     <div style="display: flex; flex-direction: row; align-items: center;">
+                        <label>({{ water.plant_instance.water_rate }})</label>
                         <label class="plant_label_container">{{ water.get_plant_name }}</label>
                         <label class="oswald_midsize">({{ water.watering_date|convert_datetime }})</label>
                         <div style="padding: 6px;"></div>
                     </div>
                 {% endfor %}
-            {% endif %}
-            {% if not watering and not user_plant_instances %}
-                <label>{{ watering_label }}</label>
             {% endif %}
         </div>
     </div>

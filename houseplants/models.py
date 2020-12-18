@@ -60,7 +60,7 @@ class PlantInstance(models.Model):
             active_date = active_date.toordinal()
         is_due = False
         last_watered = self.get_last_watered()
-        if last_watered is None or active_date > last_watered.toordinal() + self.water_rate:
+        if last_watered is None or active_date >= last_watered.watering_date.toordinal() + self.water_rate:
             is_due = True
         return is_due
 
@@ -68,15 +68,17 @@ class PlantInstance(models.Model):
         """
         Gets the most recent watering date for the plant instance.
 
-        :rtype Datetime.date object
+        :rtype Watering object
         """
-        watering = Watering.objects.filter(plant_instance=self)
-        last_watered_date = None
-        if watering:
-            last_watered_date = datetime.date.fromordinal(max(
-                [water.watering_date.astimezone(timezone.get_current_timezone()).toordinal() for water in watering]
-            ))
-        return last_watered_date
+        waterings = Watering.objects.filter(plant_instance=self)
+        water = None
+        if waterings:
+            most_recent_watering = datetime.datetime.fromordinal(1)
+            for watering in waterings:
+                if watering.watering_date.toordinal() > most_recent_watering.toordinal():
+                    water = watering
+                    most_recent_watering = watering.watering_date.toordinal()
+        return water
 
     def water_plant(self, date_watered):
         """

@@ -90,9 +90,6 @@ def reddit_images(request):
 
 @login_required(login_url='/accounts/login/')
 def watering_schedule(request):
-    # TODO Notes
-    # Dates in the past should gather any Watering objects from that day and display them
-    print(request.POST)
     activate(pytz.timezone('America/Chicago'))
     current_date = timezone.localtime(now(), timezone.get_current_timezone())
     if request.method == 'POST':
@@ -124,6 +121,7 @@ def watering_schedule(request):
     user_plant_instances = []
     watering = []
     watering_label = None
+    plant_instance_label = None
     if current_ord < timezone.localtime(now(), timezone.get_current_timezone()).toordinal():
         watering = Watering.objects.filter(watering_date=current_date)
         if not watering:
@@ -134,12 +132,12 @@ def watering_schedule(request):
         for pi in PlantInstance.objects.filter(owner=request.user):
             if pi.due_for_watering(active_date=current_date):
                 user_plant_instances.append(pi)
-            # TODO fix future date handling
             last_watered = pi.get_last_watered()
-            if last_watered is not None and \
-                    last_watered.toordinal() == timezone.localtime(now(), timezone.get_current_timezone()).toordinal():
-                # TODO this needs to append waterings not plant instances
-                watering.append(pi)
+            if last_watered.watering_date is not None and last_watered.watering_date.toordinal() == current_ord:
+                watering.append(last_watered)
+
+        # TODO possible improvements
+        # Do not display checkboxes for dates in the future. Only on actual now date?
 
         if watering:
             watering_label = "You already watered these plants today!"
@@ -147,11 +145,15 @@ def watering_schedule(request):
         if not watering and not user_plant_instances:
             watering_label = "Nothing to do today!"
 
+        if timezone.localtime(now(), timezone.get_current_timezone()).toordinal() < current_ord:
+            plant_instance_label = "These plants are in your future!"
+
     template_dict = {
         'weekly_dates': weekly_dates,
         'user_plant_instances': user_plant_instances,
         'watering': watering,
         'watering_label': watering_label,
+        'plant_instance_label': plant_instance_label,
     }
 
     return render(request, 'houseplants/watering_schedule.html', template_dict)
