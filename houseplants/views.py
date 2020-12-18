@@ -136,9 +136,6 @@ def watering_schedule(request):
             if last_watered.watering_date is not None and last_watered.watering_date.toordinal() == current_ord:
                 watering.append(last_watered)
 
-        # TODO possible improvements
-        # Do not display checkboxes for dates in the future. Only on actual now date?
-
         if watering:
             watering_label = "You already watered these plants today!"
 
