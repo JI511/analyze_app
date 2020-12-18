@@ -1,8 +1,12 @@
 import random
 import datetime
+import pytz
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.utils import timezone
+from django.utils.timezone import now
+from django.utils.timezone import activate
 
 from .models import HouseplantItem, PlantInstance, Plant, Watering
 from .forms import AddPlantForm
@@ -86,17 +90,23 @@ def reddit_images(request):
 
 @login_required(login_url='/accounts/login/')
 def watering_schedule(request):
-    # TODO Notes
-    # Dates in the past should gather any Watering objects from that day and display them
-
-    current_date = datetime.date.today()
+    activate(pytz.timezone('America/Chicago'))
+    current_date = timezone.localtime(now(), timezone.get_current_timezone())
     if request.method == 'POST':
+        # User selected different date to display
         if 'calendar_select' in request.POST:
             temp_date = request.POST.get('calendar_select')
             current_date = datetime.datetime.strptime(temp_date, '%m-%d-%Y').date()
+        # Calendar used to select date
         elif 'jump_to_date' in request.POST:
             temp_date = request.POST.get('jump_to_date')
             current_date = datetime.datetime.strptime(temp_date, '%Y-%m-%d').date()
+        # Watering checkbox submitted
+        elif 'plant_water_update' in request.POST:
+            # iterate over user's plants and match with which IDs were in POST
+            for plant in PlantInstance.objects.filter(owner=request.user):
+                if str(plant.id) in request.POST:
+                    plant.water_plant(current_date)
 
     current_ord = current_date.toordinal()
     weekly_dates = []
@@ -110,17 +120,37 @@ def watering_schedule(request):
 
     user_plant_instances = []
     watering = []
-    if current_ord < datetime.datetime.today().toordinal():
+    watering_label = None
+    plant_instance_label = None
+    if current_ord < timezone.localtime(now(), timezone.get_current_timezone()).toordinal():
         watering = Watering.objects.filter(watering_date=current_date)
+        if not watering:
+            watering_label = "You didn't water anything on this day!"
+        else:
+            watering_label = "You watered these plants on this day!"
     else:
         for pi in PlantInstance.objects.filter(owner=request.user):
             if pi.due_for_watering(active_date=current_date):
                 user_plant_instances.append(pi)
+            last_watered = pi.get_last_watered()
+            if last_watered.watering_date is not None and last_watered.watering_date.toordinal() == current_ord:
+                watering.append(last_watered)
+
+        if watering:
+            watering_label = "You already watered these plants today!"
+
+        if not watering and not user_plant_instances:
+            watering_label = "Nothing to do today!"
+
+        if timezone.localtime(now(), timezone.get_current_timezone()).toordinal() < current_ord:
+            plant_instance_label = "These plants are in your future!"
 
     template_dict = {
         'weekly_dates': weekly_dates,
         'user_plant_instances': user_plant_instances,
         'watering': watering,
+        'watering_label': watering_label,
+        'plant_instance_label': plant_instance_label,
     }
 
     return render(request, 'houseplants/watering_schedule.html', template_dict)

@@ -40,3 +40,12 @@ def convert_date(date_obj):
     """
     if isinstance(date_obj, (datetime.date, datetime.datetime)):
         return date_obj.strftime('%A, %B %d')
+
+
+@register.filter
+def convert_datetime(date_obj):
+    """
+    Converts a datetime.date or datetime.datetime object into a human readable date with time information.
+    """
+    if isinstance(date_obj, (datetime.date, datetime.datetime)):
+        return date_obj.strftime('%A, %B %d at %I:%M')

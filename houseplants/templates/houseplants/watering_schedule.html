@@ -61,28 +61,48 @@
         <div class="watering_divider"></div>
         <br>
         <div>
-        {% if not watering %}
-            {% for plant in user_plant_instances %}
-                <div style="display: flex; flex-direction: row; align-items: center;">
-                    <label class="plant_label_container">{{ plant }},
-                        <input type="checkbox">
-                        <span class="checkmark"></span>
-                    </label>
-                    <div style="padding: 6px;"></div>
-                    <label class="oswald_midsize">(Last Watered: {{ plant.get_last_watered|convert_date }})</label>
-                </div>
-            {% endfor %}
-        {% else %}
-            {% for water in watering %}
-                <div style="display: flex; flex-direction: row; align-items: center;">
-                    <label class="plant_label_container">{{ water.get_plant_name }}
-                        <input type="checkbox">
-                        <span class="checkmark"></span>
-                    </label>
-                    <div style="padding: 6px;"></div>
-                </div>
-            {% endfor %}
-        {% endif %}
+            {% if user_plant_instances %}
+                {% if plant_instance_label is not None %}
+                    <label>{{ plant_instance_label }}</label>
+                    {% for plant_instance in user_plant_instances %}
+                        <div style="display: flex; flex-direction: row; align-items: center;">
+                            <label>({{ plant_instance.water_rate }})</label>
+                            <label class="plant_label_container">{{ plant_instance }}</label>
+                            <div style="padding: 6px;"></div>
+                            <label class="oswald_midsize">(Last {{ plant_instance.get_last_watered|convert_date }})</label>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <form action="" method="post">
+                    {% csrf_token %}
+                        {% for plant_instance in user_plant_instances %}
+                            <div style="display: flex; flex-direction: row; align-items: center;">
+                                <label>({{ plant_instance.water_rate }})</label>
+                                <label class="plant_label_container">{{ plant_instance }},
+                                    <input type="checkbox" name="{{ plant_instance.id }}">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <div style="padding: 6px;"></div>
+                                <label class="oswald_midsize">(Last {{ plant_instance.get_last_watered|convert_date }})</label>
+                            </div>
+                        {% endfor %}
+                    <button type="submit" class="watering_button" value="submit" name="plant_water_update">Update</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+            {% if watering %}
+                {% if watering_label is not None %}
+                    <label>{{ watering_label }}</label>
+                {% endif %}
+                {% for water in watering %}
+                    <div style="display: flex; flex-direction: row; align-items: center;">
+                        <label>({{ water.plant_instance.water_rate }})</label>
+                        <label class="plant_label_container">{{ water.get_plant_name }}</label>
+                        <label class="oswald_midsize">({{ water.watering_date|convert_datetime }})</label>
+                        <div style="padding: 6px;"></div>
+                    </div>
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}
