@@ -26,7 +26,7 @@ class Command(BaseCommand):
     @staticmethod
     def rename_all_in_dir(dir_path):
         """
-        Renames provided files by removing any special characters and limiting to 50 characters.
+        Renames provided files in a directory by removing any special characters and limiting to 50 characters.
         """
         for img_file in os.listdir(dir_path):
             file_path = os.path.join(dir_path, img_file)
@@ -43,7 +43,6 @@ class Command(BaseCommand):
     def _create_items(self, directory):
         """
         Creates houseplant model objects in a given directory.
-        :return:
         """
         print(directory)
         if os.path.exists(directory) and os.path.isdir(directory):
