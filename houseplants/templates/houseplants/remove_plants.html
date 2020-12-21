@@ -14,17 +14,33 @@
 {% block content %}
 
 <div class="flex_columns">
-    <h1>Which plants would you like to delete?</h1>
-    {% for plant in user_plants %}
-        <div style="display: flex; flex-direction: row; align-items: center;">
-            <label class="plant_label_container">{{ plant }},
-                <input type="checkbox">
-                <span class="checkmark"></span>
-            </label>
-            <div style="padding: 6px;"></div>
-            <label class="oswald_midsize">(Added: {{ plant.date_added|convert_date }})</label>
-        </div>
-    {% endfor %}
+    {% if removed_plant_instances %}
+        <label class="oswald_midsize">You successfully removed the following plants</label>
+        {% for removed_plant_instance in removed_plant_instances %}
+            <label class="plant_label_container">{{ removed_plant_instance }}</label>
+        {% endfor %}
+        <div class="watering_divider"></div>
+    {% endif %}
+    {% if user_plant_instances %}
+        <label class="oswald_midsize">Which plants would you like to delete?</label>
+        <form action="" method="post">
+        {% csrf_token %}
+            {% for plant_instance in user_plant_instances %}
+                <div style="display: flex; flex-direction: row; align-items: center;">
+                    <label class="plant_label_container">{{ plant_instance }},
+                        <input type="checkbox" name="{{ plant_instance.id }}">
+                        <span class="checkmark"></span>
+                    </label>
+                    <div style="padding: 6px;"></div>
+                    <label class="oswald_midsize">(Added: {{ plant_instance.date_added|convert_date }})</label>
+                </div>
+            {% endfor %}
+            <button type="submit" class="watering_button" value="submit" name="plant_remove_update">Update</button>
+        </form>
+    {% else %}
+        <label class="oswald_midsize">You dont have any plants to remove! Try adding some</label>
+        <a href="{% url 'houseplants:add_plants' %}" class="oswald_midsize">Add Plants</a>
+    {% endif %}
 </div>
 
 {% endblock %}
