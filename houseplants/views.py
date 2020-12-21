@@ -133,7 +133,7 @@ def watering_schedule(request):
             if pi.due_for_watering(active_date=current_date):
                 user_plant_instances.append(pi)
             last_watered = pi.get_last_watered()
-            if last_watered.watering_date is not None and last_watered.watering_date.toordinal() == current_ord:
+            if last_watered is not None and last_watered.watering_date.toordinal() == current_ord:
                 watering.append(last_watered)
 
         if watering:
@@ -159,9 +159,7 @@ def watering_schedule(request):
 @login_required(login_url='/accounts/login/')
 def my_plants(request):
     """
-
-    :param request:
-    :return:
+    Displays all plants in the user's collection.
     """
     user_plants = PlantInstance.objects.filter(owner=request.user)
     template_dict = {
@@ -188,7 +186,7 @@ def add_plants(request):
             plant_instance.save()
             # Create an initial watering instance from the created plant instance
             watering = Watering(plant_instance=PlantInstance.objects.get(id=plant_instance.id),
-                                watering_date=form.cleaned_data['watering'])
+                                watering_date=form.cleaned_data['last_watered'])
             watering.save()
 
             status_message = 'Plant added successfully: %s' % plant_instance.plant.plant_name
@@ -206,13 +204,20 @@ def add_plants(request):
 @login_required(login_url='/accounts/login/')
 def remove_plants(request):
     """
-
-    :param request:
-    :return:
+    Removes selected plants from the user's collection.
     """
-    # TODO add logic for removal
+    removed_plants = []
+    if request.method == 'POST':
+        # Remove plant checkbox submitted
+        if 'plant_remove_update' in request.POST:
+            # iterate over user's plants and match with which IDs were in POST
+            for plant_instance in PlantInstance.objects.filter(owner=request.user):
+                if str(plant_instance.id) in request.POST:
+                    removed_plants.append(plant_instance.plant.plant_name)
+                    plant_instance.delete()
     user_plants = PlantInstance.objects.filter(owner=request.user)
     template_dict = {
-        'user_plants': user_plants
+        'user_plant_instances': user_plants,
+        'removed_plant_instances': removed_plants,
     }
     return render(request, 'houseplants/remove_plants.html', template_dict)

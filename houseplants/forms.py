@@ -34,7 +34,7 @@ class AddPlantForm(forms.Form):
         return rate
 
     def clean_last_watered(self):
-        data = self.cleaned_data['watering']
+        data = self.cleaned_data['last_watered']
 
         current_date = datetime.datetime.now(pytz.timezone(settings.TIME_ZONE))
 
@@ -46,6 +46,4 @@ class AddPlantForm(forms.Form):
         if data > current_date:
             raise ValidationError(_('Invalid date - you can\'t water the future!'))
 
-        watering = Watering()
-
-        return
+        return data
