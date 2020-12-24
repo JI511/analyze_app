@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.timezone import activate
 
-from .models import HouseplantItem, PlantInstance, Plant, Watering
+from .models import HouseplantItem, PlantInstance, Plant, Watering, PropagationInstance
 from .forms import AddPlantForm
 
 
@@ -227,7 +227,7 @@ def propagation_board(request):
     """
     Contains user posted plants to buy/sell/trade/giveaway plant propagations.
     """
-    propagation_instances = []
+    propagation_instances = PropagationInstance.objects.filter(owner=request.user)
     template_dict = {
         'propagation_instances': propagation_instances,
     }

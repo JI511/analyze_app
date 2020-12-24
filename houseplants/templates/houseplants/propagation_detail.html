@@ -10,10 +10,7 @@
 <body>
 {% block content %}
 
-    <h1>Propagation Buy/Sell/Trade</h1>
-    {% for propagation_instance in propagation_instances %}
-        <a href="{% url 'houseplants:propagation_detail' %}">{{ propagation_instance.plant.plant_name }}</a>
-    {% endfor %}
+    <h1>Propagation Detail</h1>
 
 {% endblock content %}
 </body>
