@@ -106,3 +106,20 @@ class Watering(models.Model):
 
     def get_plant_name(self):
         return self.plant_instance.plant.plant_name
+
+
+class PropagationInstance(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
+                          help_text='Unique ID for this propagation across all users')
+
+    plant = models.ForeignKey('Plant', on_delete=models.SET_NULL, null=True)
+    image = models.ImageField(upload_to='uploads/propagations')
+    listed_date = models.DateField(default=now)
+    # is it a cutting, rooted cutting, etc
+    type = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000)
+    amount = models.IntegerField(default=1)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return "%s" % (self.plant.plant_name,)

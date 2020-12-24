@@ -227,7 +227,8 @@ def propagation_board(request):
     """
     Contains user posted plants to buy/sell/trade/giveaway plant propagations.
     """
+    propagation_instances = []
     template_dict = {
-
+        'propagation_instances': propagation_instances,
     }
     return render(request, 'houseplants/propagation_board.html', template_dict)
