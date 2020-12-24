@@ -10,4 +10,5 @@ urlpatterns = [
     path('add_plants/', views.add_plants, name='add_plants'),
     path('my_plants/', views.my_plants, name='my_plants'),
     path('remove_plants/', views.remove_plants, name='remove_plants'),
+    path('propagation_board/', views.propagation_board, name='propagation_board'),
 ]

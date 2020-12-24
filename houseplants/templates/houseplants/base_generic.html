@@ -20,6 +20,7 @@
                     <br>
                     <li style="font-size: 24px;"><a href="{% url 'houseplants:index' %}">Home</a></li>
                     <li><a href="{% url 'houseplants:reddit_images' %}">Reddit Images</a></li>
+                    <li><a href="{% url 'houseplants:propagation_board' %}">Propagation Board</a></li>
                     <br>
                     {% if user.is_authenticated  %}
                         <li><label style="font-size: 30px;" class="oswald_midsize">{{ user.get_username }}</label></li>

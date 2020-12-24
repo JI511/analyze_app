@@ -221,3 +221,13 @@ def remove_plants(request):
         'removed_plant_instances': removed_plants,
     }
     return render(request, 'houseplants/remove_plants.html', template_dict)
+
+
+def propagation_board(request):
+    """
+    Contains user posted plants to buy/sell/trade/giveaway plant propagations.
+    """
+    template_dict = {
+
+    }
+    return render(request, 'houseplants/propagation_board.html', template_dict)
