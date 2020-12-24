@@ -111,15 +111,22 @@ class Watering(models.Model):
 class PropagationInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           help_text='Unique ID for this propagation across all users')
-
+    # plant item
     plant = models.ForeignKey('Plant', on_delete=models.SET_NULL, null=True)
+    # user image of cutting
     image = models.ImageField(upload_to='uploads/propagations')
+    # date user created propagation
     listed_date = models.DateField(default=now)
     # is it a cutting, rooted cutting, etc
-    type = models.CharField(max_length=100)
+    propagation_type = models.CharField(max_length=100)
+    # Any user notes
     description = models.CharField(max_length=1000)
+    # How many cuttings exist
     amount = models.IntegerField(default=1)
+    # Are you buying, selling, trading, looking for
+    action = models.CharField(max_length=30)
+    # Who created the propagation
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return "%s" % (self.plant.plant_name,)
+        return "(%s) %s %s" % (self.amount, self.plant.plant_name, self.propagation_type)

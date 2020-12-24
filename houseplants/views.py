@@ -223,6 +223,7 @@ def remove_plants(request):
     return render(request, 'houseplants/remove_plants.html', template_dict)
 
 
+@login_required(login_url='/accounts/login/')
 def propagation_board(request):
     """
     Contains user posted plants to buy/sell/trade/giveaway plant propagations.
@@ -232,3 +233,6 @@ def propagation_board(request):
         'propagation_instances': propagation_instances,
     }
     return render(request, 'houseplants/propagation_board.html', template_dict)
+
+
+

@@ -20,10 +20,11 @@ class Command(BaseCommand):
             PropagationInstance(
                 plant=Plant.objects.get(plant_name=Plant.objects.order_by("?").first()),
                 listed_date=current_date,
-                image=os.path.join(os.getcwd(), 'houseplants/static/houseplants.jpg'),
-                type="Cutting" if i % 2 == 0 else "Rooted Cutting",
+                image='uploads/propagations/monstera.jpg',
+                propagation_type="Cutting" if i % 2 == 0 else "Rooted Cutting",
                 description="This was an auto generated cutting.",
-                amount=i % 5,
+                amount=(i % 5) + 1,
+                action="Buying" if i % 3 == 0 else "Selling",
                 owner=User.objects.get(username=options['username'])
             ).save()
         for propagation_instance in PropagationInstance.objects.filter(
