@@ -1,15 +1,30 @@
 import os
-import uuid
 import datetime
+import time
+import random
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.timezone import now
 
-media_dir = os.path.dirname(os.path.abspath(__file__))
+MEDIA_DIR = os.path.dirname(os.path.abspath(__file__))
+START_TIME = int(time.time()*1000)
 
 
-# Create your models here.
+def make_id():
+    """
+    inspired by http://instagram-engineering.tumblr.com/post/10853187575/sharding-ids-at-instagram
+    """
+    t = int(time.time()*1000) - START_TIME
+    u = random.SystemRandom().getrandbits(23)
+    return (t << 23) | u
+
+
+# def reverse_id(id):
+#     t = id >> 23
+#     return t + START_TIME
+
+
 class HouseplantItem(models.Model):
     image_id = models.AutoField(primary_key=True)
     image_name = models.CharField(max_length=200)
@@ -34,8 +49,8 @@ class PlantInstance(models.Model):
     """
     Model representing a specific plant instance (that a user owns).
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                          help_text='Unique ID for this plant across all users')
+    plant_instance_id = models.BigIntegerField(primary_key=True, default=make_id,
+                                               help_text='Unique ID for this propagation across all users')
     # Foreign key to plant model object
     plant = models.ForeignKey('Plant', on_delete=models.SET_NULL, null=True)
     # number of days between watering
@@ -109,8 +124,8 @@ class Watering(models.Model):
 
 
 class PropagationInstance(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                          help_text='Unique ID for this propagation across all users')
+    propagation_instance_id = models.BigIntegerField(primary_key=True, default=make_id,
+                                                     help_text='Unique ID for this propagation across all users')
     # plant item
     plant = models.ForeignKey('Plant', on_delete=models.SET_NULL, null=True)
     # user image of cutting

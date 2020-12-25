@@ -105,7 +105,7 @@ def watering_schedule(request):
         elif 'plant_water_update' in request.POST:
             # iterate over user's plants and match with which IDs were in POST
             for plant in PlantInstance.objects.filter(owner=request.user):
-                if str(plant.id) in request.POST:
+                if str(plant.plant_instance_id) in request.POST:
                     plant.water_plant(current_date)
 
     current_ord = current_date.toordinal()
@@ -185,7 +185,7 @@ def add_plants(request):
             )
             plant_instance.save()
             # Create an initial watering instance from the created plant instance
-            watering = Watering(plant_instance=PlantInstance.objects.get(id=plant_instance.id),
+            watering = Watering(plant_instance=PlantInstance.objects.get(id=plant_instance.plant_instance_id),
                                 watering_date=form.cleaned_data['last_watered'])
             watering.save()
 
@@ -212,7 +212,7 @@ def remove_plants(request):
         if 'plant_remove_update' in request.POST:
             # iterate over user's plants and match with which IDs were in POST
             for plant_instance in PlantInstance.objects.filter(owner=request.user):
-                if str(plant_instance.id) in request.POST:
+                if str(plant_instance.plant_instance_id) in request.POST:
                     removed_plants.append(plant_instance.plant.plant_name)
                     plant_instance.delete()
     user_plants = PlantInstance.objects.filter(owner=request.user)
@@ -235,4 +235,14 @@ def propagation_board(request):
     return render(request, 'houseplants/propagation_board.html', template_dict)
 
 
-
+@login_required(login_url='/accounts/login/')
+def propagation_detail(request, propagation_instance_id):
+    """
+    Contains detailed information on a user plant propagation.
+    """
+    propagation_instance = PropagationInstance.objects.get(pk=propagation_instance_id)
+    template_dict = {
+        'propagation_instance': propagation_instance,
+    }
+    # TODO Fix render with detail
+    return render(request, 'houseplants/propagation_detail.html', template_dict)

@@ -11,4 +11,5 @@ urlpatterns = [
     path('my_plants/', views.my_plants, name='my_plants'),
     path('remove_plants/', views.remove_plants, name='remove_plants'),
     path('propagation_board/', views.propagation_board, name='propagation_board'),
+    path('propagation_board/<int:propagation_instance_id>', views.propagation_detail, name='propagation_detail'),
 ]

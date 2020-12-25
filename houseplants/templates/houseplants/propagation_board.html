@@ -16,7 +16,7 @@
         <div style="display: flex; flex-direction: row; align-items: center;">
             <label>{{ propagation_instance.action }}</label>
             <img style="width: 50px; height: 50px;" src="{{ propagation_instance.image.url }}" alt="(!)"/>
-            <a href="{% url 'houseplants:index' %}">{{ propagation_instance.plant.plant_name }}</a>
+            <a href="{% url 'houseplants:propagation_detail' propagation_instance.propagation_instance_id %}">{{ propagation_instance.plant.plant_name }}</a>
             <label>{{ propagation_instance.amount }}</label>
         </div>
     {% endfor %}

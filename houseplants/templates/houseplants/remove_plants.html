@@ -28,7 +28,7 @@
             {% for plant_instance in user_plant_instances %}
                 <div style="display: flex; flex-direction: row; align-items: center;">
                     <label class="plant_label_container">{{ plant_instance }},
-                        <input type="checkbox" name="{{ plant_instance.id }}">
+                        <input type="checkbox" name="{{ plant_instance.plant_instance_id }}">
                         <span class="checkmark"></span>
                     </label>
                     <div style="padding: 6px;"></div>
