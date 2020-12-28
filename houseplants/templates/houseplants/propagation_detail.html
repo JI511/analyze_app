@@ -10,10 +10,21 @@
 <body>
 {% block content %}
 
-    <h1>Propagation Detail</h1>
-    <p>{{ propagation_instance.plant.plant_name }}</p>
-    <p>Amount: {{ propagation_instance.amount }}</p>
-    <p>Action: {{ propagation_instance.action }}</p>
+<div class="flex_columns">
+    <label>{{ propagation_instance.plant.plant_name }}</label>
+    <div style="display: flex; flex-direction: row; align-items: center; border: 1px solid black;">
+        <img style="max-width: 40%; padding: 5%;" src="{{ propagation_instance.image.url }}" alt="(!)"/>
+        <div style="border: 1px solid black">
+            <label>{{ propagation_instance.action }}</label><br>
+            <label>Type: {{ propagation_instance.propagation_type }}</label><br>
+            <label>Amount: {{ propagation_instance.amount }}</label><br>
+            <label>Description: {{ propagation_instance.description }}</label><br>
+            <label>Date Added: {{ propagation_instance.listed_date|convert_date }}</label><br>
+        </div>
+    </div>
+    <label>Owner: {{ propagation_instance.owner }}</label>
+    <button>Save</button>
+</div>
 
 {% endblock content %}
 </body>
