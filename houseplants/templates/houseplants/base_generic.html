@@ -28,6 +28,10 @@
                         <li><a href="{% url 'houseplants:my_plants' %}">My Plants</a></li>
                         <li style="padding-left: 14px;"><a href="{% url 'houseplants:add_plants' %}">Add Plants</a></li>
                         <li style="padding-left: 14px;"><a href="{% url 'houseplants:remove_plants' %}">Remove Plants</a></li>
+                        <li><a href="{% url 'houseplants:my_plants' %}">My Props</a></li>
+                        <li style="padding-left: 14px;"><a href="{% url 'houseplants:add_plants' %}">Add Props</a></li>
+                        <li style="padding-left: 14px;"><a href="{% url 'houseplants:remove_plants' %}">Remove Props</a></li>
+                        <li><a href="{% url 'houseplants:my_plants' %}">Saved Items</a></li>
                         <br>
                         <li><a href="{% url 'logout'%}?next={{request.path}}" class="watering_button">Logout</a></li>
                     {% else %}

@@ -10,20 +10,28 @@
 <body>
 {% block content %}
 
-<div class="flex_columns">
-    <label>{{ propagation_instance.plant.plant_name }}</label>
-    <div style="display: flex; flex-direction: row; align-items: center; border: 1px solid black;">
-        <img style="max-width: 40%; padding: 5%;" src="{{ propagation_instance.image.url }}" alt="(!)"/>
-        <div style="border: 1px solid black">
-            <label>{{ propagation_instance.action }}</label><br>
-            <label>Type: {{ propagation_instance.propagation_type }}</label><br>
-            <label>Amount: {{ propagation_instance.amount }}</label><br>
-            <label>Description: {{ propagation_instance.description }}</label><br>
-            <label>Date Added: {{ propagation_instance.listed_date|convert_date }}</label><br>
+<div class="flex_start">
+    <label class="oswald_large">{{ propagation_instance.plant.plant_name }}</label>
+    <div style="display: flex; flex-direction: row; align-items: center;">
+        <div>
+            <div>
+                <label class="oswald_midsize">{{ propagation_instance.action }}</label><br>
+                <label>Type: {{ propagation_instance.propagation_type }}</label><br>
+                <label>Amount: {{ propagation_instance.amount }}</label><br>
+                <label>Description: {{ propagation_instance.description }}</label><br>
+                <label>Date Added: {{ propagation_instance.listed_date|convert_date }}</label><br>
+            </div>
+            <div style="padding: 10% 0%;">
+                <label>Owner: {{ propagation_instance.owner }}</label><br>
+                <button>Save</button>
+            </div>
         </div>
+        <div style="width: 40%; height: 40%;">
+            <img style="padding: 5%; width: 100%; object-fit: contain;" src="{{ propagation_instance.image.url }}" alt="(!)"/>
+        </div>
+
     </div>
-    <label>Owner: {{ propagation_instance.owner }}</label>
-    <button>Save</button>
+
 </div>
 
 {% endblock content %}

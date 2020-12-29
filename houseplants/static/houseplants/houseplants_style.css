@@ -121,6 +121,13 @@
     align-items: center;
 }
 
+.flex_start {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
 .plant_label_container {
     display: block;
     position: relative;
@@ -205,6 +212,11 @@
 .oswald_midsize {
     font-family: "Oswald";
     font-size: 20px;
+}
+
+.oswald_large {
+    font-family: "Oswald";
+    font-size: 36px;
 }
 
 .sidebar-nav {
